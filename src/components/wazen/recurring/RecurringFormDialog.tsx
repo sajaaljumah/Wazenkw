@@ -11,7 +11,8 @@ import { Button } from "@/components/ui/button";
 import { SpinnerIcon } from "@/components/wazen/icons";
 import { useWazenLocale } from "@/components/wazen/WazenLocale";
 import { useSaveRecurringItem } from "@/hooks/use-wazen-recurring";
-import { CURRENCIES, DEFAULT_CURRENCY, currencyName } from "@/lib/currency";
+import { CURRENCIES, DEFAULT_CURRENCY, currencyName, attachFxSnapshot } from "@/lib/currency";
+import { convertCurrencyFn } from "@/lib/currency.functions";
 import { firstOfMonth } from "@/lib/finance";
 import type { RecurringFrequency, RecurringItem, RecurringKind } from "@/lib/finance";
 
@@ -57,26 +58,50 @@ export function RecurringFormDialog({
     setStartDate(item?.start_date?.slice(0, 10) ?? firstOfMonth());
     setEndsOn(item?.ends_on?.slice(0, 10) ?? "");
     setNote(item?.note ?? "");
-  }, [open, item, currency]);
+  }, [open, item, currency, t]);
 
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
     const value = Number(amount);
     if (!name.trim() || !Number.isFinite(value) || value <= 0) return;
     try {
+      let finalAmount = value;
+      let finalNote = note.trim() || null;
+
+      if (itemCurrency !== "KWD") {
+        const fxRes = await convertCurrencyFn({
+          data: {
+            amount: value,
+            from: itemCurrency,
+            to: "KWD",
+            date: startDate || firstOfMonth(),
+          },
+        });
+        if (fxRes.success) {
+          finalAmount = fxRes.converted_amount;
+          finalNote = attachFxSnapshot(finalNote, {
+            original_amount: fxRes.original_amount,
+            original_currency: fxRes.original_currency,
+            converted_amount: fxRes.converted_amount,
+            exchange_rate: fxRes.exchange_rate,
+            rate_date: fxRes.rate_date,
+          });
+        }
+      }
+
       await save.mutateAsync({
         id: item?.id,
         kind,
         name: name.trim(),
         merchant: merchant.trim() || null,
         category: category.trim() || t("subscriptionsCategory"),
-        amount: value,
+        amount: finalAmount,
         currency: itemCurrency,
         frequency,
         day_of_month: Math.min(Math.max(Number(day) || 1, 1), 31),
         start_date: startDate || firstOfMonth(),
         ends_on: endsOn || null,
-        note: note.trim() || null,
+        note: finalNote,
         active: item ? item.active : true,
       });
       toast.success(t("recurringSaved"));
@@ -97,25 +122,46 @@ export function RecurringFormDialog({
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="block">
               <span className="wazen-label">{t("typeLabel")}</span>
-              <select className="wazen-field mt-2" value={kind} onChange={(e) => setKind(e.target.value as RecurringKind)}>
+              <select
+                className="wazen-field mt-2"
+                value={kind}
+                onChange={(e) => setKind(e.target.value as RecurringKind)}
+              >
                 {KINDS.map((option) => (
                   <option key={option} value={option}>
-                    {option === "income" ? t("income") : option === "saving" ? t("savingKind") : t("expense")}
+                    {option === "income"
+                      ? t("income")
+                      : option === "saving"
+                        ? t("savingKind")
+                        : t("expense")}
                   </option>
                 ))}
               </select>
             </label>
             <label className="block">
               <span className="wazen-label">{t("recurringName")}</span>
-              <input className="wazen-field mt-2" value={name} onChange={(e) => setName(e.target.value)} required />
+              <input
+                className="wazen-field mt-2"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
             </label>
             <label className="block">
               <span className="wazen-label">{t("provider")}</span>
-              <input className="wazen-field mt-2" value={merchant} onChange={(e) => setMerchant(e.target.value)} />
+              <input
+                className="wazen-field mt-2"
+                value={merchant}
+                onChange={(e) => setMerchant(e.target.value)}
+              />
             </label>
             <label className="block">
               <span className="wazen-label">{t("categoryLabel")}</span>
-              <input className="wazen-field mt-2" value={category} onChange={(e) => setCategory(e.target.value)} />
+              <input
+                className="wazen-field mt-2"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+              />
             </label>
             <label className="block">
               <span className="wazen-label">{t("amountLabel")}</span>
@@ -132,7 +178,11 @@ export function RecurringFormDialog({
             </label>
             <label className="block">
               <span className="wazen-label">{t("currencyLabel")}</span>
-              <select className="wazen-field mt-2" value={itemCurrency} onChange={(e) => setItemCurrency(e.target.value)}>
+              <select
+                className="wazen-field mt-2"
+                value={itemCurrency}
+                onChange={(e) => setItemCurrency(e.target.value)}
+              >
                 {CURRENCIES.map((option) => (
                   <option key={option.code} value={option.code}>
                     {option.code} — {currencyName(option.code, language)}
@@ -167,16 +217,30 @@ export function RecurringFormDialog({
             </label>
             <label className="block">
               <span className="wazen-label">{t("startDate")}</span>
-              <input className="wazen-field mt-2" type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+              <input
+                className="wazen-field mt-2"
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+              />
             </label>
             <label className="block">
               <span className="wazen-label">{t("endDateOptional")}</span>
-              <input className="wazen-field mt-2" type="date" value={endsOn} onChange={(e) => setEndsOn(e.target.value)} />
+              <input
+                className="wazen-field mt-2"
+                type="date"
+                value={endsOn}
+                onChange={(e) => setEndsOn(e.target.value)}
+              />
             </label>
           </div>
           <label className="block">
             <span className="wazen-label">{t("noteOptional")}</span>
-            <input className="wazen-field mt-2" value={note} onChange={(e) => setNote(e.target.value)} />
+            <input
+              className="wazen-field mt-2"
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+            />
           </label>
           <div className="flex flex-wrap justify-end gap-2 pt-2">
             <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>

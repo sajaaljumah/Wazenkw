@@ -118,3 +118,78 @@ export function convert(
   const rate = toRate / fromRate;
   return { amount: amount * rate, rate, identity: false };
 }
+
+/** Stored foreign-currency snapshot preserved on transactions. */
+export type FxSnapshot = {
+  original_amount: number;
+  original_currency: string;
+  converted_amount: number; // in base currency (KWD)
+  exchange_rate: number; // rate used to convert to KWD
+  rate_date: string; // date of the exchange rate used
+};
+
+const FX_TAG_REGEX = /<!--fx:(\{[^}]+\})-->/;
+
+/** Serializes an exchange-rate snapshot into a metadata tag */
+export function attachFxSnapshot(note: string | null | undefined, snapshot: FxSnapshot): string {
+  const clean = (note ?? "").replace(FX_TAG_REGEX, "").trim();
+  const serialized = `<!--fx:${JSON.stringify(snapshot)}-->`;
+  return clean ? `${clean}\n${serialized}` : serialized;
+}
+
+/** Extracts an exchange-rate snapshot from metadata */
+export function parseFxSnapshot(note: string | null | undefined): {
+  cleanNote: string | null;
+  snapshot: FxSnapshot | null;
+} {
+  if (!note) return { cleanNote: null, snapshot: null };
+  const match = note.match(FX_TAG_REGEX);
+  if (!match) return { cleanNote: note, snapshot: null };
+  try {
+    const rawTag = match[1];
+    if (!rawTag) return { cleanNote: note, snapshot: null };
+    const parsed = JSON.parse(rawTag) as FxSnapshot;
+    const clean = note.replace(FX_TAG_REGEX, "").trim();
+    return {
+      cleanNote: clean.length > 0 ? clean : null,
+      snapshot: parsed,
+    };
+  } catch {
+    return { cleanNote: note, snapshot: null };
+  }
+}
+
+/** Enriches a transaction record with parsed FX snapshot data */
+export function enrichTransactionWithFx<
+  T extends { note?: string | null; amount: number; currency: string },
+>(
+  transaction: T,
+): T & {
+  original_amount?: number | null;
+  original_currency?: string | null;
+  converted_amount?: number | null;
+  exchange_rate?: number | null;
+  rate_date?: string | null;
+} {
+  const parsed = parseFxSnapshot(transaction.note);
+  const raw = transaction as Record<string, unknown>;
+  if (parsed.snapshot) {
+    return {
+      ...transaction,
+      note: parsed.cleanNote,
+      original_amount: parsed.snapshot.original_amount,
+      original_currency: parsed.snapshot.original_currency,
+      converted_amount: parsed.snapshot.converted_amount,
+      exchange_rate: parsed.snapshot.exchange_rate,
+      rate_date: parsed.snapshot.rate_date,
+    };
+  }
+  return {
+    ...transaction,
+    original_amount: (raw["original_amount"] as number | undefined) ?? transaction.amount,
+    original_currency: (raw["original_currency"] as string | undefined) ?? transaction.currency,
+    converted_amount: (raw["converted_amount"] as number | undefined) ?? transaction.amount,
+    exchange_rate: (raw["exchange_rate"] as number | undefined) ?? 1.0,
+    rate_date: (raw["rate_date"] as string | undefined) ?? null,
+  };
+}

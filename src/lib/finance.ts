@@ -22,8 +22,13 @@ export type Transaction = {
   deducted_from_child?: boolean;
   payment_method?: string | null;
   linked_transaction_id?: string | null;
+  /** Stored foreign-currency snapshot fields */
+  original_amount?: number | null;
+  original_currency?: string | null;
+  converted_amount?: number | null;
+  exchange_rate?: number | null;
+  rate_date?: string | null;
 };
-
 
 export type Goal = {
   id: string;
@@ -61,6 +66,12 @@ export type RecurringItem = {
   start_date?: string | null;
   ends_on?: string | null;
   note?: string | null;
+  /** Stored foreign-currency snapshot fields */
+  original_amount?: number | null;
+  original_currency?: string | null;
+  converted_amount?: number | null;
+  exchange_rate?: number | null;
+  rate_date?: string | null;
 };
 
 export type RecurringStatus = "active" | "paused" | "ended" | "scheduled";
@@ -138,7 +149,7 @@ export function recurringStatus(item: RecurringItem, from = new Date()): Recurri
 
 /** Total committed per calendar month, normalised across frequencies. */
 export function monthlyEquivalent(item: RecurringItem): number {
-  const amount = Number(item.amount) || 0;
+  const amount = Number(item.converted_amount ?? item.amount) || 0;
   switch (frequencyOf(item)) {
     case "weekly":
       return (amount * 52) / 12;
@@ -243,6 +254,11 @@ export type Totals = {
   net: number;
 };
 
+/** Resolves the stored converted base currency amount (KWD) for any calculation */
+export function baseAmountOf(t: Transaction): number {
+  return Number(t.converted_amount ?? t.amount) || 0;
+}
+
 /** Refunds reduce net spending rather than counting as income. */
 export function totalsFor(transactions: Transaction[]): Totals {
   let income = 0;
@@ -250,14 +266,20 @@ export function totalsFor(transactions: Transaction[]): Totals {
   let refunds = 0;
   let savings = 0;
   for (const t of transactions) {
-    const amount = Number(t.amount) || 0;
+    const amount = baseAmountOf(t);
     if (t.kind === "income") income += amount;
     else if (t.kind === "expense") expenses += amount;
     else if (t.kind === "refund") refunds += amount;
     else if (t.kind === "saving") savings += amount;
   }
-  const netExpenses = expenses - refunds;
-  return { income, expenses: netExpenses, refunds, savings, net: income - netExpenses - savings };
+  const netExpenses = round(expenses - refunds);
+  return {
+    income: round(income),
+    expenses: netExpenses,
+    refunds: round(refunds),
+    savings: round(savings),
+    net: round(income - netExpenses - savings),
+  };
 }
 
 export function inMonth(transactions: Transaction[], key: string): Transaction[] {
@@ -276,7 +298,7 @@ export function availableMoney(transactions: Transaction[]): number {
 export function savedForGoal(transactions: Transaction[], goalId: string): number {
   return transactions
     .filter((t) => t.kind === "saving" && t.goal_id === goalId)
-    .reduce((sum, t) => sum + (Number(t.amount) || 0), 0);
+    .reduce((sum, t) => sum + baseAmountOf(t), 0);
 }
 
 export type CategorySlice = { category: string; amount: number };
@@ -285,7 +307,7 @@ export function spendingByCategory(transactions: Transaction[]): CategorySlice[]
   const map = new Map<string, number>();
   for (const t of transactions) {
     if (t.kind !== "expense" && t.kind !== "refund") continue;
-    const delta = (Number(t.amount) || 0) * (t.kind === "refund" ? -1 : 1);
+    const delta = baseAmountOf(t) * (t.kind === "refund" ? -1 : 1);
     map.set(t.category, (map.get(t.category) ?? 0) + delta);
   }
   return [...map.entries()]

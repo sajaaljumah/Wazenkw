@@ -25,6 +25,8 @@ import { firstOfMonth } from "@/lib/finance";
 import { Button } from "@/components/ui/button";
 import { useWazenLocale } from "@/components/wazen/WazenLocale";
 import { useReveal } from "@/hooks/use-reveal";
+import { CURRENCIES, attachFxSnapshot } from "@/lib/currency";
+import { convertCurrencyFn } from "@/lib/currency.functions";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -121,11 +123,18 @@ export function QuickActions({
 
   return (
     <>
-      <section ref={ref} data-revealed={revealed} className="wazen-action-dock wazen-reveal" data-tour="actions">
+      <section
+        ref={ref}
+        data-revealed={revealed}
+        className="wazen-action-dock wazen-reveal"
+        data-tour="actions"
+      >
         <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
           <span className="min-w-0">
             <span className="wazen-label block">{t("moneyActions" as never)}</span>
-            <span className="mt-1 block text-xs text-muted-foreground">{t("moneyActionsHint" as never)}</span>
+            <span className="mt-1 block text-xs text-muted-foreground">
+              {t("moneyActionsHint" as never)}
+            </span>
           </span>
           {order.some((kind) => !meta[kind].primary) ? (
             <DropdownMenu>
@@ -136,39 +145,49 @@ export function QuickActions({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="min-w-52 p-2">
-                {order.filter((kind) => !meta[kind].primary).map((kind) => {
-                  const item = meta[kind];
-                  const Icon = item.icon;
-                  return (
-                    <DropdownMenuItem key={kind} onSelect={() => setOpen(kind)} className="min-h-11 gap-3 px-3">
-                      <Icon className="size-4" strokeWidth={ICON_STROKE} />
-                      {item.label}
-                    </DropdownMenuItem>
-                  );
-                })}
+                {order
+                  .filter((kind) => !meta[kind].primary)
+                  .map((kind) => {
+                    const item = meta[kind];
+                    const Icon = item.icon;
+                    return (
+                      <DropdownMenuItem
+                        key={kind}
+                        onSelect={() => setOpen(kind)}
+                        className="min-h-11 gap-3 px-3"
+                      >
+                        <Icon className="size-4" strokeWidth={ICON_STROKE} />
+                        {item.label}
+                      </DropdownMenuItem>
+                    );
+                  })}
               </DropdownMenuContent>
             </DropdownMenu>
           ) : null}
         </div>
         <div className="mt-4 grid grid-cols-3 gap-2 sm:gap-3">
-          {order.filter((kind) => meta[kind].primary).map((kind) => {
-            const item = meta[kind];
-            const Icon = item.icon;
-            return (
-              <Button
-                key={kind}
-                type="button"
-                variant="outline"
-                onClick={() => setOpen(kind)}
-                className="group h-auto min-h-20 min-w-0 flex-col gap-2 border-primary/15 bg-card px-2 py-3 text-center hover:border-primary/35 hover:bg-accent/45 sm:min-h-16 sm:flex-row sm:justify-start sm:px-4 sm:text-start"
-              >
-                <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary transition-transform group-active:scale-95">
-                  <Icon className="size-4" strokeWidth={ICON_STROKE} />
-                </span>
-                <span className="min-w-0 text-xs font-semibold leading-tight sm:text-sm">{item.label}</span>
-              </Button>
-            );
-          })}
+          {order
+            .filter((kind) => meta[kind].primary)
+            .map((kind) => {
+              const item = meta[kind];
+              const Icon = item.icon;
+              return (
+                <Button
+                  key={kind}
+                  type="button"
+                  variant="outline"
+                  onClick={() => setOpen(kind)}
+                  className="group h-auto min-h-20 min-w-0 flex-col gap-2 border-primary/15 bg-card px-2 py-3 text-center hover:border-primary/35 hover:bg-accent/45 sm:min-h-16 sm:flex-row sm:justify-start sm:px-4 sm:text-start"
+                >
+                  <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary transition-transform group-active:scale-95">
+                    <Icon className="size-4" strokeWidth={ICON_STROKE} />
+                  </span>
+                  <span className="min-w-0 text-xs font-semibold leading-tight sm:text-sm">
+                    {item.label}
+                  </span>
+                </Button>
+              );
+            })}
         </div>
       </section>
 
@@ -211,6 +230,7 @@ export function ActionDialog({
   const [goalTarget, setGoalTarget] = useState("");
   const [goalDate, setGoalDate] = useState("");
   const [budgetMonth, setBudgetMonth] = useState(() => firstOfMonth().slice(0, 7));
+  const [selectedCurrency, setSelectedCurrency] = useState(currency);
   const [busy, setBusy] = useState(false);
 
   function reset() {
@@ -226,6 +246,7 @@ export function ActionDialog({
     setGoalTarget("");
     setGoalDate("");
     setBudgetMonth(firstOfMonth().slice(0, 7));
+    setSelectedCurrency(currency);
   }
 
   function close() {
@@ -254,17 +275,15 @@ export function ActionDialog({
       } else if (kind === "budget") {
         const value = Number(amount);
         if (!Number.isFinite(value) || value <= 0) throw new Error(tr("enterAmount"));
-        const { error } = await supabase
-          .from("budgets")
-          .upsert(
-            {
-              user_id: userId,
-              period_month: `${budgetMonth}-01`,
-              amount: value,
-              currency,
-            },
-            { onConflict: "user_id,period_month" },
-          );
+        const { error } = await supabase.from("budgets").upsert(
+          {
+            user_id: userId,
+            period_month: `${budgetMonth}-01`,
+            amount: value,
+            currency,
+          },
+          { onConflict: "user_id,period_month" },
+        );
         if (error) throw error;
         await queryClient.invalidateQueries({ queryKey: ["budget"] });
       } else {
@@ -274,16 +293,45 @@ export function ActionDialog({
           throw new Error(tr("enterCategory"));
         }
         const resolvedCategory =
-          kind === "saving" ? t("savingsCategory") : kind === "give" ? tr(givingType) : category.trim();
+          kind === "saving"
+            ? t("savingsCategory")
+            : kind === "give"
+              ? tr(givingType)
+              : category.trim();
+
+        let finalAmount = value;
+        let finalNote = note.trim() || null;
+
+        if (selectedCurrency !== "KWD") {
+          const fxRes = await convertCurrencyFn({
+            data: {
+              amount: value,
+              from: selectedCurrency,
+              to: "KWD",
+              date,
+            },
+          });
+          if (fxRes.success) {
+            finalAmount = fxRes.converted_amount;
+            finalNote = attachFxSnapshot(finalNote, {
+              original_amount: fxRes.original_amount,
+              original_currency: fxRes.original_currency,
+              converted_amount: fxRes.converted_amount,
+              exchange_rate: fxRes.exchange_rate,
+              rate_date: fxRes.rate_date,
+            });
+          }
+        }
+
         const { error } = await supabase.from("transactions").insert({
           user_id: userId,
           // Giving is real spending, so it flows through expense analytics.
           kind: kind === "give" ? "expense" : kind,
           category: resolvedCategory,
           merchant: merchant.trim() || null,
-          note: note.trim() || null,
-          amount: value,
-          currency,
+          note: finalNote,
+          amount: finalAmount,
+          currency: selectedCurrency,
           occurred_on: date,
           payment_method: kind === "saving" ? null : tr(paymentMethod),
           goal_id: kind === "saving" && goalId ? goalId : null,
@@ -316,7 +364,11 @@ export function ActionDialog({
               {kind === "goal" ? (
                 <>
                   <Field label={tr("goalNameField")}>
-                    <input className={inputClass} value={goalName} onChange={(e) => setGoalName(e.target.value)} />
+                    <input
+                      className={inputClass}
+                      value={goalName}
+                      onChange={(e) => setGoalName(e.target.value)}
+                    />
                   </Field>
                   <Field label={`${tr("targetAmountField")} (${currency})`}>
                     <input
@@ -360,20 +412,39 @@ export function ActionDialog({
                 </>
               ) : (
                 <>
-                  <Field label={`${tr("amountField")} (${currency})`}>
-                    <input
-                      className={inputClass}
-                      type="number"
-                      min="0"
-                      step="0.001"
-                      value={amount}
-                      onChange={(e) => setAmount(e.target.value)}
-                    />
-                  </Field>
+                  <div className="grid grid-cols-[1fr_110px] gap-2 items-end">
+                    <Field label={`${tr("amountField")} (${selectedCurrency})`}>
+                      <input
+                        className={inputClass}
+                        type="number"
+                        min="0"
+                        step="0.001"
+                        value={amount}
+                        onChange={(e) => setAmount(e.target.value)}
+                      />
+                    </Field>
+                    <Field label="Currency">
+                      <select
+                        className={inputClass}
+                        value={selectedCurrency}
+                        onChange={(e) => setSelectedCurrency(e.target.value)}
+                      >
+                        {CURRENCIES.map((c) => (
+                          <option key={c.code} value={c.code}>
+                            {c.code}
+                          </option>
+                        ))}
+                      </select>
+                    </Field>
+                  </div>
 
                   {kind === "saving" ? (
                     <Field label={tr("towardsGoal")}>
-                      <select className={inputClass} value={goalId} onChange={(e) => setGoalId(e.target.value)}>
+                      <select
+                        className={inputClass}
+                        value={goalId}
+                        onChange={(e) => setGoalId(e.target.value)}
+                      >
                         <option value="">{tr("generalSavings")}</option>
                         {goals.map((goal) => (
                           <option key={goal.id} value={goal.id}>
@@ -398,7 +469,11 @@ export function ActionDialog({
                         </select>
                       </Field>
                       <Field label={tr("recipientField")}>
-                        <input className={inputClass} value={merchant} onChange={(e) => setMerchant(e.target.value)} />
+                        <input
+                          className={inputClass}
+                          value={merchant}
+                          onChange={(e) => setMerchant(e.target.value)}
+                        />
                       </Field>
                     </>
                   ) : (
@@ -411,7 +486,11 @@ export function ActionDialog({
                         />
                       </Field>
                       <Field label={kind === "income" ? tr("sourceField") : tr("merchantField")}>
-                        <input className={inputClass} value={merchant} onChange={(e) => setMerchant(e.target.value)} />
+                        <input
+                          className={inputClass}
+                          value={merchant}
+                          onChange={(e) => setMerchant(e.target.value)}
+                        />
                       </Field>
                     </>
                   )}
@@ -442,7 +521,11 @@ export function ActionDialog({
                   </Field>
 
                   <Field label={tr("notesField")}>
-                    <input className={inputClass} value={note} onChange={(e) => setNote(e.target.value)} />
+                    <input
+                      className={inputClass}
+                      value={note}
+                      onChange={(e) => setNote(e.target.value)}
+                    />
                   </Field>
                 </>
               )}

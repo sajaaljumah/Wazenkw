@@ -4,6 +4,8 @@ import { useSession } from "@/hooks/use-wazen-auth";
 import { firstOfMonth } from "@/lib/finance";
 import type { Budget, Goal, RecurringItem, Transaction } from "@/lib/finance";
 import type { Profile } from "@/lib/wazen";
+import { enrichTransactionWithFx, attachFxSnapshot } from "@/lib/currency";
+import { convertCurrencyFn } from "@/lib/currency.functions";
 
 /** All queries are scoped to the signed-in user; RLS enforces this server-side too. */
 export function useTransactions() {
@@ -19,7 +21,7 @@ export function useTransactions() {
         .order("occurred_on", { ascending: false })
         .order("created_at", { ascending: false });
       if (error) throw error;
-      return (data ?? []) as unknown as Transaction[];
+      return (data ?? []).map((row) => enrichTransactionWithFx(row as unknown as Transaction));
     },
   });
 }
@@ -73,7 +75,7 @@ export function useRecurringItems() {
         .eq("active", true)
         .order("day_of_month", { ascending: true });
       if (error) throw error;
-      return (data ?? []) as unknown as RecurringItem[];
+      return (data ?? []).map((row) => enrichTransactionWithFx(row as unknown as RecurringItem));
     },
   });
 }
@@ -131,7 +133,9 @@ export function useFamilySummary(enabled: boolean) {
             profile,
             canFund: permissions["can_fund"] === true,
             canMonitor: permissions["can_monitor"] === true,
-            transactions: transactions.filter((t) => t.user_id === profile.id),
+            transactions: transactions
+              .filter((t) => t.user_id === profile.id)
+              .map((t) => enrichTransactionWithFx(t)),
             goals: goals.filter((g) => g.user_id === profile.id),
           };
         })
@@ -160,7 +164,7 @@ export function useParentPaidForMe() {
         .neq("user_id", user!.id)
         .order("occurred_on", { ascending: false });
       if (error) throw error;
-      return (data ?? []) as unknown as Transaction[];
+      return (data ?? []).map((row) => enrichTransactionWithFx(row as unknown as Transaction));
     },
   });
 }
@@ -188,16 +192,44 @@ export function useAddParentPaidExpense() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (input: ParentPaidExpenseInput) => {
+      let finalAmount = input.amount;
+      let parentNote: string | null = null;
+      let childNote = "Paid by parent from your own money";
+
+      if (input.currency !== "KWD") {
+        const fxRes = await convertCurrencyFn({
+          data: {
+            amount: input.amount,
+            from: input.currency,
+            to: "KWD",
+            date: input.occurredOn,
+          },
+        });
+        if (fxRes.success) {
+          finalAmount = fxRes.converted_amount;
+          const snapshot = {
+            original_amount: fxRes.original_amount,
+            original_currency: fxRes.original_currency,
+            converted_amount: fxRes.converted_amount,
+            exchange_rate: fxRes.exchange_rate,
+            rate_date: fxRes.rate_date,
+          };
+          parentNote = attachFxSnapshot(parentNote, snapshot);
+          childNote = attachFxSnapshot(childNote, snapshot);
+        }
+      }
+
       const shared = {
         kind: "expense" as const,
         category: input.category,
         merchant: input.merchant,
-        amount: input.amount,
+        amount: finalAmount,
         currency: input.currency,
         occurred_on: input.occurredOn,
         payment_method: input.paymentMethod,
         beneficiary_user_id: input.childUserId,
         paid_by_parent: true,
+        note: parentNote,
       };
 
       const { data, error } = await supabase
@@ -213,7 +245,7 @@ export function useAddParentPaidExpense() {
           user_id: input.childUserId,
           deducted_from_child: true,
           linked_transaction_id: (data as { id: string }).id,
-          note: "Paid by parent from your own money",
+          note: childNote,
         });
         if (childError) throw childError;
       }
@@ -227,4 +259,3 @@ export function useAddParentPaidExpense() {
     },
   });
 }
-
