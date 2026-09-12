@@ -2,7 +2,14 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState, type ComponentType, type SVGProps } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { LockedIcon, PremiumIcon, ProfileIcon, SignOutIcon, SpinnerIcon, ICON_STROKE } from "@/components/wazen/icons";
+import {
+  LockedIcon,
+  PremiumIcon,
+  ProfileIcon,
+  SignOutIcon,
+  SpinnerIcon,
+  ICON_STROKE,
+} from "@/components/wazen/icons";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/wazen/AppShell";
 import { useProfile, useSession, useSignOut } from "@/hooks/use-wazen-auth";
@@ -26,9 +33,15 @@ export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({
     meta: [
       { title: "Settings — Wazen" },
-      { name: "description", content: "Manage Wazen language, appearance, security and account controls." },
+      {
+        name: "description",
+        content: "Manage Wazen language, appearance, security and account controls.",
+      },
       { property: "og:title", content: "Settings — Wazen" },
-      { property: "og:description", content: "Manage Wazen language, appearance, security and account controls." },
+      {
+        property: "og:description",
+        content: "Manage Wazen language, appearance, security and account controls.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -36,8 +49,7 @@ export const Route = createFileRoute("/_authenticated/settings")({
   component: SettingsPage,
 });
 
-const inputClass =
-  "wazen-field";
+const inputClass = "wazen-field";
 
 function SettingsPage() {
   const queryClient = useQueryClient();
@@ -73,10 +85,7 @@ function SettingsPage() {
     applyTheme(next);
     if (user?.id) cacheTheme(user.id, next);
     if (!profile) return;
-    const { error } = await supabase
-      .from("profiles")
-      .update({ theme: next })
-      .eq("id", profile.id);
+    const { error } = await supabase.from("profiles").update({ theme: next }).eq("id", profile.id);
     if (error) {
       toast.error(error.message);
       return;
@@ -88,7 +97,10 @@ function SettingsPage() {
   async function chooseLanguage(next: string) {
     setLanguage(next);
     if (!profile) return;
-    const { error } = await supabase.from("profiles").update({ language: next }).eq("id", profile.id);
+    const { error } = await supabase
+      .from("profiles")
+      .update({ language: next })
+      .eq("id", profile.id);
     if (error) {
       toast.error(error.message);
       return;
@@ -267,11 +279,7 @@ function SettingsPage() {
             </div>
           </div>
         </div>
-        <Button
-          onClick={save}
-          disabled={busy}
-          className="mt-7"
-        >
+        <Button onClick={save} disabled={busy} className="mt-7">
           {busy ? <SpinnerIcon className="size-4 animate-spin" /> : null}
           {t("saveSettings")}
         </Button>
@@ -302,17 +310,11 @@ function SettingsPage() {
           </label>
         </div>
         <div className="mt-7 flex flex-wrap gap-3">
-          <Button
-            onClick={changePassword}
-            disabled={pwBusy}
-          >
+          <Button onClick={changePassword} disabled={pwBusy}>
             {pwBusy ? <SpinnerIcon className="size-4 animate-spin" /> : null}
             {t("changePassword")}
           </Button>
-          <Button
-            onClick={signOut}
-            variant="outline"
-          >
+          <Button onClick={signOut} variant="outline">
             <SignOutIcon className="size-4" strokeWidth={ICON_STROKE} />
             {t("signOut")}
           </Button>
@@ -359,7 +361,6 @@ function SettingsLink({
     </Link>
   );
 }
-
 
 function Locked({ label, value }: { label: string; value: string }) {
   return (

@@ -11,13 +11,29 @@ type StagePalette = {
 function paletteFor(lifeStage: LifeStage): StagePalette {
   switch (lifeStage) {
     case "child":
-      return { plate: "var(--avatar-child-plate)", field: "var(--avatar-child-field)", accent: "var(--avatar-child-accent)" };
+      return {
+        plate: "var(--avatar-child-plate)",
+        field: "var(--avatar-child-field)",
+        accent: "var(--avatar-child-accent)",
+      };
     case "teenager":
-      return { plate: "var(--avatar-teen-plate)", field: "var(--avatar-teen-field)", accent: "var(--avatar-teen-accent)" };
+      return {
+        plate: "var(--avatar-teen-plate)",
+        field: "var(--avatar-teen-field)",
+        accent: "var(--avatar-teen-accent)",
+      };
     case "university_student":
-      return { plate: "var(--avatar-student-plate)", field: "var(--avatar-student-field)", accent: "var(--avatar-student-accent)" };
+      return {
+        plate: "var(--avatar-student-plate)",
+        field: "var(--avatar-student-field)",
+        accent: "var(--avatar-student-accent)",
+      };
     default:
-      return { plate: "var(--avatar-adult-plate)", field: "var(--avatar-adult-field)", accent: "var(--avatar-adult-accent)" };
+      return {
+        plate: "var(--avatar-adult-plate)",
+        field: "var(--avatar-adult-field)",
+        accent: "var(--avatar-adult-accent)",
+      };
   }
 }
 
@@ -76,8 +92,23 @@ export function WazenAvatar({
           <stop offset="100%" stopColor={palette.plate} />
         </linearGradient>
       </defs>
-      <circle cx="48" cy="48" r="47" fill={`url(#avatar-field-${uid})`} stroke={palette.plate} strokeWidth="2" />
-      <circle cx="48" cy="48" r={child ? 33 : teen ? 32 : 31} fill="none" stroke={palette.accent} strokeWidth="1.5" opacity="0.75" />
+      <circle
+        cx="48"
+        cy="48"
+        r="47"
+        fill={`url(#avatar-field-${uid})`}
+        stroke={palette.plate}
+        strokeWidth="2"
+      />
+      <circle
+        cx="48"
+        cy="48"
+        r={child ? 33 : teen ? 32 : 31}
+        fill="none"
+        stroke={palette.accent}
+        strokeWidth="1.5"
+        opacity="0.75"
+      />
       {child ? (
         <>
           <circle cx="48" cy="14" r="3" fill={palette.accent} />
@@ -86,7 +117,13 @@ export function WazenAvatar({
           <circle cx="14" cy="48" r="3" fill={palette.accent} />
         </>
       ) : teen ? (
-        <path d="M24 69 48 21l24 48Z" fill="none" stroke={palette.accent} strokeWidth="1.5" opacity="0.45" />
+        <path
+          d="M24 69 48 21l24 48Z"
+          fill="none"
+          stroke={palette.accent}
+          strokeWidth="1.5"
+          opacity="0.45"
+        />
       ) : (
         <path d="M22 48h52M48 22v52" stroke={palette.accent} strokeWidth="1" opacity="0.24" />
       )}

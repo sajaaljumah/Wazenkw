@@ -2,7 +2,12 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/wazen/AppShell";
-import { DisclosurePanel, Panel, EmptyState, StatCard } from "@/components/wazen/dashboard/primitives";
+import {
+  DisclosurePanel,
+  Panel,
+  EmptyState,
+  StatCard,
+} from "@/components/wazen/dashboard/primitives";
 import { Button } from "@/components/ui/button";
 import {
   AddIcon,
@@ -41,12 +46,14 @@ export const Route = createFileRoute("/_authenticated/recurring")({
       { title: "Recurring commitments — Wazen" },
       {
         name: "description",
-        content: "Track subscriptions, bills and recurring saving transfers with their amount, frequency and next payment date.",
+        content:
+          "Track subscriptions, bills and recurring saving transfers with their amount, frequency and next payment date.",
       },
       { property: "og:title", content: "Recurring commitments — Wazen" },
       {
         property: "og:description",
-        content: "Track subscriptions, bills and recurring saving transfers with their amount, frequency and next payment date.",
+        content:
+          "Track subscriptions, bills and recurring saving transfers with their amount, frequency and next payment date.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -90,22 +97,66 @@ function RecurringPage() {
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <p className="truncate text-sm font-semibold">{item.name}</p>
-            <span className="rounded-full border border-border/70 px-2 py-0.5 text-[0.625rem] font-semibold uppercase tracking-wide text-muted-foreground">{t("recurringBadge")}</span>
-            <span className={cn("rounded-full px-2 py-0.5 text-[0.625rem] font-semibold", status === "active" ? "bg-chart-2/12 text-chart-2" : "bg-secondary text-muted-foreground")}>{t(STATUS_KEY[status])}</span>
+            <span className="rounded-full border border-border/70 px-2 py-0.5 text-[0.625rem] font-semibold uppercase tracking-wide text-muted-foreground">
+              {t("recurringBadge")}
+            </span>
+            <span
+              className={cn(
+                "rounded-full px-2 py-0.5 text-[0.625rem] font-semibold",
+                status === "active"
+                  ? "bg-chart-2/12 text-chart-2"
+                  : "bg-secondary text-muted-foreground",
+              )}
+            >
+              {t(STATUS_KEY[status])}
+            </span>
           </div>
           <p className="mt-1 truncate text-xs text-muted-foreground">
             {t(frequency === "monthly" ? "monthlyFreq" : frequency)}
-            {item.merchant ? ` · ${labels.merchant(item.merchant)}` : ""} · {labels.category(item.category)}
+            {item.merchant ? ` · ${labels.merchant(item.merchant)}` : ""} ·{" "}
+            {labels.category(item.category)}
             {due ? ` · ${t("nextPayment")}: ${formatDate(due)}` : ""}
           </p>
         </div>
-        <span className={cn("shrink-0 text-sm tabular-nums", item.kind === "income" ? "text-chart-2" : "text-foreground")}>
-          {item.kind === "income" ? "+" : "−"}{formatMoney(Number(item.amount), item.currency || currency)}
+        <span
+          className={cn(
+            "shrink-0 text-sm tabular-nums",
+            item.kind === "income" ? "text-chart-2" : "text-foreground",
+          )}
+        >
+          {item.kind === "income" ? "+" : "−"}
+          {formatMoney(Number(item.amount), item.currency || currency)}
         </span>
         <div className="flex shrink-0 items-center gap-1">
-          <Button variant="ghost" size="sm" onClick={() => toggle.mutate({ id: item.id, active: !item.active })}>{item.active ? t("pauseLabel") : t("resumeLabel")}</Button>
-          <Button variant="ghost" size="icon" aria-label={t("editRecurring")} onClick={() => { setEditing(item); setDialogOpen(true); }}><EditIcon className="size-4" strokeWidth={ICON_STROKE} /></Button>
-          <Button variant="ghost" size="icon" aria-label={t("deleteLabel")} onClick={async () => { await remove.mutateAsync(item.id); toast.success(t("recurringDeleted")); }}><DeleteIcon className="size-4" strokeWidth={ICON_STROKE} /></Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => toggle.mutate({ id: item.id, active: !item.active })}
+          >
+            {item.active ? t("pauseLabel") : t("resumeLabel")}
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label={t("editRecurring")}
+            onClick={() => {
+              setEditing(item);
+              setDialogOpen(true);
+            }}
+          >
+            <EditIcon className="size-4" strokeWidth={ICON_STROKE} />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label={t("deleteLabel")}
+            onClick={async () => {
+              await remove.mutateAsync(item.id);
+              toast.success(t("recurringDeleted"));
+            }}
+          >
+            <DeleteIcon className="size-4" strokeWidth={ICON_STROKE} />
+          </Button>
         </div>
       </li>
     );
@@ -167,10 +218,26 @@ function RecurringPage() {
             />
           ) : (
             <div className="space-y-5">
-              <ul className="divide-y divide-border/70">{list.filter((item) => recurringStatus(item) === "active" || recurringStatus(item) === "scheduled").map(renderItem)}</ul>
-              {list.some((item) => recurringStatus(item) === "paused" || recurringStatus(item) === "ended") ? (
+              <ul className="divide-y divide-border/70">
+                {list
+                  .filter(
+                    (item) =>
+                      recurringStatus(item) === "active" || recurringStatus(item) === "scheduled",
+                  )
+                  .map(renderItem)}
+              </ul>
+              {list.some(
+                (item) => recurringStatus(item) === "paused" || recurringStatus(item) === "ended",
+              ) ? (
                 <DisclosurePanel title={t("inactiveCommitments")}>
-                  <ul className="divide-y divide-border/70">{list.filter((item) => recurringStatus(item) === "paused" || recurringStatus(item) === "ended").map(renderItem)}</ul>
+                  <ul className="divide-y divide-border/70">
+                    {list
+                      .filter(
+                        (item) =>
+                          recurringStatus(item) === "paused" || recurringStatus(item) === "ended",
+                      )
+                      .map(renderItem)}
+                  </ul>
                 </DisclosurePanel>
               ) : null}
             </div>

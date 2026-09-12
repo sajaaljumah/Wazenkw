@@ -1,12 +1,16 @@
 import { useState } from "react";
-import { ExpensesIcon, GoalsIcon, IncomeIcon, ReceiptIcon, RefundIcon, SavingsIcon, ScheduledIcon, ICON_STROKE } from "@/components/wazen/icons";
-import { EmptyState, Panel, ProgressBar, percentOf } from "./primitives";
 import {
-  formatDate,
-  formatMoney,
-  savedForGoal,
-  upcomingCashFlow,
-} from "@/lib/finance";
+  ExpensesIcon,
+  GoalsIcon,
+  IncomeIcon,
+  ReceiptIcon,
+  RefundIcon,
+  SavingsIcon,
+  ScheduledIcon,
+  ICON_STROKE,
+} from "@/components/wazen/icons";
+import { EmptyState, Panel, ProgressBar, percentOf } from "./primitives";
+import { formatDate, formatMoney, savedForGoal, upcomingCashFlow } from "@/lib/finance";
 import type { Goal, RecurringItem, Transaction } from "@/lib/finance";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -54,7 +58,15 @@ export function RecentTransactionsCard({
               size="sm"
               className="h-7 px-2.5"
             >
-              {t(option.value === "all" ? "all" : option.value === "in" ? "moneyIn" : option.value === "out" ? "spending" : "saving")}
+              {t(
+                option.value === "all"
+                  ? "all"
+                  : option.value === "in"
+                    ? "moneyIn"
+                    : option.value === "out"
+                      ? "spending"
+                      : "saving",
+              )}
             </Button>
           ))}
         </div>
@@ -64,11 +76,7 @@ export function RecentTransactionsCard({
         <EmptyState
           icon={<ReceiptIcon className="size-5" strokeWidth={ICON_STROKE} />}
           title={filter === "all" ? t("noTransactions") : t("nothingHere")}
-          description={
-            filter === "all"
-              ? t("noTransactionsDescription")
-              : t("tryAnotherFilter")
-          }
+          description={filter === "all" ? t("noTransactionsDescription") : t("tryAnotherFilter")}
         />
       ) : (
         <ul className="divide-y divide-border/70">
@@ -87,15 +95,20 @@ export function RecentTransactionsCard({
                 <span
                   className={cn(
                     "flex size-9 shrink-0 items-center justify-center rounded-md",
-                    isPositive ? "bg-chart-2/12 text-chart-2" : "bg-secondary text-muted-foreground",
+                    isPositive
+                      ? "bg-chart-2/12 text-chart-2"
+                      : "bg-secondary text-muted-foreground",
                   )}
                 >
                   <Icon className="size-4" strokeWidth={ICON_STROKE} />
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm">{labels.merchant(t.merchant) || labels.category(t.category)}</p>
+                  <p className="truncate text-sm">
+                    {labels.merchant(t.merchant) || labels.category(t.category)}
+                  </p>
                   <p className="mt-0.5 truncate text-xs text-muted-foreground">
-                    {labels.transactionKind(t.kind)} · {labels.category(t.category)} · {formatDate(t.occurred_on)}
+                    {labels.transactionKind(t.kind)} · {labels.category(t.category)} ·{" "}
+                    {formatDate(t.occurred_on)}
                   </p>
                 </div>
                 <span
@@ -138,10 +151,7 @@ export function UpcomingCashFlowCard({
       ) : (
         <ul className="wazen-rule-list">
           {upcoming.map((entry) => (
-            <li
-              key={entry.id}
-              className="flex items-center justify-between gap-4 py-3.5"
-            >
+            <li key={entry.id} className="flex items-center justify-between gap-4 py-3.5">
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
                   <p className="truncate text-sm">{entry.name}</p>
@@ -150,9 +160,13 @@ export function UpcomingCashFlowCard({
                   </span>
                 </div>
                 <p className="mt-0.5 text-xs text-muted-foreground">
-                  {entry.kind === "income" ? t("income") : entry.kind === "saving" ? t("savingKind") : t("expense")} ·{" "}
-                  {t(entry.frequency === "monthly" ? "monthlyFreq" : entry.frequency)} · {t("nextPayment")}:{" "}
-                  {formatDate(entry.date)}
+                  {entry.kind === "income"
+                    ? t("income")
+                    : entry.kind === "saving"
+                      ? t("savingKind")
+                      : t("expense")}{" "}
+                  · {t(entry.frequency === "monthly" ? "monthlyFreq" : entry.frequency)} ·{" "}
+                  {t("nextPayment")}: {formatDate(entry.date)}
                 </p>
               </div>
               <span
@@ -254,7 +268,8 @@ export function EmergencyFundCard({
             {formatMoney(savedForGoal(transactions, fund.id), fund.currency || currency)}
           </p>
           <p className="mt-1 text-xs text-muted-foreground">
-            {t("ofWord")} {formatMoney(Number(fund.target_amount), fund.currency || currency)} · {t("targetWord")}
+            {t("ofWord")} {formatMoney(Number(fund.target_amount), fund.currency || currency)} ·{" "}
+            {t("targetWord")}
           </p>
           <ProgressBar
             value={savedForGoal(transactions, fund.id)}
@@ -291,15 +306,24 @@ export function BudgetCard({
       ) : (
         <>
           <div className="flex flex-wrap items-baseline justify-between gap-2">
-            <p className="text-2xl tabular-nums">{formatMoney(Math.max(budget - spent, 0), currency)}</p>
+            <p className="text-2xl tabular-nums">
+              {formatMoney(Math.max(budget - spent, 0), currency)}
+            </p>
             <span className="text-xs text-muted-foreground">
               {t("leftOf")} {formatMoney(budget, currency)}
             </span>
           </div>
-          <ProgressBar value={spent} max={budget} tone={spent > budget ? "charcoal" : "gold"} className="mt-4" />
+          <ProgressBar
+            value={spent}
+            max={budget}
+            tone={spent > budget ? "charcoal" : "gold"}
+            className="mt-4"
+          />
           <p className="mt-2 text-xs text-muted-foreground">
             {formatMoney(spent, currency)} {t("spentThisMonth")}
-            {spent > budget ? ` · ${t("overBudget")}` : ` · ${percentOf(spent, budget)}% ${t("usedWord")}`}
+            {spent > budget
+              ? ` · ${t("overBudget")}`
+              : ` · ${percentOf(spent, budget)}% ${t("usedWord")}`}
           </p>
         </>
       )}

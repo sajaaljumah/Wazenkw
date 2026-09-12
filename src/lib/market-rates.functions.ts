@@ -18,19 +18,21 @@ export type MetalRateDTO = {
 };
 
 /** Latest stored gram price per metal, newest row first. */
-export const getMetalRates = createServerFn({ method: "GET" }).handler(async (): Promise<{
-  rates: MetalRateDTO[];
-  /** True once an automated integration is configured for future updates. */
-  integrationConfigured: boolean;
-}> => {
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const { data, error } = await supabaseAdmin
-    .from("metal_rates")
-    .select("metal, price_per_gram, currency, as_of, source")
-    .order("as_of", { ascending: false });
-  if (error) throw new Error(error.message);
-  return {
-    rates: (data ?? []) as unknown as MetalRateDTO[],
-    integrationConfigured: Boolean(process.env['METAL_RATES_SOURCE_URL']),
-  };
-});
+export const getMetalRates = createServerFn({ method: "GET" }).handler(
+  async (): Promise<{
+    rates: MetalRateDTO[];
+    /** True once an automated integration is configured for future updates. */
+    integrationConfigured: boolean;
+  }> => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data, error } = await supabaseAdmin
+      .from("metal_rates")
+      .select("metal, price_per_gram, currency, as_of, source")
+      .order("as_of", { ascending: false });
+    if (error) throw new Error(error.message);
+    return {
+      rates: (data ?? []) as unknown as MetalRateDTO[],
+      integrationConfigured: Boolean(process.env["METAL_RATES_SOURCE_URL"]),
+    };
+  },
+);

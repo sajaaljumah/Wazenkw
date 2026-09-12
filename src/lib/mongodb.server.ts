@@ -219,8 +219,23 @@ export type SubscriptionDoc = {
   current_period_start: string;
   current_period_end: string;
   cancel_at_period_end: boolean;
+  stripe_customer_id?: string | null | undefined;
+  stripe_subscription_id?: string | null | undefined;
+  stripe_checkout_session_id?: string | null | undefined;
+  stripe_price_id?: string | null | undefined;
+  family_id?: string | null | undefined;
+  additional_child_count?: number | undefined;
+  cancelled_at?: string | null | undefined;
   created_at: string;
   updated_at: string;
+};
+
+export type StripeEventDoc = {
+  _id: string;
+  id: string;
+  type: string;
+  processed_at: string;
+  livemode: boolean;
 };
 
 export type WazenCollections = {
@@ -237,6 +252,7 @@ export type WazenCollections = {
   badges: BadgeDoc;
   assets: AssetDoc;
   subscriptions: SubscriptionDoc;
+  stripe_events: StripeEventDoc;
 };
 
 export type CollectionName = keyof WazenCollections;
@@ -308,8 +324,8 @@ export async function getMongoClient(): Promise<MongoClient> {
 /**
  * Returns the default Wazen MongoDB database instance.
  */
-export async function getMongoDb(dbName: string = "wazen"): Promise<Db> {
-  if (cachedDb) return cachedDb;
+export async function getMongoDb(dbName: string = "Wazen"): Promise<Db> {
+  if (cachedDb && cachedDb.databaseName === dbName) return cachedDb;
   const client = await getMongoClient();
   cachedDb = client.db(dbName);
   return cachedDb;
@@ -320,7 +336,7 @@ export async function getMongoDb(dbName: string = "wazen"): Promise<Db> {
  */
 export async function getCollection<K extends CollectionName>(
   name: K,
-  dbName: string = "wazen",
+  dbName: string = "Wazen",
 ): Promise<Collection<WazenCollections[K]>> {
   const db = await getMongoDb(dbName);
   return db.collection<WazenCollections[K]>(name);
@@ -329,7 +345,7 @@ export async function getCollection<K extends CollectionName>(
 /**
  * Pings the MongoDB database to verify connectivity.
  */
-export async function pingDatabase(dbName: string = "wazen"): Promise<{
+export async function pingDatabase(dbName: string = "Wazen"): Promise<{
   success: boolean;
   database?: string;
   error?: string;
@@ -352,7 +368,7 @@ export async function pingDatabase(dbName: string = "wazen"): Promise<{
 /**
  * Creates essential indexes across Wazen collections safely and idempotently.
  */
-export async function ensureIndexes(dbName: string = "wazen"): Promise<Record<string, string[]>> {
+export async function ensureIndexes(dbName: string = "Wazen"): Promise<Record<string, string[]>> {
   const db = await getMongoDb(dbName);
   const created: Record<string, string[]> = {};
 
@@ -426,7 +442,15 @@ export async function ensureIndexes(dbName: string = "wazen"): Promise<Record<st
     },
     {
       collection: "subscriptions",
-      indexes: [{ spec: { user_id: 1, status: 1 }, name: "idx_sub_user_status" }],
+      indexes: [
+        { spec: { user_id: 1, status: 1 }, name: "idx_sub_user_status" },
+        { spec: { stripe_customer_id: 1 }, name: "idx_sub_stripe_customer" },
+        { spec: { stripe_subscription_id: 1 }, name: "idx_sub_stripe_sub" },
+      ],
+    },
+    {
+      collection: "stripe_events",
+      indexes: [{ spec: { id: 1 }, name: "idx_stripe_event_id", unique: true }],
     },
   ];
 

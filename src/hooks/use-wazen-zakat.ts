@@ -105,7 +105,11 @@ export function useZakat(): {
   const payments = useZakatPayments();
 
   const isLoading =
-    transactions.isLoading || assets.isLoading || rates.isLoading || zakatProfile.isLoading || payments.isLoading;
+    transactions.isLoading ||
+    assets.isLoading ||
+    rates.isLoading ||
+    zakatProfile.isLoading ||
+    payments.isLoading;
 
   const result = isLoading
     ? null

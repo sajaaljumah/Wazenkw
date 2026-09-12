@@ -155,7 +155,8 @@ function hijriParts(date: Date): { year: number; month: number; day: number } | 
       day: "numeric",
       timeZone: "UTC",
     }).formatToParts(date);
-    const get = (type: string) => Number(parts.find((p) => p.type === type)?.value?.replace(/[^0-9]/g, ""));
+    const get = (type: string) =>
+      Number(parts.find((p) => p.type === type)?.value?.replace(/[^0-9]/g, ""));
     const year = get("year");
     const month = get("month");
     const day = get("day");
@@ -220,13 +221,7 @@ export function todayISO(now = new Date()): string {
 
 /* ------------------------------------------------------------ eligibility --- */
 
-export type ZakatAssetLineType =
-  | "cash"
-  | "savings"
-  | "gold"
-  | "silver"
-  | "stock"
-  | "real_estate";
+export type ZakatAssetLineType = "cash" | "savings" | "gold" | "silver" | "stock" | "real_estate";
 
 export type ZakatAssetLine = {
   key: string;
@@ -259,7 +254,8 @@ function purposeOf(asset: Asset): string | null {
   if (raw) return raw;
   if (asset.kind === "real_estate") {
     const type = (asset.property_type ?? "").toLowerCase();
-    if (type.includes("residence") || type.includes("home") || type.includes("سكن")) return "primary_residence";
+    if (type.includes("residence") || type.includes("home") || type.includes("سكن"))
+      return "primary_residence";
     if (type.includes("rent") || type.includes("إيجار")) return "rental_income";
     if (type.includes("sale") || type.includes("trade")) return "for_sale";
   }
@@ -458,7 +454,8 @@ export function calculateZakat(input: {
     hawlStatus = today >= dueDate ? "completed" : "in_progress";
   }
 
-  const zakatDue = meetsNisab && hawlStatus === "completed" ? round(zakatableAmount * ZAKAT_RATE) : 0;
+  const zakatDue =
+    meetsNisab && hawlStatus === "completed" ? round(zakatableAmount * ZAKAT_RATE) : 0;
 
   const cycleStart = startDate ?? "0001-01-01";
   const paid = round(

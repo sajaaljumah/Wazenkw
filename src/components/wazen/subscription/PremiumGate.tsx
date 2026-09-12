@@ -52,7 +52,9 @@ export function UpgradePrompt({
         <p className="mt-2 text-sm text-muted-foreground">{description}</p>
       </div>
       {hideCta ? null : (
-        <Button asChild className="mx-auto"><Link to="/subscription">{ctaLabel}</Link></Button>
+        <Button asChild className="mx-auto">
+          <Link to="/subscription">{ctaLabel}</Link>
+        </Button>
       )}
     </div>
   );

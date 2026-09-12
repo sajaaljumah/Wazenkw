@@ -95,12 +95,7 @@ function ResetPassword() {
                 className="wazen-field mt-2"
               />
             </label>
-            <Button
-              type="submit"
-              disabled={busy || !ready}
-              size="lg"
-              className="w-full"
-            >
+            <Button type="submit" disabled={busy || !ready} size="lg" className="w-full">
               {busy ? <SpinnerIcon className="size-4 animate-spin" /> : null}
               {t("updatePassword")}
             </Button>

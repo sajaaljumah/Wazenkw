@@ -20,7 +20,10 @@ export const Route = createFileRoute("/_authenticated/profile")({
       { title: "Profile — Wazen" },
       { name: "description", content: "Manage your Wazen identity and personal preferences." },
       { property: "og:title", content: "Profile — Wazen" },
-      { property: "og:description", content: "Manage your Wazen identity and personal preferences." },
+      {
+        property: "og:description",
+        content: "Manage your Wazen identity and personal preferences.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -28,8 +31,7 @@ export const Route = createFileRoute("/_authenticated/profile")({
   component: ProfilePage,
 });
 
-const inputClass =
-  "wazen-field";
+const inputClass = "wazen-field";
 
 function ProfilePage() {
   const queryClient = useQueryClient();
@@ -109,7 +111,10 @@ function ProfilePage() {
 
       <section className="mt-8 grid border-y border-border sm:grid-cols-2">
         <LockedField label={t("dateOfBirth")} value={profile.date_of_birth} />
-        <LockedField label={t("ageCalculated")} value={`${calculateAge(profile.date_of_birth)} ${t("years")}`} />
+        <LockedField
+          label={t("ageCalculated")}
+          value={`${calculateAge(profile.date_of_birth)} ${t("years")}`}
+        />
         <LockedField label={t("gender")} value={labels.gender(profile.gender)} />
         <LockedField label={t("accountType")} value={labels.accountType(profile.account_type)} />
       </section>
@@ -166,10 +171,7 @@ function ProfilePage() {
               </select>
             </label>
           </div>
-          <Button
-            onClick={save}
-            disabled={busy}
-          >
+          <Button onClick={save} disabled={busy}>
             {busy ? <SpinnerIcon className="size-4 animate-spin" /> : null}
             {t("saveChanges")}
           </Button>

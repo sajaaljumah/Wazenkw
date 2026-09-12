@@ -11,13 +11,7 @@ export type Text = { en: string; ar: string };
 export const say = (language: WazenLanguage, text: Text) => text[language];
 
 export type LearnTopic =
-  | "needs_wants"
-  | "saving"
-  | "spending"
-  | "budget"
-  | "goals"
-  | "giving"
-  | "zakat";
+  "needs_wants" | "saving" | "spending" | "budget" | "goals" | "giving" | "zakat";
 
 export type Difficulty = "beginner" | "intermediate" | "advanced";
 
@@ -258,7 +252,7 @@ export const LESSONS: Lesson[] = [
       {
         title: { en: "Name it", ar: "سمِّ هدفك" },
         body: {
-          en: "\"A bicycle\" is a goal. \"Something nice\" is not.",
+          en: '"A bicycle" is a goal. "Something nice" is not.',
           ar: "«دراجة» هدف. «شيء جميل» ليس هدفاً.",
         },
       },
@@ -370,11 +364,7 @@ export const LESSONS: Lesson[] = [
 /* ----------------------------------------------------------------- games */
 
 export type GameKey =
-  | "needs-or-wants"
-  | "build-your-budget"
-  | "save-for-goal"
-  | "smart-shopper"
-  | "money-mission";
+  "needs-or-wants" | "build-your-budget" | "save-for-goal" | "smart-shopper" | "money-mission";
 
 export type GameMeta = {
   key: GameKey;
@@ -390,7 +380,10 @@ export const GAMES: GameMeta[] = [
     key: "needs-or-wants",
     topic: "needs_wants",
     title: { en: "Needs or wants?", ar: "الاحتياجات أم الرغبات؟" },
-    summary: { en: "Sort things quickly into needs and wants.", ar: "صنّف الأشياء بسرعة إلى احتياجات ورغبات." },
+    summary: {
+      en: "Sort things quickly into needs and wants.",
+      ar: "صنّف الأشياء بسرعة إلى احتياجات ورغبات.",
+    },
     how: {
       en: "You will see one thing at a time. Tap Need or Want. Harder levels add trickier items.",
       ar: "سيظهر لك شيء واحد كل مرة. اختر احتياج أو رغبة. المستويات الأصعب تضيف أشياء أذكى.",
@@ -401,7 +394,10 @@ export const GAMES: GameMeta[] = [
     key: "build-your-budget",
     topic: "budget",
     title: { en: "Build your budget", ar: "ابنِ ميزانيتك" },
-    summary: { en: "Share your coins between saving, needs, giving and fun.", ar: "وزّع نقودك بين الادخار والاحتياجات والعطاء والمتعة." },
+    summary: {
+      en: "Share your coins between saving, needs, giving and fun.",
+      ar: "وزّع نقودك بين الادخار والاحتياجات والعطاء والمتعة.",
+    },
     how: {
       en: "You have coins to place. Cover the needs, save something, give something, and do not go over.",
       ar: "لديك نقود لتوزّعها. غطِّ الاحتياجات، وادخر شيئاً، وأعطِ شيئاً، ولا تتجاوز المبلغ.",
@@ -412,7 +408,10 @@ export const GAMES: GameMeta[] = [
     key: "save-for-goal",
     topic: "goals",
     title: { en: "Save for your goal", ar: "ادخر لهدفك" },
-    summary: { en: "Make weekly choices and reach your goal in time.", ar: "اتخذ قرارات أسبوعية وحقّق هدفك في الوقت." },
+    summary: {
+      en: "Make weekly choices and reach your goal in time.",
+      ar: "اتخذ قرارات أسبوعية وحقّق هدفك في الوقت.",
+    },
     how: {
       en: "Every week you choose what to do with your money. Reach the goal before the weeks end.",
       ar: "كل أسبوع تختار ما تفعله بمالك. اصل إلى الهدف قبل انتهاء الأسابيع.",
@@ -423,7 +422,10 @@ export const GAMES: GameMeta[] = [
     key: "smart-shopper",
     topic: "spending",
     title: { en: "Smart shopper", ar: "المتسوق الذكي" },
-    summary: { en: "Pick the better value in each pair.", ar: "اختر الخيار الأفضل قيمة في كل مقارنة." },
+    summary: {
+      en: "Pick the better value in each pair.",
+      ar: "اختر الخيار الأفضل قيمة في كل مقارنة.",
+    },
     how: {
       en: "Two offers appear. Choose the one that gives more value for the money.",
       ar: "يظهر عرضان. اختر العرض الذي يعطي قيمة أكبر للمال.",
@@ -434,7 +436,10 @@ export const GAMES: GameMeta[] = [
     key: "money-mission",
     topic: "saving",
     title: { en: "Money mission", ar: "مهمة المال" },
-    summary: { en: "Quick money decisions, one after another.", ar: "قرارات مالية سريعة، واحداً بعد الآخر." },
+    summary: {
+      en: "Quick money decisions, one after another.",
+      ar: "قرارات مالية سريعة، واحداً بعد الآخر.",
+    },
     how: {
       en: "Answer fast money questions in a row. Each right answer moves the mission forward.",
       ar: "أجب على أسئلة مالية سريعة بالتتابع. كل إجابة صحيحة تُقدّم المهمة.",
@@ -456,17 +461,45 @@ export const NEEDS_WANTS_ITEMS: { label: Text; need: boolean; level: Difficulty 
   { label: { en: "Winter jacket", ar: "معطف الشتاء" }, need: true, level: "beginner" },
   { label: { en: "Stickers", ar: "ملصقات" }, need: false, level: "beginner" },
   { label: { en: "School shoes", ar: "حذاء المدرسة" }, need: true, level: "intermediate" },
-  { label: { en: "A second pair of party shoes", ar: "حذاء مناسبات ثانٍ" }, need: false, level: "intermediate" },
+  {
+    label: { en: "A second pair of party shoes", ar: "حذاء مناسبات ثانٍ" },
+    need: false,
+    level: "intermediate",
+  },
   { label: { en: "Notebook for class", ar: "دفتر للحصة" }, need: true, level: "intermediate" },
   { label: { en: "Fancy pen set", ar: "طقم أقلام فخم" }, need: false, level: "intermediate" },
   { label: { en: "Healthy lunch", ar: "غداء صحي" }, need: true, level: "intermediate" },
-  { label: { en: "Restaurant dessert", ar: "تحلية من المطعم" }, need: false, level: "intermediate" },
+  {
+    label: { en: "Restaurant dessert", ar: "تحلية من المطعم" },
+    need: false,
+    level: "intermediate",
+  },
   { label: { en: "Bus fare to school", ar: "أجرة الباص للمدرسة" }, need: true, level: "advanced" },
-  { label: { en: "Taxi because I woke up late", ar: "تاكسي لأنني تأخرت" }, need: false, level: "advanced" },
-  { label: { en: "Eyeglasses I was prescribed", ar: "نظارة طبية موصوفة لي" }, need: true, level: "advanced" },
-  { label: { en: "Sunglasses like my friend's", ar: "نظارة شمسية مثل صديقي" }, need: false, level: "advanced" },
-  { label: { en: "Refill for my water bottle", ar: "تعبئة قارورة الماء" }, need: true, level: "advanced" },
-  { label: { en: "New bottle because the colour is nicer", ar: "قارورة جديدة لأن لونها أجمل" }, need: false, level: "advanced" },
+  {
+    label: { en: "Taxi because I woke up late", ar: "تاكسي لأنني تأخرت" },
+    need: false,
+    level: "advanced",
+  },
+  {
+    label: { en: "Eyeglasses I was prescribed", ar: "نظارة طبية موصوفة لي" },
+    need: true,
+    level: "advanced",
+  },
+  {
+    label: { en: "Sunglasses like my friend's", ar: "نظارة شمسية مثل صديقي" },
+    need: false,
+    level: "advanced",
+  },
+  {
+    label: { en: "Refill for my water bottle", ar: "تعبئة قارورة الماء" },
+    need: true,
+    level: "advanced",
+  },
+  {
+    label: { en: "New bottle because the colour is nicer", ar: "قارورة جديدة لأن لونها أجمل" },
+    need: false,
+    level: "advanced",
+  },
 ];
 
 /** Smart-shopper comparisons: which offer gives more value? */
@@ -484,17 +517,26 @@ export const SHOPPER_PAIRS: {
       { en: "2 bottles for 0.700 KWD", ar: "قارورتان بـ 0.700 د.ك" },
     ],
     better: 1,
-    why: { en: "Two bottles cost 0.350 each — cheaper per bottle.", ar: "القارورتان بـ 0.350 لكل واحدة — أرخص للقارورة." },
+    why: {
+      en: "Two bottles cost 0.350 each — cheaper per bottle.",
+      ar: "القارورتان بـ 0.350 لكل واحدة — أرخص للقارورة.",
+    },
     level: "beginner",
   },
   {
     question: { en: "The notebook you need", ar: "الدفتر الذي تحتاجه" },
     options: [
       { en: "Plain notebook for 0.400 KWD", ar: "دفتر عادي بـ 0.400 د.ك" },
-      { en: "Same notebook with a cartoon cover for 1.200 KWD", ar: "نفس الدفتر بغلاف مرسوم بـ 1.200 د.ك" },
+      {
+        en: "Same notebook with a cartoon cover for 1.200 KWD",
+        ar: "نفس الدفتر بغلاف مرسوم بـ 1.200 د.ك",
+      },
     ],
     better: 0,
-    why: { en: "Both write the same. The cover costs three times more.", ar: "الاثنان يكتبان بنفس الجودة. الغلاف يكلف ثلاثة أضعاف." },
+    why: {
+      en: "Both write the same. The cover costs three times more.",
+      ar: "الاثنان يكتبان بنفس الجودة. الغلاف يكلف ثلاثة أضعاف.",
+    },
     level: "beginner",
   },
   {
@@ -514,7 +556,10 @@ export const SHOPPER_PAIRS: {
       { en: "Keep yours and save the 8 KWD", ar: "احتفظ بلعبتك وادخر الـ 8 د.ك" },
     ],
     better: 1,
-    why: { en: "Paying twice for the same fun is not value.", ar: "الدفع مرتين لنفس المتعة ليس قيمة." },
+    why: {
+      en: "Paying twice for the same fun is not value.",
+      ar: "الدفع مرتين لنفس المتعة ليس قيمة.",
+    },
     level: "intermediate",
   },
   {
@@ -524,17 +569,26 @@ export const SHOPPER_PAIRS: {
       { en: "2 pens for 0.300 KWD", ar: "قلمان بـ 0.300 د.ك" },
     ],
     better: 1,
-    why: { en: "A discount on things you will not use is still spending.", ar: "الخصم على ما لن تستخدمه يبقى صرفاً." },
+    why: {
+      en: "A discount on things you will not use is still spending.",
+      ar: "الخصم على ما لن تستخدمه يبقى صرفاً.",
+    },
     level: "advanced",
   },
   {
     question: { en: "Waiting has a price", ar: "الانتظار له سعر" },
     options: [
       { en: "Buy the shoes today for 12 KWD", ar: "شراء الحذاء اليوم بـ 12 د.ك" },
-      { en: "The same shoes next week in the sale for 8 KWD", ar: "نفس الحذاء الأسبوع القادم بالتخفيض بـ 8 د.ك" },
+      {
+        en: "The same shoes next week in the sale for 8 KWD",
+        ar: "نفس الحذاء الأسبوع القادم بالتخفيض بـ 8 د.ك",
+      },
     ],
     better: 1,
-    why: { en: "If you can wait, waiting saved 4 KWD.", ar: "إذا كان بإمكانك الانتظار، فقد وفّر 4 د.ك." },
+    why: {
+      en: "If you can wait, waiting saved 4 KWD.",
+      ar: "إذا كان بإمكانك الانتظار، فقد وفّر 4 د.ك.",
+    },
     level: "advanced",
   },
 ];
@@ -547,17 +601,54 @@ export const BUDGET_ROUNDS: {
   minGive: number;
   story: Text;
 }[] = [
-  { money: 10, needs: 4, minSave: 2, minGive: 1, story: { en: "You received 10 KWD this month.", ar: "حصلت على 10 د.ك هذا الشهر." } },
-  { money: 8, needs: 3, minSave: 2, minGive: 1, story: { en: "This month you have 8 KWD only.", ar: "هذا الشهر لديك 8 د.ك فقط." } },
-  { money: 14, needs: 6, minSave: 4, minGive: 1, story: { en: "A gift made it 14 KWD — plan carefully.", ar: "هدية جعلت المبلغ 14 د.ك — خطّط بعناية." } },
+  {
+    money: 10,
+    needs: 4,
+    minSave: 2,
+    minGive: 1,
+    story: { en: "You received 10 KWD this month.", ar: "حصلت على 10 د.ك هذا الشهر." },
+  },
+  {
+    money: 8,
+    needs: 3,
+    minSave: 2,
+    minGive: 1,
+    story: { en: "This month you have 8 KWD only.", ar: "هذا الشهر لديك 8 د.ك فقط." },
+  },
+  {
+    money: 14,
+    needs: 6,
+    minSave: 4,
+    minGive: 1,
+    story: {
+      en: "A gift made it 14 KWD — plan carefully.",
+      ar: "هدية جعلت المبلغ 14 د.ك — خطّط بعناية.",
+    },
+  },
 ];
 
 /** Weekly decisions in the goal game. */
 export const GOAL_CHOICES: { label: Text; save: number; hint: Text }[] = [
-  { label: { en: "Save most of my allowance", ar: "أدخر معظم مصروفي" }, save: 3, hint: { en: "Fast progress", ar: "تقدّم سريع" } },
-  { label: { en: "Save half, spend half", ar: "أدخر النصف وأصرف النصف" }, save: 2, hint: { en: "Balanced", ar: "متوازن" } },
-  { label: { en: "Buy snacks, save a little", ar: "أشتري وجبات وأدخر قليلاً" }, save: 1, hint: { en: "Slow progress", ar: "تقدّم بطيء" } },
-  { label: { en: "Spend everything this week", ar: "أصرف كل شيء هذا الأسبوع" }, save: 0, hint: { en: "No progress", ar: "بلا تقدّم" } },
+  {
+    label: { en: "Save most of my allowance", ar: "أدخر معظم مصروفي" },
+    save: 3,
+    hint: { en: "Fast progress", ar: "تقدّم سريع" },
+  },
+  {
+    label: { en: "Save half, spend half", ar: "أدخر النصف وأصرف النصف" },
+    save: 2,
+    hint: { en: "Balanced", ar: "متوازن" },
+  },
+  {
+    label: { en: "Buy snacks, save a little", ar: "أشتري وجبات وأدخر قليلاً" },
+    save: 1,
+    hint: { en: "Slow progress", ar: "تقدّم بطيء" },
+  },
+  {
+    label: { en: "Spend everything this week", ar: "أصرف كل شيء هذا الأسبوع" },
+    save: 0,
+    hint: { en: "No progress", ar: "بلا تقدّم" },
+  },
 ];
 
 /* ------------------------------------------------------------------ quiz */
@@ -584,33 +675,48 @@ export const QUIZ_BANK: QuizQuestion[] = [
       { en: "Chocolate", ar: "شوكولاتة" },
     ],
     answer: 0,
-    explain: { en: "Water keeps you healthy — that is a need.", ar: "الماء يحفظ صحتك — هذا احتياج." },
+    explain: {
+      en: "Water keeps you healthy — that is a need.",
+      ar: "الماء يحفظ صحتك — هذا احتياج.",
+    },
   },
   {
     key: "q-nw-2",
     topic: "needs_wants",
     difficulty: "intermediate",
-    prompt: { en: "You have school shoes that fit. New party shoes are…", ar: "لديك حذاء مدرسة مناسب. حذاء المناسبات الجديد هو…" },
+    prompt: {
+      en: "You have school shoes that fit. New party shoes are…",
+      ar: "لديك حذاء مدرسة مناسب. حذاء المناسبات الجديد هو…",
+    },
     options: [
       { en: "A want", ar: "رغبة" },
       { en: "A need", ar: "احتياج" },
       { en: "Free money", ar: "مال مجاني" },
     ],
     answer: 0,
-    explain: { en: "Your feet are already covered, so the extra pair is a want.", ar: "قدماك مغطّاتان بالفعل، فالحذاء الإضافي رغبة." },
+    explain: {
+      en: "Your feet are already covered, so the extra pair is a want.",
+      ar: "قدماك مغطّاتان بالفعل، فالحذاء الإضافي رغبة.",
+    },
   },
   {
     key: "q-nw-3",
     topic: "needs_wants",
     difficulty: "advanced",
-    prompt: { en: "Bus fare to school and a taxi because you slept late — which is the need?", ar: "أجرة الباص للمدرسة وتاكسي لأنك تأخرت — أيّهما الاحتياج؟" },
+    prompt: {
+      en: "Bus fare to school and a taxi because you slept late — which is the need?",
+      ar: "أجرة الباص للمدرسة وتاكسي لأنك تأخرت — أيّهما الاحتياج؟",
+    },
     options: [
       { en: "The bus fare", ar: "أجرة الباص" },
       { en: "The taxi", ar: "التاكسي" },
       { en: "Both the same", ar: "الاثنان سواء" },
     ],
     answer: 0,
-    explain: { en: "The bus gets you there normally; the taxi paid for a mistake.", ar: "الباص وسيلتك المعتادة؛ التاكسي دفعتَه بسبب خطأ." },
+    explain: {
+      en: "The bus gets you there normally; the taxi paid for a mistake.",
+      ar: "الباص وسيلتك المعتادة؛ التاكسي دفعتَه بسبب خطأ.",
+    },
   },
   {
     key: "q-sv-1",
@@ -629,7 +735,10 @@ export const QUIZ_BANK: QuizQuestion[] = [
     key: "q-sv-2",
     topic: "saving",
     difficulty: "intermediate",
-    prompt: { en: "You save 1 KWD every week. How much after 6 weeks?", ar: "تدخر 1 د.ك كل أسبوع. كم يصبح المبلغ بعد 6 أسابيع؟" },
+    prompt: {
+      en: "You save 1 KWD every week. How much after 6 weeks?",
+      ar: "تدخر 1 د.ك كل أسبوع. كم يصبح المبلغ بعد 6 أسابيع؟",
+    },
     options: [
       { en: "6 KWD", ar: "6 د.ك" },
       { en: "3 KWD", ar: "3 د.ك" },
@@ -649,13 +758,19 @@ export const QUIZ_BANK: QuizQuestion[] = [
       { en: "Saving only what is left at the end", ar: "ادخار ما يتبقى في النهاية فقط" },
     ],
     answer: 0,
-    explain: { en: "Regular saving beats rare big attempts.", ar: "الانتظام يتغلب على المحاولات الكبيرة النادرة." },
+    explain: {
+      en: "Regular saving beats rare big attempts.",
+      ar: "الانتظام يتغلب على المحاولات الكبيرة النادرة.",
+    },
   },
   {
     key: "q-sp-1",
     topic: "spending",
     difficulty: "beginner",
-    prompt: { en: "Before buying something, what should you do first?", ar: "قبل شراء شيء، ماذا تفعل أولاً؟" },
+    prompt: {
+      en: "Before buying something, what should you do first?",
+      ar: "قبل شراء شيء، ماذا تفعل أولاً؟",
+    },
     options: [
       { en: "Think if I really need it", ar: "أفكر إن كنت أحتاجه فعلاً" },
       { en: "Buy it quickly", ar: "أشتريه بسرعة" },
@@ -668,14 +783,20 @@ export const QUIZ_BANK: QuizQuestion[] = [
     key: "q-sp-2",
     topic: "spending",
     difficulty: "intermediate",
-    prompt: { en: "The same pencil case is 1 KWD in one shop and 2 KWD in another. What do you do?", ar: "نفس المقلمة بـ 1 د.ك في متجر وبـ 2 د.ك في آخر. ماذا تفعل؟" },
+    prompt: {
+      en: "The same pencil case is 1 KWD in one shop and 2 KWD in another. What do you do?",
+      ar: "نفس المقلمة بـ 1 د.ك في متجر وبـ 2 د.ك في آخر. ماذا تفعل؟",
+    },
     options: [
       { en: "Buy the 1 KWD one", ar: "أشتري التي بـ 1 د.ك" },
       { en: "Buy the 2 KWD one", ar: "أشتري التي بـ 2 د.ك" },
       { en: "Buy both", ar: "أشتري الاثنتين" },
     ],
     answer: 0,
-    explain: { en: "Same item, lower price — you keep 1 KWD.", ar: "نفس الشيء بسعر أقل — تحتفظ بـ 1 د.ك." },
+    explain: {
+      en: "Same item, lower price — you keep 1 KWD.",
+      ar: "نفس الشيء بسعر أقل — تحتفظ بـ 1 د.ك.",
+    },
   },
   {
     key: "q-bd-1",
@@ -688,13 +809,19 @@ export const QUIZ_BANK: QuizQuestion[] = [
       { en: "A game only", ar: "لعبة فقط" },
     ],
     answer: 0,
-    explain: { en: "A budget plans money before you use it.", ar: "الميزانية تخطّط للمال قبل استخدامه." },
+    explain: {
+      en: "A budget plans money before you use it.",
+      ar: "الميزانية تخطّط للمال قبل استخدامه.",
+    },
   },
   {
     key: "q-bd-2",
     topic: "budget",
     difficulty: "advanced",
-    prompt: { en: "You have 10 KWD: needs 4, saving 3, giving 1. How much is left for fun?", ar: "لديك 10 د.ك: احتياجات 4، ادخار 3، عطاء 1. كم يتبقى للمتعة؟" },
+    prompt: {
+      en: "You have 10 KWD: needs 4, saving 3, giving 1. How much is left for fun?",
+      ar: "لديك 10 د.ك: احتياجات 4، ادخار 3، عطاء 1. كم يتبقى للمتعة؟",
+    },
     options: [
       { en: "2 KWD", ar: "2 د.ك" },
       { en: "4 KWD", ar: "4 د.ك" },
@@ -714,13 +841,19 @@ export const QUIZ_BANK: QuizQuestion[] = [
       { en: "More money", ar: "مال أكثر" },
     ],
     answer: 0,
-    explain: { en: "A clear goal has a name, a price and a date.", ar: "الهدف الواضح له اسم وسعر وتاريخ." },
+    explain: {
+      en: "A clear goal has a name, a price and a date.",
+      ar: "الهدف الواضح له اسم وسعر وتاريخ.",
+    },
   },
   {
     key: "q-gl-2",
     topic: "goals",
     difficulty: "intermediate",
-    prompt: { en: "Your goal costs 20 KWD and you have 10 weeks. How much per week?", ar: "هدفك بـ 20 د.ك ولديك 10 أسابيع. كم في الأسبوع؟" },
+    prompt: {
+      en: "Your goal costs 20 KWD and you have 10 weeks. How much per week?",
+      ar: "هدفك بـ 20 د.ك ولديك 10 أسابيع. كم في الأسبوع؟",
+    },
     options: [
       { en: "2 KWD", ar: "2 د.ك" },
       { en: "5 KWD", ar: "5 د.ك" },
@@ -733,14 +866,20 @@ export const QUIZ_BANK: QuizQuestion[] = [
     key: "q-hb-1",
     topic: "saving",
     difficulty: "intermediate",
-    prompt: { en: "Your friends are all buying something you do not need. You…", ar: "أصدقاؤك يشترون شيئاً لا تحتاجه. أنت…" },
+    prompt: {
+      en: "Your friends are all buying something you do not need. You…",
+      ar: "أصدقاؤك يشترون شيئاً لا تحتاجه. أنت…",
+    },
     options: [
       { en: "Keep my money for my goal", ar: "أحتفظ بمالي لهدفي" },
       { en: "Buy it so I look the same", ar: "أشتريه لأبدو مثلهم" },
       { en: "Borrow money to buy it", ar: "أستلف مالاً لأشتريه" },
     ],
     answer: 0,
-    explain: { en: "Your goal matters more than matching others.", ar: "هدفك أهم من مجاراة الآخرين." },
+    explain: {
+      en: "Your goal matters more than matching others.",
+      ar: "هدفك أهم من مجاراة الآخرين.",
+    },
   },
   {
     key: "q-gv-1",
@@ -753,7 +892,10 @@ export const QUIZ_BANK: QuizQuestion[] = [
       { en: "Only very large amounts", ar: "للمبالغ الكبيرة فقط" },
     ],
     answer: 0,
-    explain: { en: "Any small amount, given willingly, counts.", ar: "أي مبلغ صغير يُعطى برضا له قيمة." },
+    explain: {
+      en: "Any small amount, given willingly, counts.",
+      ar: "أي مبلغ صغير يُعطى برضا له قيمة.",
+    },
   },
   {
     key: "q-zk-1",
@@ -761,18 +903,29 @@ export const QUIZ_BANK: QuizQuestion[] = [
     difficulty: "intermediate",
     prompt: { en: "How is Zakat different from Sadaqah?", ar: "كيف تختلف الزكاة عن الصدقة؟" },
     options: [
-      { en: "Zakat is an obligation with rules; Sadaqah is voluntary", ar: "الزكاة فريضة لها أحكام؛ والصدقة تطوعية" },
+      {
+        en: "Zakat is an obligation with rules; Sadaqah is voluntary",
+        ar: "الزكاة فريضة لها أحكام؛ والصدقة تطوعية",
+      },
       { en: "They are exactly the same", ar: "هما نفس الشيء تماماً" },
       { en: "Sadaqah must be paid once a year", ar: "الصدقة تُدفع مرة في السنة" },
     ],
     answer: 0,
-    explain: { en: "Zakat has a minimum amount and a full year; Sadaqah is a free gift.", ar: "للزكاة نصاب وحول كامل؛ والصدقة عطاء حر." },
+    explain: {
+      en: "Zakat has a minimum amount and a full year; Sadaqah is a free gift.",
+      ar: "للزكاة نصاب وحول كامل؛ والصدقة عطاء حر.",
+    },
   },
 ];
 
 /** Quick-fire questions for the money-mission game (reuses the quiz bank). */
 export const missionQuestions = (level: Difficulty): QuizQuestion[] => {
-  const order: Difficulty[] = level === "beginner" ? ["beginner", "intermediate"] : level === "intermediate" ? ["intermediate", "beginner", "advanced"] : ["advanced", "intermediate"];
+  const order: Difficulty[] =
+    level === "beginner"
+      ? ["beginner", "intermediate"]
+      : level === "intermediate"
+        ? ["intermediate", "beginner", "advanced"]
+        : ["advanced", "intermediate"];
   const picked = order.flatMap((d) => QUIZ_BANK.filter((q) => q.difficulty === d));
   return picked.slice(0, 7);
 };
@@ -792,7 +945,10 @@ export const CHALLENGES: ChallengeMeta[] = [
   {
     key: "save-7-days",
     title: { en: "Save for 7 days", ar: "تحدي الادخار لمدة 7 أيام" },
-    description: { en: "Put something aside every day for a week.", ar: "ضع شيئاً جانباً كل يوم لمدة أسبوع." },
+    description: {
+      en: "Put something aside every day for a week.",
+      ar: "ضع شيئاً جانباً كل يوم لمدة أسبوع.",
+    },
     targetDays: 7,
     reward: { en: "Saving Star badge", ar: "شارة نجم الادخار" },
     xp: 70,
@@ -808,7 +964,10 @@ export const CHALLENGES: ChallengeMeta[] = [
   {
     key: "steady-saver",
     title: { en: "Keep saving", ar: "تحدي الادخار المستمر" },
-    description: { en: "Check in for 14 days of steady saving.", ar: "سجّل حضورك 14 يوماً من الادخار المستمر." },
+    description: {
+      en: "Check in for 14 days of steady saving.",
+      ar: "سجّل حضورك 14 يوماً من الادخار المستمر.",
+    },
     targetDays: 14,
     reward: { en: "Saving Hero badge", ar: "شارة بطل الادخار" },
     xp: 120,
@@ -863,7 +1022,10 @@ export type BadgeMeta = {
 
 const completed = (context: BadgeContext, type: ActivityType, key?: string) =>
   context.progress.filter(
-    (row) => row.activity_type === type && row.status === "completed" && (!key || row.activity_key === key),
+    (row) =>
+      row.activity_type === type &&
+      row.status === "completed" &&
+      (!key || row.activity_key === key),
   );
 
 export const BADGES: BadgeMeta[] = [
@@ -937,7 +1099,9 @@ export function recommendNext(context: BadgeContext): Recommendation {
     };
   }
 
-  const playedGames = new Set(context.progress.filter((row) => row.activity_type === "game").map((row) => row.activity_key));
+  const playedGames = new Set(
+    context.progress.filter((row) => row.activity_type === "game").map((row) => row.activity_key),
+  );
   const nextGame = GAMES.find((game) => !playedGames.has(game.key));
   if (nextGame) {
     return {
@@ -949,7 +1113,10 @@ export function recommendNext(context: BadgeContext): Recommendation {
   }
 
   const weakGame = context.progress
-    .filter((row) => row.activity_type === "game" && row.max_score > 0 && row.best_score / row.max_score < 0.7)
+    .filter(
+      (row) =>
+        row.activity_type === "game" && row.max_score > 0 && row.best_score / row.max_score < 0.7,
+    )
     .sort((a, b) => a.best_score / a.max_score - b.best_score / b.max_score)[0];
   if (weakGame) {
     const meta = GAMES.find((game) => game.key === weakGame.activity_key);
@@ -1008,13 +1175,14 @@ export function recommendNext(context: BadgeContext): Recommendation {
 export function nextQuizDifficulty(progress: LearningProgress[]): Difficulty {
   const quizzes = progress.filter((row) => row.activity_type === "quiz" && row.max_score > 0);
   if (quizzes.length === 0) return "beginner";
-  const best = quizzes.reduce(
-    (top, row) => Math.max(top, row.best_score / row.max_score),
-    0,
+  const best = quizzes.reduce((top, row) => Math.max(top, row.best_score / row.max_score), 0);
+  const advanced = quizzes.some(
+    (row) => row.difficulty === "advanced" && row.best_score / row.max_score >= 0.8,
   );
-  const advanced = quizzes.some((row) => row.difficulty === "advanced" && row.best_score / row.max_score >= 0.8);
   if (advanced) return "advanced";
-  const intermediate = quizzes.some((row) => row.difficulty === "intermediate" && row.best_score / row.max_score >= 0.8);
+  const intermediate = quizzes.some(
+    (row) => row.difficulty === "intermediate" && row.best_score / row.max_score >= 0.8,
+  );
   if (intermediate) return "advanced";
   if (best >= 0.7) return "intermediate";
   return "beginner";

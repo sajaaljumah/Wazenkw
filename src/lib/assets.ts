@@ -104,8 +104,13 @@ export function portfolioTotals(assets: Asset[]): PortfolioTotals {
     value += assetValue;
     annualRentalIncome += annualRentOf(asset);
 
-    const entry =
-      kinds.get(asset.kind) ?? { kind: asset.kind, count: 0, cost: 0, value: 0, gain: 0 };
+    const entry = kinds.get(asset.kind) ?? {
+      kind: asset.kind,
+      count: 0,
+      cost: 0,
+      value: 0,
+      gain: 0,
+    };
     entry.count += 1;
     entry.cost += assetCost;
     entry.value += assetValue;
@@ -161,5 +166,10 @@ export function portfolioSeries(assets: Asset[], valuations: AssetValuation[]): 
 
 /** Life stages that may own assets — children and teenagers never can. */
 export function canOwnAssets(lifeStage: string | undefined): boolean {
-  return lifeStage === "university_student" || lifeStage === "employee" || lifeStage === "self_employed" || lifeStage === "parent";
+  return (
+    lifeStage === "university_student" ||
+    lifeStage === "employee" ||
+    lifeStage === "self_employed" ||
+    lifeStage === "parent"
+  );
 }

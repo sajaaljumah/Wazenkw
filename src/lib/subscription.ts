@@ -11,12 +11,7 @@
  */
 
 export type SubscriptionPlan = "free" | "premium";
-export type SubscriptionStatus =
-  | "active"
-  | "inactive"
-  | "cancelled"
-  | "past_due"
-  | "trialing";
+export type SubscriptionStatus = "active" | "inactive" | "cancelled" | "past_due" | "trialing";
 
 export type SubscriptionKind = "individual" | "family";
 export type BillingPeriod = "monthly" | "yearly";
@@ -109,12 +104,8 @@ export function findPrice(
   period: BillingPeriod = "monthly",
 ): PriceConfig | null {
   return (
-    prices.find(
-      (p) => p.subscription_type === kind && p.billing_period === period && p.active,
-    ) ??
-    FALLBACK_PRICES.find(
-      (p) => p.subscription_type === kind && p.billing_period === period,
-    ) ??
+    prices.find((p) => p.subscription_type === kind && p.billing_period === period && p.active) ??
+    FALLBACK_PRICES.find((p) => p.subscription_type === kind && p.billing_period === period) ??
     null
   );
 }
@@ -293,7 +284,12 @@ export function resolveFamilySeats(
       additionalIndex += 1;
       entitled = premium && additionalIndex <= paidAdditional;
     }
-    return { userId: m.user_id, role: m.member_role, seatKind: m.seat_kind, entitled: entitled && !suspended };
+    return {
+      userId: m.user_id,
+      role: m.member_role,
+      seatKind: m.seat_kind,
+      entitled: entitled && !suspended,
+    };
   });
 }
 
@@ -442,7 +438,9 @@ export const INDIVIDUAL_PLAN_HIGHLIGHTS = [
 ];
 
 function dateLocale(): string {
-  return typeof document !== "undefined" && document.documentElement.lang === "en" ? "en-KW" : "ar-KW";
+  return typeof document !== "undefined" && document.documentElement.lang === "en"
+    ? "en-KW"
+    : "ar-KW";
 }
 
 export function formatPlanDate(value: string | null): string {

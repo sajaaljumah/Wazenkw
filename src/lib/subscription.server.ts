@@ -16,7 +16,7 @@ import {
  * from the user's own subscription AND their family subscription seat.
  */
 export async function loadEntitlements(
-  supabase: SupabaseClient<any, any, any>,
+  supabase: SupabaseClient,
   userId: string,
 ): Promise<Entitlements> {
   const [ownRes, memberRes, pricesRes] = await Promise.all([
@@ -75,7 +75,7 @@ export async function loadEntitlements(
  * premium modules fail closed even if the UI forgets to hide a button.
  */
 export async function requirePremium(
-  supabase: SupabaseClient<any, any, any>,
+  supabase: SupabaseClient,
   userId: string,
   feature?: PremiumFeature,
 ): Promise<Entitlements> {
@@ -101,7 +101,7 @@ export async function requirePremium(
  * for a subscription — their access belongs to the family subscription.
  */
 export async function requireBillingOwner(
-  supabase: SupabaseClient<any, any, any>,
+  supabase: SupabaseClient,
   userId: string,
 ): Promise<Entitlements> {
   const entitlements = await loadEntitlements(supabase, userId);
@@ -137,7 +137,7 @@ export type ActivationInput = {
  * connected later, it simply calls this after a successful payment.
  */
 export async function activatePremium(
-  supabase: SupabaseClient<any, any, any>,
+  supabase: SupabaseClient,
   userId: string,
   input: ActivationInput,
 ): Promise<Entitlements> {
@@ -150,28 +150,26 @@ export async function activatePremium(
   const now = new Date();
   const periodEnd = addPeriod(now, input.billingPeriod);
 
-  const { error } = await supabaseAdmin
-    .from("subscriptions")
-    .upsert(
-      {
-        user_id: userId,
-        plan: "premium",
-        status: "active",
-        subscription_type: kind,
-        family_id: kind === "family" ? familyId : null,
-        billing_period: input.billingPeriod,
-        price_key: price?.key ?? null,
-        included_parent_count: kind === "family" ? (price?.included_parent_count ?? 2) : 1,
-        included_child_count: kind === "family" ? (price?.included_child_count ?? 4) : 0,
-        additional_child_count: kind === "family" ? Math.max(0, input.additionalChildren) : 0,
-        started_at: current.startedAt ?? now.toISOString(),
-        current_period_start: now.toISOString(),
-        current_period_end: periodEnd.toISOString(),
-        cancel_at_period_end: false,
-        cancelled_at: null,
-      },
-      { onConflict: "user_id" },
-    );
+  const { error } = await supabaseAdmin.from("subscriptions").upsert(
+    {
+      user_id: userId,
+      plan: "premium",
+      status: "active",
+      subscription_type: kind,
+      family_id: kind === "family" ? familyId : null,
+      billing_period: input.billingPeriod,
+      price_key: price?.key ?? null,
+      included_parent_count: kind === "family" ? (price?.included_parent_count ?? 2) : 1,
+      included_child_count: kind === "family" ? (price?.included_child_count ?? 4) : 0,
+      additional_child_count: kind === "family" ? Math.max(0, input.additionalChildren) : 0,
+      started_at: current.startedAt ?? now.toISOString(),
+      current_period_start: now.toISOString(),
+      current_period_end: periodEnd.toISOString(),
+      cancel_at_period_end: false,
+      cancelled_at: null,
+    },
+    { onConflict: "user_id" },
+  );
   if (error) throw error;
 
   // Family seats inherit premium from the family subscription: clear any
@@ -192,7 +190,7 @@ export async function activatePremium(
  * stored subscription status, so cancelled or expired subscriptions are Free.
  */
 export async function cancelPremium(
-  supabase: SupabaseClient<any, any, any>,
+  supabase: SupabaseClient,
   userId: string,
 ): Promise<Entitlements> {
   await requireBillingOwner(supabase, userId);
@@ -214,7 +212,7 @@ export async function cancelPremium(
 
 /** Free-plan quota guard for future modules (goals, budgets, recurring items). */
 export async function assertWithinPlanLimit(
-  supabase: SupabaseClient<any, any, any>,
+  supabase: SupabaseClient,
   userId: string,
   limit: "goals" | "budgets" | "recurring_items",
   currentCount: number,
@@ -222,9 +220,9 @@ export async function assertWithinPlanLimit(
   const entitlements = await loadEntitlements(supabase, userId);
   const max = entitlements.limits[limit];
   if (max !== null && currentCount >= max) {
-    throw new Response(
-      JSON.stringify({ error: "plan_limit_reached", limit, max }),
-      { status: 402, headers: { "content-type": "application/json" } },
-    );
+    throw new Response(JSON.stringify({ error: "plan_limit_reached", limit, max }), {
+      status: 402,
+      headers: { "content-type": "application/json" },
+    });
   }
 }

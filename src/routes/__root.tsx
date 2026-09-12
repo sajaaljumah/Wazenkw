@@ -28,7 +28,9 @@ function NotFoundComponent() {
         <h1 className="mt-4 text-4xl text-foreground">{t("notFoundTitle")}</h1>
         <p className="mt-2 text-sm text-muted-foreground">{t("notFoundBody")}</p>
         <div className="mt-6">
-          <Button asChild><Link to="/">{t("goHome")}</Link></Button>
+          <Button asChild>
+            <Link to="/">{t("goHome")}</Link>
+          </Button>
         </div>
       </div>
     </div>
@@ -57,7 +59,9 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
           >
             {t("tryAgain")}
           </Button>
-          <Button asChild variant="outline"><a href="/">{t("goHome")}</a></Button>
+          <Button asChild variant="outline">
+            <a href="/">{t("goHome")}</a>
+          </Button>
         </div>
       </div>
     </div>

@@ -27,7 +27,11 @@ function NeedsOrWants({ level, onFinish }: GameProps) {
   const { lc, s } = useLearnCopy();
   const items = useMemo(() => {
     const allowed: Difficulty[] =
-      level === "beginner" ? ["beginner"] : level === "intermediate" ? ["beginner", "intermediate"] : ["intermediate", "advanced"];
+      level === "beginner"
+        ? ["beginner"]
+        : level === "intermediate"
+          ? ["beginner", "intermediate"]
+          : ["intermediate", "advanced"];
     return NEEDS_WANTS_ITEMS.filter((item) => allowed.includes(item.level)).slice(0, 8);
   }, [level]);
   const [index, setIndex] = useState(0);
@@ -96,7 +100,10 @@ function BuildYourBudget({ level, onFinish }: GameProps) {
   const check = () => {
     if (state) return;
     const ok =
-      plan.needs >= target.needs && plan.save >= target.minSave && plan.give >= target.minGive && used <= target.money;
+      plan.needs >= target.needs &&
+      plan.save >= target.minSave &&
+      plan.give >= target.minGive &&
+      used <= target.money;
     if (ok) setScore((value) => value + 1);
     setState(ok ? "correct" : "wrong");
     window.setTimeout(() => {
@@ -116,8 +123,8 @@ function BuildYourBudget({ level, onFinish }: GameProps) {
       <div className="rounded-2xl bg-kid-tint p-5">
         <p className="text-sm">{s(target.story)}</p>
         <p className="mt-2 text-xs text-muted-foreground">
-          {lc("budgetNeeds")} ≥ {target.needs} · {lc("budgetSave")} ≥ {target.minSave} · {lc("budgetGive")} ≥{" "}
-          {target.minGive}
+          {lc("budgetNeeds")} ≥ {target.needs} · {lc("budgetSave")} ≥ {target.minSave} ·{" "}
+          {lc("budgetGive")} ≥ {target.minGive}
         </p>
       </div>
 
@@ -133,7 +140,12 @@ function BuildYourBudget({ level, onFinish }: GameProps) {
                 type="button"
                 aria-label={`-1 ${bucket.label}`}
                 className="kid-press size-9 rounded-full border border-kid-soft bg-kid-tint text-base"
-                onClick={() => setPlan((value) => ({ ...value, [bucket.key]: Math.max(0, value[bucket.key] - 1) }))}
+                onClick={() =>
+                  setPlan((value) => ({
+                    ...value,
+                    [bucket.key]: Math.max(0, value[bucket.key] - 1),
+                  }))
+                }
               >
                 −
               </button>
@@ -144,7 +156,9 @@ function BuildYourBudget({ level, onFinish }: GameProps) {
                 className="kid-press size-9 rounded-full bg-kid-deep text-base text-kid-ivory"
                 disabled={left <= 0}
                 onClick={() =>
-                  setPlan((value) => (left <= 0 ? value : { ...value, [bucket.key]: value[bucket.key] + 1 }))
+                  setPlan((value) =>
+                    left <= 0 ? value : { ...value, [bucket.key]: value[bucket.key] + 1 },
+                  )
                 }
               >
                 +
@@ -233,7 +247,11 @@ function SmartShopper({ level, onFinish }: GameProps) {
   const { lc, s } = useLearnCopy();
   const pairs = useMemo(() => {
     const allowed: Difficulty[] =
-      level === "beginner" ? ["beginner", "intermediate"] : level === "intermediate" ? ["intermediate", "beginner"] : ["advanced", "intermediate"];
+      level === "beginner"
+        ? ["beginner", "intermediate"]
+        : level === "intermediate"
+          ? ["intermediate", "beginner"]
+          : ["advanced", "intermediate"];
     const picked = allowed.flatMap((d) => SHOPPER_PAIRS.filter((pair) => pair.level === d));
     return picked.slice(0, 6);
   }, [level]);
@@ -421,7 +439,9 @@ export function GameDialog({
   const [result, setResult] = useState({ score: 0, max: 0 });
   const [round, setRound] = useState(0);
 
-  const row = progress.find((item) => item.activity_type === "game" && item.activity_key === gameKey);
+  const row = progress.find(
+    (item) => item.activity_type === "game" && item.activity_key === gameKey,
+  );
 
   useEffect(() => {
     if (!gameKey) return;
@@ -471,7 +491,9 @@ export function GameDialog({
                   onClick={() => setLevel(option)}
                   className={cn(
                     "kid-press min-h-10 rounded-xl border px-2 text-xs",
-                    option === level ? "border-kid-mid bg-kid-soft/70 text-kid-deep" : "border-kid-soft bg-card",
+                    option === level
+                      ? "border-kid-mid bg-kid-soft/70 text-kid-deep"
+                      : "border-kid-soft bg-card",
                   )}
                 >
                   {s(DIFFICULTY_LABEL[option])}
@@ -501,7 +523,9 @@ export function GameDialog({
           <p className="text-4xl tabular-nums">
             {result.score}/{result.max}
           </p>
-          <p className="text-sm text-muted-foreground">{won ? lc("winBody") : lc("tryAgainBody")}</p>
+          <p className="text-sm text-muted-foreground">
+            {won ? lc("winBody") : lc("tryAgainBody")}
+          </p>
           <div className="flex flex-wrap justify-center gap-3">
             <LearnButton
               onClick={() => {

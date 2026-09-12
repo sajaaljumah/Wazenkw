@@ -73,16 +73,14 @@ export function useSaveAsset() {
         const { error } = await supabase.from("assets").update(input).eq("id", id);
         if (error) throw error;
         // Keep the value history in step with the latest recorded value.
-        const { error: historyError } = await supabase
-          .from("asset_valuations")
-          .upsert(
-            {
-              asset_id: id,
-              valued_on: new Date().toISOString().slice(0, 10),
-              unit_value: input.current_unit_value,
-            },
-            { onConflict: "asset_id,valued_on" },
-          );
+        const { error: historyError } = await supabase.from("asset_valuations").upsert(
+          {
+            asset_id: id,
+            valued_on: new Date().toISOString().slice(0, 10),
+            unit_value: input.current_unit_value,
+          },
+          { onConflict: "asset_id,valued_on" },
+        );
         if (historyError) throw historyError;
         return id;
       }

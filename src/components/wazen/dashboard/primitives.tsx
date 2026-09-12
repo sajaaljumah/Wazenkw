@@ -27,7 +27,9 @@ export function DashboardHeader({
       <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
         {avatar ? <div className="shrink-0">{avatar}</div> : null}
         <div className="min-w-0">
-          <p className="wazen-label">{today} · {eyebrow}</p>
+          <p className="wazen-label">
+            {today} · {eyebrow}
+          </p>
           <h1 className="mt-3 text-3xl sm:text-4xl">
             {greeting}, {name}.
           </h1>
@@ -60,22 +62,31 @@ export function BalanceHero({
 }) {
   const { ref, revealed } = useReveal<HTMLElement>();
   return (
-    <section ref={ref} data-revealed={revealed} className="wazen-balance wazen-reveal" data-tour="balance">
+    <section
+      ref={ref}
+      data-revealed={revealed}
+      className="wazen-balance wazen-reveal"
+      data-tour="balance"
+    >
       <div aria-hidden className="wazen-balance-grid" />
       <div className="relative grid min-w-0 gap-8 xl:grid-cols-[minmax(0,1fr)_minmax(20rem,24rem)] xl:items-end">
         <div className="min-w-0">
           <p className="wazen-label text-primary-foreground/65">{label}</p>
-          <p className="wazen-number mt-3 break-words text-3xl leading-none min-[375px]:text-4xl sm:text-5xl">{formatMoney(amount, currency)}</p>
+          <p className="wazen-number mt-3 break-words text-3xl leading-none min-[375px]:text-4xl sm:text-5xl">
+            {formatMoney(amount, currency)}
+          </p>
           {hint ? <p className="mt-3 max-w-sm text-sm text-primary-foreground/70">{hint}</p> : null}
           {action ? <div className="mt-6">{action}</div> : null}
         </div>
         <dl className="grid grid-cols-1 gap-px overflow-hidden rounded-xl bg-primary-foreground/15 min-[390px]:grid-cols-3">
           {items.map((item) => (
             <div key={item.label} className="min-w-0 bg-transparent px-3 py-4 sm:px-4">
-              <dt className="text-[0.68rem] tracking-[0.14em] uppercase text-primary-foreground/60">{item.label}</dt>
+              <dt className="text-[0.68rem] tracking-[0.14em] uppercase text-primary-foreground/60">
+                {item.label}
+              </dt>
               <dd
-                 className={cn(
-                   "wazen-number mt-2 break-words text-sm sm:text-base",
+                className={cn(
+                  "wazen-number mt-2 break-words text-sm sm:text-base",
                   item.tone === "positive"
                     ? "wazen-balance-pos"
                     : item.tone === "negative"
@@ -130,12 +141,18 @@ export function StatCard({
           : "before:bg-border";
   const { ref, revealed } = useReveal<HTMLDivElement>();
   return (
-    <div ref={ref} data-revealed={revealed} className={cn("wazen-stat wazen-reveal", rule, className)}>
+    <div
+      ref={ref}
+      data-revealed={revealed}
+      className={cn("wazen-stat wazen-reveal", rule, className)}
+    >
       <div className="flex items-start justify-between gap-3">
         <span className="wazen-label">{label}</span>
         {icon ? <span className="text-muted-foreground/80">{icon}</span> : null}
       </div>
-      <p className={cn("wazen-number mt-2.5 text-xl sm:text-2xl", toneClass)}>{formatMoney(amount, currency)}</p>
+      <p className={cn("wazen-number mt-2.5 text-xl sm:text-2xl", toneClass)}>
+        {formatMoney(amount, currency)}
+      </p>
       {hint ? <p className="mt-2 text-xs text-muted-foreground">{hint}</p> : null}
     </div>
   );
@@ -154,7 +171,11 @@ export function Panel({
 }) {
   const { ref, revealed } = useReveal<HTMLElement>();
   return (
-    <section ref={ref} data-revealed={revealed} className={cn("wazen-card wazen-reveal min-w-0", className)}>
+    <section
+      ref={ref}
+      data-revealed={revealed}
+      className={cn("wazen-card wazen-reveal min-w-0", className)}
+    >
       <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-border/70 pb-4">
         <h2 className="min-w-0 text-xl sm:text-2xl">{title}</h2>
         {action}
@@ -183,12 +204,19 @@ export function JourneySection({
 }) {
   const { ref, revealed } = useReveal<HTMLElement>();
   return (
-    <section ref={ref} id={id} data-revealed={revealed} className={cn("wazen-journey wazen-reveal", className)}>
+    <section
+      ref={ref}
+      id={id}
+      data-revealed={revealed}
+      className={cn("wazen-journey wazen-reveal", className)}
+    >
       <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-4">
         <div className="min-w-0">
           {eyebrow ? <p className="wazen-label wazen-journey-eyebrow">{eyebrow}</p> : null}
           <h2 className={cn("text-xl sm:text-2xl", eyebrow && "mt-2")}>{title}</h2>
-          {description ? <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{description}</p> : null}
+          {description ? (
+            <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{description}</p>
+          ) : null}
         </div>
         {action}
       </div>
@@ -197,10 +225,23 @@ export function JourneySection({
   );
 }
 
-export function InsightStrip({ icon, label, children }: { icon?: ReactNode; label: string; children: ReactNode }) {
+export function InsightStrip({
+  icon,
+  label,
+  children,
+}: {
+  icon?: ReactNode;
+  label: string;
+  children: ReactNode;
+}) {
   const { ref, revealed } = useReveal<HTMLElement>();
   return (
-    <aside ref={ref} data-revealed={revealed} className="wazen-insight wazen-reveal" aria-label={label}>
+    <aside
+      ref={ref}
+      data-revealed={revealed}
+      className="wazen-insight wazen-reveal"
+      aria-label={label}
+    >
       {icon ? <span className="shrink-0 text-primary">{icon}</span> : null}
       <div className="min-w-0">
         <p className="wazen-label">{label}</p>
@@ -234,7 +275,9 @@ export function DisclosurePanel({
       <summary className="grid cursor-pointer list-none grid-cols-[minmax(0,1fr)_auto] items-center gap-4 focus-visible:outline-hidden">
         <span className="min-w-0">
           <span className="block text-base font-semibold sm:text-lg">{title}</span>
-          {summary ? <span className="mt-1 block text-xs text-muted-foreground sm:text-sm">{summary}</span> : null}
+          {summary ? (
+            <span className="mt-1 block text-xs text-muted-foreground sm:text-sm">{summary}</span>
+          ) : null}
         </span>
         <span className="wazen-disclosure-control flex size-9 shrink-0 items-center justify-center rounded-full bg-secondary text-muted-foreground transition-all group-open:rotate-180 group-open:bg-accent group-open:text-primary">
           <ExpandIcon className="size-4" strokeWidth={ICON_STROKE} />
@@ -245,7 +288,15 @@ export function DisclosurePanel({
   );
 }
 
-export function EmptyState({ title, description, icon }: { title: string; description: string; icon?: ReactNode }) {
+export function EmptyState({
+  title,
+  description,
+  icon,
+}: {
+  title: string;
+  description: string;
+  icon?: ReactNode;
+}) {
   return (
     <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-secondary/50 px-6 py-10 text-center">
       {icon ? <span className="mb-3 text-muted-foreground">{icon}</span> : null}
@@ -274,12 +325,14 @@ export function ProgressBar({
     const frame = window.requestAnimationFrame(() => setVisiblePercent(percent));
     return () => window.cancelAnimationFrame(frame);
   }, [percent, revealed]);
-  const fill =
-    tone === "sage" ? "bg-chart-2" : tone === "charcoal" ? "bg-primary" : "bg-gold";
+  const fill = tone === "sage" ? "bg-chart-2" : tone === "charcoal" ? "bg-primary" : "bg-gold";
   return (
     <div
       ref={ref}
-      className={cn("wazen-progress-track h-2 w-full overflow-hidden rounded-full bg-secondary", className)}
+      className={cn(
+        "wazen-progress-track h-2 w-full overflow-hidden rounded-full bg-secondary",
+        className,
+      )}
       data-complete={percent >= 100 ? "true" : undefined}
       role="progressbar"
       aria-valuenow={Math.round(percent)}
@@ -287,7 +340,10 @@ export function ProgressBar({
       aria-valuemax={100}
     >
       <div
-        className={cn("wazen-progress-fill h-full rounded-full transition-[width] duration-700 ease-out", fill)}
+        className={cn(
+          "wazen-progress-fill h-full rounded-full transition-[width] duration-700 ease-out",
+          fill,
+        )}
         style={{ width: `${visiblePercent}%` }}
       />
     </div>

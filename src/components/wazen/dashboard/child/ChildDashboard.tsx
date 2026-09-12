@@ -1,5 +1,18 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { AddIcon, ExpensesIcon, ExpandIcon, GiveIcon, GoalsIcon, IncomeIcon, PremiumIcon, RefundIcon, SavingsIcon, ScheduledIcon, SpendIcon, ICON_STROKE } from "@/components/wazen/icons";
+import {
+  AddIcon,
+  ExpensesIcon,
+  ExpandIcon,
+  GiveIcon,
+  GoalsIcon,
+  IncomeIcon,
+  PremiumIcon,
+  RefundIcon,
+  SavingsIcon,
+  ScheduledIcon,
+  SpendIcon,
+  ICON_STROKE,
+} from "@/components/wazen/icons";
 import {
   Dialog,
   DialogContent,
@@ -47,7 +60,10 @@ function KidProgress({ percent, className }: { percent: number; className?: stri
   return (
     <div
       ref={ref}
-      className={cn("wazen-progress-track h-5 w-full overflow-hidden rounded-full bg-kid-soft/70", className)}
+      className={cn(
+        "wazen-progress-track h-5 w-full overflow-hidden rounded-full bg-kid-soft/70",
+        className,
+      )}
       data-complete={safePercent >= 100 ? "true" : undefined}
       role="progressbar"
       aria-valuenow={safePercent}
@@ -90,7 +106,10 @@ function MoneyTile({
 }
 
 function ChoiceTile({
-  title, caption, illustration, onClick,
+  title,
+  caption,
+  illustration,
+  onClick,
 }: {
   title: string;
   caption: string;
@@ -117,7 +136,10 @@ const ACTIVITY_ICON: Record<Transaction["kind"], typeof IncomeIcon> = {
   refund: RefundIcon,
 };
 
-const ACTIVITY_KEY: Record<Transaction["kind"], "kidGotMoney" | "kidSpentWord" | "kidSavedMoneyWord" | "kidMoneyBack"> = {
+const ACTIVITY_KEY: Record<
+  Transaction["kind"],
+  "kidGotMoney" | "kidSpentWord" | "kidSavedMoneyWord" | "kidMoneyBack"
+> = {
   income: "kidGotMoney",
   expense: "kidSpentWord",
   saving: "kidSavedMoneyWord",
@@ -152,7 +174,10 @@ export function ChildDashboard({
   const r6 = useReveal<HTMLDetailsElement>();
   const r7 = useReveal<HTMLDetailsElement>();
 
-  const monthTransactions = useMemo(() => inMonth(transactions, monthKey(new Date())), [transactions]);
+  const monthTransactions = useMemo(
+    () => inMonth(transactions, monthKey(new Date())),
+    [transactions],
+  );
   const month = totalsFor(monthTransactions);
   const all = totalsFor(transactions);
 
@@ -189,7 +214,11 @@ export function ChildDashboard({
   }, [percent]);
 
   const badges = [
-    { label: t("kidBadgeFirstSaving"), earned: all.savings > 0, hint: t("kidBadgeFirstSavingHint") },
+    {
+      label: t("kidBadgeFirstSaving"),
+      earned: all.savings > 0,
+      hint: t("kidBadgeFirstSavingHint"),
+    },
     { label: t("kidBadgeGoalStarted"), earned: !!goal, hint: t("kidBadgeGoalStartedHint") },
     { label: t("kidBadgeHalfway"), earned: percent >= 50, hint: t("kidBadgeHalfwayHint") },
     { label: t("kidBadgeKind"), earned: give > 0, hint: t("kidBadgeKindHint") },
@@ -205,17 +234,25 @@ export function ChildDashboard({
         <KidDecorations />
         <div className="relative grid grid-cols-1 items-center gap-5 text-center sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:gap-7 sm:text-start">
           <span className="kid-float rounded-full bg-kid-soft/70 p-2">
-            <WazenAvatar fullName={fullName} gender={gender} lifeStage="child" avatarUrl={avatarUrl} size={84} />
+            <WazenAvatar
+              fullName={fullName}
+              gender={gender}
+              lifeStage="child"
+              avatarUrl={avatarUrl}
+              size={84}
+            />
           </span>
           <div className="min-w-0">
-            <p className="text-sm text-kid-deep">{t("kidHi")} {firstName}!</p>
+            <p className="text-sm text-kid-deep">
+              {t("kidHi")} {firstName}!
+            </p>
             <h1 className="mt-2 text-3xl sm:text-4xl">{t("kidWorldTitle")}</h1>
             <p className="mt-2 max-w-md text-sm text-muted-foreground">{t("kidWorldBody")}</p>
           </div>
           <button
             type="button"
             onClick={() => setAction("saving")}
-             className="kid-press flex w-full items-center justify-center gap-2 rounded-xl bg-kid-deep px-6 py-3 text-sm text-kid-ivory sm:w-auto"
+            className="kid-press flex w-full items-center justify-center gap-2 rounded-xl bg-kid-deep px-6 py-3 text-sm text-kid-ivory sm:w-auto"
           >
             <AddIcon className="size-4" strokeWidth={ICON_STROKE} />
             {t("kidSaveMoney")}
@@ -252,13 +289,17 @@ export function ChildDashboard({
       </section>
 
       {/* Goal */}
-      <section ref={r1.ref} data-revealed={r1.revealed} className="kid-panel wazen-reveal relative order-1 overflow-hidden bg-kid-tint/70 p-7 sm:p-9">
+      <section
+        ref={r1.ref}
+        data-revealed={r1.revealed}
+        className="kid-panel wazen-reveal relative order-1 overflow-hidden bg-kid-tint/70 p-7 sm:p-9"
+      >
         <Celebration show={celebrate} />
         {goal ? (
           <button
             type="button"
             onClick={() => setSheet("goal")}
-             className="relative flex w-full flex-col items-center gap-6 text-center sm:flex-row sm:text-start"
+            className="relative flex w-full flex-col items-center gap-6 text-center sm:flex-row sm:text-start"
           >
             <span className="size-32 shrink-0 kid-float sm:size-40">
               <GoalArt />
@@ -268,7 +309,8 @@ export function ChildDashboard({
               <span className="mt-1 block text-2xl sm:text-3xl">{goal.name}</span>
               <KidProgress percent={percent} className="mt-5" />
               <span className="mt-3 block text-sm text-muted-foreground">
-                {formatMoney(saved, currency)} {t("kidGoalSavedOf")} {formatMoney(target, currency)} — {t("kidGoalThere")} {percent}% {t("kidGoalThereEnd")}
+                {formatMoney(saved, currency)} {t("kidGoalSavedOf")} {formatMoney(target, currency)}{" "}
+                — {t("kidGoalThere")} {percent}% {t("kidGoalThereEnd")}
               </span>
               <span className="mt-4 inline-flex items-center gap-2 text-sm text-kid-deep">
                 <PremiumIcon className="size-4" strokeWidth={ICON_STROKE} />
@@ -286,7 +328,7 @@ export function ChildDashboard({
             <button
               type="button"
               onClick={() => setAction("goal")}
-               className="kid-press rounded-xl bg-kid-deep px-6 py-3 text-sm text-kid-ivory"
+              className="kid-press rounded-xl bg-kid-deep px-6 py-3 text-sm text-kid-ivory"
             >
               {t("kidMakeGoal")}
             </button>
@@ -312,7 +354,11 @@ export function ChildDashboard({
           />
           <ChoiceTile
             title={t("kidGive")}
-            caption={give > 0 ? `${formatMoney(give, currency)} ${t("kidSharedCaption")}` : t("kidLearnSharing")}
+            caption={
+              give > 0
+                ? `${formatMoney(give, currency)} ${t("kidSharedCaption")}`
+                : t("kidLearnSharing")
+            }
             illustration={<HeartIllustration />}
             onClick={() => setSheet("give")}
           />
@@ -321,7 +367,11 @@ export function ChildDashboard({
 
       {/* Allowance + badges */}
       <div className="order-4 grid gap-4 lg:grid-cols-2">
-        <section className="kid-panel wazen-reveal relative overflow-hidden p-6" data-revealed={r4.revealed} ref={r4.ref}>
+        <section
+          className="kid-panel wazen-reveal relative overflow-hidden p-6"
+          data-revealed={r4.revealed}
+          ref={r4.ref}
+        >
           <div className="flex items-center gap-4">
             <span className="size-14 kid-float">
               <CoinIllustration />
@@ -362,89 +412,118 @@ export function ChildDashboard({
       </div>
 
       {/* Recent activity */}
-      <details ref={r6.ref} data-revealed={r6.revealed} open className="kid-panel wazen-reveal group order-5 p-6">
+      <details
+        ref={r6.ref}
+        data-revealed={r6.revealed}
+        open
+        className="kid-panel wazen-reveal group order-5 p-6"
+      >
         <summary className="grid cursor-pointer list-none grid-cols-[minmax(0,1fr)_auto] items-center gap-3 focus-visible:outline-hidden">
           <span className="min-w-0">
             <span className="block text-xl font-semibold">{t("kidLately")}</span>
-            <span className="mt-1 block text-xs font-normal text-muted-foreground">{t("kidLatelyHint")}</span>
+            <span className="mt-1 block text-xs font-normal text-muted-foreground">
+              {t("kidLatelyHint")}
+            </span>
           </span>
           <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-kid-soft/70 text-kid-deep transition-transform group-open:rotate-180">
             <ExpandIcon className="size-4" strokeWidth={ICON_STROKE} />
           </span>
         </summary>
         <div className="mt-5 border-t border-kid-soft pt-5">
-        {recent.length === 0 ? (
-          <div className="mt-5 flex flex-col items-center gap-3 rounded-3xl bg-kid-tint/70 p-8 text-center">
-            <span className="size-20">
-              <SavingsJarIllustration />
-            </span>
-            <p>{t("kidNothingYet")}</p>
-            <p className="max-w-xs text-sm text-muted-foreground">{t("kidNothingYetBody")}</p>
-          </div>
-        ) : (
-          <ul className="mt-5 space-y-3">
-            {recent.map((item) => {
-              const Icon = ACTIVITY_ICON[item.kind];
-              const isOut = item.kind === "expense";
-              return (
-                <li key={item.id} className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3 rounded-2xl bg-kid-tint/60 p-4 min-[420px]:grid-cols-[auto_minmax(0,1fr)_auto]">
-                  <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-kid-soft/80 text-kid-deep">
-                    <Icon className="size-5" strokeWidth={ICON_STROKE} />
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm">
-                      {t(ACTIVITY_KEY[item.kind])} — {labels.merchant(item.merchant) || labels.category(item.category)}
+          {recent.length === 0 ? (
+            <div className="mt-5 flex flex-col items-center gap-3 rounded-3xl bg-kid-tint/70 p-8 text-center">
+              <span className="size-20">
+                <SavingsJarIllustration />
+              </span>
+              <p>{t("kidNothingYet")}</p>
+              <p className="max-w-xs text-sm text-muted-foreground">{t("kidNothingYetBody")}</p>
+            </div>
+          ) : (
+            <ul className="mt-5 space-y-3">
+              {recent.map((item) => {
+                const Icon = ACTIVITY_ICON[item.kind];
+                const isOut = item.kind === "expense";
+                return (
+                  <li
+                    key={item.id}
+                    className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3 rounded-2xl bg-kid-tint/60 p-4 min-[420px]:grid-cols-[auto_minmax(0,1fr)_auto]"
+                  >
+                    <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-kid-soft/80 text-kid-deep">
+                      <Icon className="size-5" strokeWidth={ICON_STROKE} />
                     </span>
-                    <span className="block text-xs text-muted-foreground">{formatDate(item.occurred_on)}</span>
-                  </span>
-                  <span className={cn("col-start-2 text-sm tabular-nums min-[420px]:col-start-3", isOut ? "text-kid-deep" : "text-foreground")}>
-                    {isOut ? "−" : "+"}
-                    {formatMoney(Number(item.amount), currency)}
-                  </span>
-                </li>
-              );
-            })}
-          </ul>
-        )}
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-sm">
+                        {t(ACTIVITY_KEY[item.kind])} —{" "}
+                        {labels.merchant(item.merchant) || labels.category(item.category)}
+                      </span>
+                      <span className="block text-xs text-muted-foreground">
+                        {formatDate(item.occurred_on)}
+                      </span>
+                    </span>
+                    <span
+                      className={cn(
+                        "col-start-2 text-sm tabular-nums min-[420px]:col-start-3",
+                        isOut ? "text-kid-deep" : "text-foreground",
+                      )}
+                    >
+                      {isOut ? "−" : "+"}
+                      {formatMoney(Number(item.amount), currency)}
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
         </div>
       </details>
 
       {/* Things a parent paid for this child. Not deducted from their own money
           unless the parent chose to. */}
-      <details ref={r7.ref} data-revealed={r7.revealed} className="kid-panel wazen-reveal group order-6 p-6">
+      <details
+        ref={r7.ref}
+        data-revealed={r7.revealed}
+        className="kid-panel wazen-reveal group order-6 p-6"
+      >
         <summary className="grid cursor-pointer list-none grid-cols-[minmax(0,1fr)_auto] items-center gap-3 focus-visible:outline-hidden">
           <span className="min-w-0">
             <span className="block text-xl font-semibold">{t("kidPaidByFamily")}</span>
-            <span className="mt-1 block text-xs font-normal text-muted-foreground">{t("kidPaidByFamilyHint")}</span>
+            <span className="mt-1 block text-xs font-normal text-muted-foreground">
+              {t("kidPaidByFamilyHint")}
+            </span>
           </span>
           <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-kid-soft/70 text-kid-deep transition-transform group-open:rotate-180">
             <ExpandIcon className="size-4" strokeWidth={ICON_STROKE} />
           </span>
         </summary>
         <div className="mt-5 border-t border-kid-soft pt-5">
-        {(parentPaid.data ?? []).length === 0 ? (
-          <p className="mt-4 text-sm text-muted-foreground">{t("kidPaidByFamilyBody")}</p>
-        ) : (
-          <ul className="mt-5 space-y-3">
-            {(parentPaid.data ?? []).slice(0, 5).map((item) => (
-              <li key={item.id} className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3 rounded-2xl bg-kid-tint/60 p-4 min-[420px]:grid-cols-[auto_minmax(0,1fr)_auto]">
-                <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-kid-soft/80 text-kid-deep">
-                  <GiveIcon className="size-5" strokeWidth={ICON_STROKE} />
-                </span>
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate text-sm">{labels.merchant(item.merchant) || labels.category(item.category)}</span>
-                  <span className="block text-xs text-muted-foreground">
-                    {formatDate(item.occurred_on)} ·{" "}
-                    {item.deducted_from_child ? t("kidFromYourMoney") : t("kidFamilyPaid")}
+          {(parentPaid.data ?? []).length === 0 ? (
+            <p className="mt-4 text-sm text-muted-foreground">{t("kidPaidByFamilyBody")}</p>
+          ) : (
+            <ul className="mt-5 space-y-3">
+              {(parentPaid.data ?? []).slice(0, 5).map((item) => (
+                <li
+                  key={item.id}
+                  className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3 rounded-2xl bg-kid-tint/60 p-4 min-[420px]:grid-cols-[auto_minmax(0,1fr)_auto]"
+                >
+                  <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-kid-soft/80 text-kid-deep">
+                    <GiveIcon className="size-5" strokeWidth={ICON_STROKE} />
                   </span>
-                </span>
-                <span className="col-start-2 text-sm tabular-nums min-[420px]:col-start-3">
-                  {formatMoney(Number(item.amount), item.currency)}
-                </span>
-              </li>
-            ))}
-          </ul>
-        )}
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-sm">
+                      {labels.merchant(item.merchant) || labels.category(item.category)}
+                    </span>
+                    <span className="block text-xs text-muted-foreground">
+                      {formatDate(item.occurred_on)} ·{" "}
+                      {item.deducted_from_child ? t("kidFromYourMoney") : t("kidFamilyPaid")}
+                    </span>
+                  </span>
+                  <span className="col-start-2 text-sm tabular-nums min-[420px]:col-start-3">
+                    {formatMoney(Number(item.amount), item.currency)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </details>
 
@@ -536,18 +615,33 @@ function SpendSheet({
   const labels = useWazenLabels();
   const spending = transactions.filter((item) => item.kind === "expense");
   return (
-    <SheetShell open={open} onClose={onClose} title={t("kidSpendSheetTitle")} description={t("kidSpendSheetBody")}>
+    <SheetShell
+      open={open}
+      onClose={onClose}
+      title={t("kidSpendSheetTitle")}
+      description={t("kidSpendSheetBody")}
+    >
       {spending.length === 0 ? (
         <p className="text-sm text-muted-foreground">{t("kidNoSpending")}</p>
       ) : (
         <ul className="max-h-72 space-y-2 overflow-y-auto">
           {spending.map((item) => (
-            <li key={item.id} className="flex items-center justify-between gap-3 rounded-2xl bg-secondary/50 px-4 py-3 text-sm">
+            <li
+              key={item.id}
+              className="flex items-center justify-between gap-3 rounded-2xl bg-secondary/50 px-4 py-3 text-sm"
+            >
               <span className="flex min-w-0 items-center gap-2">
-                <ExpensesIcon className="size-4 shrink-0 text-muted-foreground" strokeWidth={ICON_STROKE} />
-                <span className="truncate">{labels.merchant(item.merchant) || labels.category(item.category)}</span>
+                <ExpensesIcon
+                  className="size-4 shrink-0 text-muted-foreground"
+                  strokeWidth={ICON_STROKE}
+                />
+                <span className="truncate">
+                  {labels.merchant(item.merchant) || labels.category(item.category)}
+                </span>
               </span>
-              <span className="shrink-0 tabular-nums">{formatMoney(Number(item.amount), currency)}</span>
+              <span className="shrink-0 tabular-nums">
+                {formatMoney(Number(item.amount), currency)}
+              </span>
             </li>
           ))}
         </ul>
@@ -586,25 +680,27 @@ function GiveSheet({
     >
       <div className="space-y-4 text-sm">
         <div className="flex items-center gap-4 rounded-3xl bg-secondary/50 p-4">
-
-
           <span className="size-14 shrink-0">
             <HeartIllustration />
           </span>
           <p>
-            {t("kidGiveSummaryStart")} <span className="tabular-nums">{formatMoney(given, currency)}</span>{" "}
+            {t("kidGiveSummaryStart")}{" "}
+            <span className="tabular-nums">{formatMoney(given, currency)}</span>{" "}
             {t("kidGiveSummaryEnd")}
           </p>
         </div>
         <ul className="space-y-2 text-muted-foreground">
           <li className="flex gap-2">
-            <GiveIcon className="mt-0.5 size-4 shrink-0" strokeWidth={ICON_STROKE} /> {t("kidGiveTip1")}
+            <GiveIcon className="mt-0.5 size-4 shrink-0" strokeWidth={ICON_STROKE} />{" "}
+            {t("kidGiveTip1")}
           </li>
           <li className="flex gap-2">
-            <ScheduledIcon className="mt-0.5 size-4 shrink-0" strokeWidth={ICON_STROKE} /> {t("kidGiveTip2")}
+            <ScheduledIcon className="mt-0.5 size-4 shrink-0" strokeWidth={ICON_STROKE} />{" "}
+            {t("kidGiveTip2")}
           </li>
           <li className="flex gap-2">
-            <PremiumIcon className="mt-0.5 size-4 shrink-0" strokeWidth={ICON_STROKE} /> {t("kidGiveTip3")}
+            <PremiumIcon className="mt-0.5 size-4 shrink-0" strokeWidth={ICON_STROKE} />{" "}
+            {t("kidGiveTip3")}
           </li>
         </ul>
         <button
@@ -615,7 +711,6 @@ function GiveSheet({
           {t("kidGaveSomething")}
         </button>
       </div>
-
     </SheetShell>
   );
 }

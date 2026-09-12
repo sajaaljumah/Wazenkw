@@ -1,11 +1,4 @@
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-  type ReactNode,
-} from "react";
+import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import { setActiveDateLocale } from "@/lib/finance";
 import { useProfile } from "@/hooks/use-wazen-auth";
 
@@ -89,16 +82,21 @@ const COPY = {
     tourSkip: "Skip",
     tourFinish: "Finish",
     tourWelcomeTitle: "Welcome to your Wazen journey",
-    tourWelcomeBody: "Wazen keeps the important part of your financial life clear, then lets you explore details when you need them.",
-    tourWelcomeYoungBody: "Wazen helps you make one smart money choice at a time and celebrate the progress you earn.",
+    tourWelcomeBody:
+      "Wazen keeps the important part of your financial life clear, then lets you explore details when you need them.",
+    tourWelcomeYoungBody:
+      "Wazen helps you make one smart money choice at a time and celebrate the progress you earn.",
     tourUnderstandTitle: "Understand what you have",
-    tourUnderstandBody: "Your available money is the starting point. Income, spending and saving explain how it changes.",
+    tourUnderstandBody:
+      "Your available money is the starting point. Income, spending and saving explain how it changes.",
     tourPlanTitle: "Plan and save with purpose",
     tourPlanBody: "Use your budget, safety net and goals to give each part of your money a job.",
     tourPlanYoungBody: "Choose a goal, save a little at a time and watch your progress grow.",
     tourGrowTitle: "Make money work for you",
-    tourGrowBody: "Review what is coming, learn from trends and make your next decision with confidence.",
-    tourGrowYoungBody: "Learn through short activities, practise with games and earn achievements as you grow.",
+    tourGrowBody:
+      "Review what is coming, learn from trends and make your next decision with confidence.",
+    tourGrowYoungBody:
+      "Learn through short activities, practise with games and earn achievements as you grow.",
     documentHistorySummary: "Open your previously saved financial documents",
     inactiveCommitments: "Paused & past commitments",
     zakatHistory: "Zakat records",
@@ -178,9 +176,11 @@ const COPY = {
     subscriptionSection: "Subscription — Wazen Premium",
     subscriptionSectionBody: "Current plan, benefits and billing",
     notifications: "Notifications",
-    notificationsBody: "Zakat and recurring payment alerts appear in the app through the notification bell.",
+    notificationsBody:
+      "Zakat and recurring payment alerts appear in the app through the notification bell.",
     privacy: "Privacy",
-    privacyBody: "Your financial data is tied to your account only, and is never visible to other users except a guardian for linked accounts.",
+    privacyBody:
+      "Your financial data is tied to your account only, and is never visible to other users except a guardian for linked accounts.",
     openLabel: "Open",
     lightMode: "Light mode",
     darkMode: "Dark mode",
@@ -232,7 +232,8 @@ const COPY = {
     stageEmployee: "Employee",
     stageSelfEmployed: "Self-employed",
     stageParent: "Parent / Guardian",
-    welcomeChild: "Let's learn how to save, spend wisely and reach your goals — one step at a time.",
+    welcomeChild:
+      "Let's learn how to save, spend wisely and reach your goals — one step at a time.",
     welcomeTeenager: "Let's turn smart money habits into second nature before you start earning.",
     welcomeUniversity: "Let's make your budget stretch further while you study.",
     welcomeEmployee: "Let's turn your salary into savings, security and long-term goals.",
@@ -254,7 +255,8 @@ const COPY = {
     lessonsSoon: "Lessons are on the way",
     lessonsSoonBody: "Your learning progress will appear here once the Wazen lessons are released.",
     studyTip: "Study-life money tip",
-    studyTipBody: "Family support and part-time income can share one clear budget while your account stays private.",
+    studyTipBody:
+      "Family support and part-time income can share one clear budget while your account stays private.",
     addMoneyIn: "Add money in",
     addSpending: "Add spending",
     allowanceTag: "Allowance",
@@ -276,22 +278,26 @@ const COPY = {
     amountField: "Amount",
     dateField: "Date",
     deductFromChild: "Deduct from the child's own money",
-    deductHint: "Leave this off and the expense stays in your records only — the child's available money is untouched.",
+    deductHint:
+      "Leave this off and the expense stays in your records only — the child's available money is untouched.",
     parentPaidSaved: "Parent-paid expense recorded",
     parentPaidTag: "Parent-paid",
     paidByFamily: "Paid by your family",
     paidByFamilyIntro: "Things your parents paid for you.",
     noParentPaid: "Nothing yet",
-    noParentPaidDescription: "When a parent records something they paid for you, it will appear here.",
+    noParentPaidDescription:
+      "When a parent records something they paid for you, it will appear here.",
     deductedFromYou: "Taken from your money",
     coveredByParent: "Covered by your parent",
     noParentPaidRecorded: "No parent-paid expenses yet",
-    noParentPaidRecordedDescription: "Use “Add expense for child” to record school fees, clothes or activities you paid for.",
+    noParentPaidRecordedDescription:
+      "Use “Add expense for child” to record school fees, clothes or activities you paid for.",
 
     // assets & portfolio
     assets: "Assets",
     portfolio: "Portfolio",
-    assetsSubtitle: "Shares, gold, silver and property you own. Assets are wealth, not spendable cash — they are never counted as available money.",
+    assetsSubtitle:
+      "Shares, gold, silver and property you own. Assets are wealth, not spendable cash — they are never counted as available money.",
     totalAssetValue: "Total asset value",
     investedAmount: "Amount invested",
     unrealisedGain: "Gain / loss",
@@ -473,7 +479,8 @@ const COPY = {
     // recurring commitments
     recurringNav: "Recurring",
     recurringTitle: "Recurring commitments & subscriptions",
-    recurringSubtitle: "Add every repeating commitment and see its amount, frequency and next date.",
+    recurringSubtitle:
+      "Add every repeating commitment and see its amount, frequency and next date.",
     addRecurring: "Add recurring item",
     editRecurring: "Edit recurring item",
     recurringName: "Name",
@@ -498,7 +505,8 @@ const COPY = {
     saveLabel: "Save",
     cancelLabel: "Cancel",
     noRecurring: "No recurring commitments yet",
-    noRecurringDescription: "Add a subscription, bill or saving transfer and it appears here and on your dashboard.",
+    noRecurringDescription:
+      "Add a subscription, bill or saving transfer and it appears here and on your dashboard.",
     monthlyCommitmentsTitle: "Committed each month",
     committedExpenses: "Recurring spending",
     committedIncome: "Recurring income",
@@ -516,7 +524,8 @@ const COPY = {
     documentsNav: "Documents",
     learnNav: "Learn",
     documentsTitle: "Financial documents",
-    documentsSubtitle: "Upload an invoice, contract or screenshot and review its details before saving.",
+    documentsSubtitle:
+      "Upload an invoice, contract or screenshot and review its details before saving.",
     chooseDocType: "Choose the document type",
     docReceipt: "Purchase invoice or receipt",
     docGold: "Gold purchase invoice",
@@ -535,7 +544,8 @@ const COPY = {
       "The extraction service is not connected, so Wazen will not read this document automatically yet. Fill in the details yourself — once the service is connected these same fields are filled in for you.",
     enterManually: "Enter the details myself",
     previewSample: "Show a sample layout",
-    sampleNotice: "These are sample values for previewing the layout only — not a reading of your document.",
+    sampleNotice:
+      "These are sample values for previewing the layout only — not a reading of your document.",
     reviewTitle: "Review the details",
     reviewSubtitle: "Edit any field before saving.",
     saveRecord: "Save document",
@@ -545,7 +555,8 @@ const COPY = {
     retryLabel: "Try again",
     myDocuments: "My documents",
     noDocuments: "No documents yet",
-    noDocumentsDescription: "Start by uploading an invoice or contract to keep its financial details.",
+    noDocumentsDescription:
+      "Start by uploading an invoice or contract to keep its financial details.",
     docStatusUploaded: "Uploaded",
     docStatusAwaiting: "Awaiting analysis",
     docStatusReview: "Needs review",
@@ -894,7 +905,8 @@ const COPY = {
     tourSkip: "تخطّي",
     tourFinish: "إنهاء",
     tourWelcomeTitle: "مرحباً بك في رحلتك مع وازن",
-    tourWelcomeBody: "يبقي وازن أهم ما في حياتك المالية واضحاً، ويتيح لك استكشاف التفاصيل عند الحاجة.",
+    tourWelcomeBody:
+      "يبقي وازن أهم ما في حياتك المالية واضحاً، ويتيح لك استكشاف التفاصيل عند الحاجة.",
     tourWelcomeYoungBody: "يساعدك وازن على اتخاذ قرار مالي ذكي في كل مرة والاحتفال بتقدمك.",
     tourUnderstandTitle: "افهم ما لديك",
     tourUnderstandBody: "المبلغ المتاح هو نقطة البداية، ويشرح الدخل والصرف والادخار كيف يتغيّر.",
@@ -931,8 +943,7 @@ const COPY = {
     futureItem2: "تصنيف معاملاتك المالية.",
     futureItem3: "تحديث ملخصك المالي وميزانيتك تلقائيًا.",
     futureItem4: "تقليل الحاجة إلى إدخال المعاملات يدويًا.",
-    futureDisclaimer:
-      "هذه ميزة مستقبلية مخططة، رهن بموافقة وتكامل بنكي رسمي — وغير متاحة اليوم.",
+    futureDisclaimer: "هذه ميزة مستقبلية مخططة، رهن بموافقة وتكامل بنكي رسمي — وغير متاحة اليوم.",
 
     // auth
     welcomeBack: "مرحباً بعودتك",
@@ -982,7 +993,8 @@ const COPY = {
     notifications: "التنبيهات",
     notificationsBody: "تنبيهات الزكاة والمدفوعات المتكررة تظهر داخل التطبيق عبر جرس التنبيهات.",
     privacy: "الخصوصية",
-    privacyBody: "بياناتك المالية مرتبطة بحسابك فقط، ولا تظهر لأي مستخدم آخر عدا وليّ الأمر للحسابات المرتبطة.",
+    privacyBody:
+      "بياناتك المالية مرتبطة بحسابك فقط، ولا تظهر لأي مستخدم آخر عدا وليّ الأمر للحسابات المرتبطة.",
     openLabel: "فتح",
     lightMode: "الوضع النهاري",
     darkMode: "الوضع الليلي",
@@ -1056,7 +1068,8 @@ const COPY = {
     lessonsSoon: "الدروس في الطريق",
     lessonsSoonBody: "سيظهر تقدمك في التعلّم هنا عند إطلاق دروس وازن.",
     studyTip: "نصيحة مالية للطلبة",
-    studyTipBody: "يمكن للدعم العائلي ودخل العمل الجزئي أن يجتمعا في ميزانية واضحة مع بقاء حسابك خاصاً.",
+    studyTipBody:
+      "يمكن للدعم العائلي ودخل العمل الجزئي أن يجتمعا في ميزانية واضحة مع بقاء حسابك خاصاً.",
     addMoneyIn: "إضافة مبلغ",
     addSpending: "إضافة صرف",
     allowanceTag: "مصروف",
@@ -1078,7 +1091,8 @@ const COPY = {
     amountField: "المبلغ",
     dateField: "التاريخ",
     deductFromChild: "خصم المبلغ من أموال الطفل",
-    deductHint: "إن تركت هذا الخيار مغلقاً يبقى المصروف في سجلاتك فقط ولا تتأثر أموال الطفل المتاحة.",
+    deductHint:
+      "إن تركت هذا الخيار مغلقاً يبقى المصروف في سجلاتك فقط ولا تتأثر أموال الطفل المتاحة.",
     parentPaidSaved: "تم تسجيل المصروف",
     parentPaidTag: "دفعه الوالدان",
     paidByFamily: "دفعته عائلتك",
@@ -1088,12 +1102,14 @@ const COPY = {
     deductedFromYou: "خُصم من أموالك",
     coveredByParent: "دفعه أحد والديك",
     noParentPaidRecorded: "لا توجد مصروفات مسجلة بعد",
-    noParentPaidRecordedDescription: "استخدم «إضافة مصروف للطفل» لتسجيل الرسوم الدراسية أو الملابس أو الأنشطة التي دفعتها.",
+    noParentPaidRecordedDescription:
+      "استخدم «إضافة مصروف للطفل» لتسجيل الرسوم الدراسية أو الملابس أو الأنشطة التي دفعتها.",
 
     // assets & portfolio
     assets: "الأصول",
     portfolio: "المحفظة",
-    assetsSubtitle: "الأسهم والذهب والفضة والعقارات التي تملكها. الأصول ثروة وليست نقداً قابلاً للصرف، ولا تُحسب أبداً ضمن الأموال المتاحة.",
+    assetsSubtitle:
+      "الأسهم والذهب والفضة والعقارات التي تملكها. الأصول ثروة وليست نقداً قابلاً للصرف، ولا تُحسب أبداً ضمن الأموال المتاحة.",
     totalAssetValue: "إجمالي قيمة الأصول",
     investedAmount: "المبلغ المستثمر",
     unrealisedGain: "الربح / الخسارة",
@@ -1616,7 +1632,6 @@ const COPY = {
     kidGoalComplete: "اكتمل الهدف!",
     kidAddToGoal: "أضف إلى هذا الهدف",
   },
-
 } as const;
 
 type CopyKey = keyof typeof COPY.en;
@@ -1685,7 +1700,8 @@ export function WazenLocaleProvider({
   children: ReactNode;
 }) {
   const parent = useContext(LocaleContext);
-  const resolved: WazenLanguage = language === "ar" ? "ar" : language === "en" ? "en" : parent.language;
+  const resolved: WazenLanguage =
+    language === "ar" ? "ar" : language === "en" ? "en" : parent.language;
   setActiveDateLocale(resolved === "ar" ? "ar-KW" : "en-KW");
   return (
     <LocaleContext.Provider value={{ language: resolved, setLanguage: parent.setLanguage }}>

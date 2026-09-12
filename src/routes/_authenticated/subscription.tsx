@@ -2,7 +2,13 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useQueryClient } from "@tanstack/react-query";
-import { CheckIcon, FamilyIcon, PremiumIcon, SpinnerIcon, ICON_STROKE } from "@/components/wazen/icons";
+import {
+  CheckIcon,
+  FamilyIcon,
+  PremiumIcon,
+  SpinnerIcon,
+  ICON_STROKE,
+} from "@/components/wazen/icons";
 import { toast } from "sonner";
 import { AppShell } from "@/components/wazen/AppShell";
 import { PremiumBadge } from "@/components/wazen/subscription/PremiumGate";
@@ -66,7 +72,6 @@ function SubscriptionPage() {
     await queryClient.invalidateQueries({ queryKey: ["entitlements"] });
     await refetch();
   }
-
 
   async function handleManage() {
     setBusy("manage");
@@ -142,11 +147,7 @@ function SubscriptionPage() {
             <div className="mt-8 flex flex-wrap gap-3">
               {isPremium ? (
                 canManageBilling ? (
-                  <Button
-                    onClick={handleManage}
-                    disabled={busy === "manage"}
-                    variant="outline"
-                  >
+                  <Button onClick={handleManage} disabled={busy === "manage"} variant="outline">
                     {busy === "manage" ? "…" : t("manageSubscription")}
                   </Button>
                 ) : null
@@ -175,7 +176,8 @@ function SubscriptionPage() {
               <div>
                 <dt className="wazen-label">{t("parentsLabel")}</dt>
                 <dd className="mt-2 text-sm">
-                  {family.parentCount} {t("ofWord")} {family.includedParentCount} {t("includedWord")}
+                  {family.parentCount} {t("ofWord")} {family.includedParentCount}{" "}
+                  {t("includedWord")}
                 </dd>
               </div>
               <div>
@@ -197,16 +199,19 @@ function SubscriptionPage() {
               <div className="mt-6 space-y-1 border-t border-border pt-6 text-sm text-muted-foreground">
                 <p>
                   {t("baseFamilySubscription")} —{" "}
-                  {formatMoney(familyMoney.base, familyMoney.currency)}{t("perMonth")}
+                  {formatMoney(familyMoney.base, familyMoney.currency)}
+                  {t("perMonth")}
                 </p>
                 <p>
                   {additionalChildren}{" "}
                   {additionalChildren === 1 ? t("extraChildWord") : t("extraChildrenWord")} ×{" "}
                   {formatMoney(familyPrice?.additional_child_amount ?? 0, familyMoney.currency)} —{" "}
-                  {formatMoney(familyMoney.additional, familyMoney.currency)}{t("perMonth")}
+                  {formatMoney(familyMoney.additional, familyMoney.currency)}
+                  {t("perMonth")}
                 </p>
                 <p className="text-foreground">
-                  {t("totalLabel")} — {formatMoney(familyMoney.total, familyMoney.currency)}{t("perMonth")}
+                  {t("totalLabel")} — {formatMoney(familyMoney.total, familyMoney.currency)}
+                  {t("perMonth")}
                 </p>
               </div>
             ) : null}
@@ -220,7 +225,10 @@ function SubscriptionPage() {
             <ul className="mt-5 space-y-3 text-sm text-muted-foreground">
               {labels.freeHighlights.map((item) => (
                 <li key={item} className="flex gap-3">
-                  <CheckIcon className="mt-0.5 size-4 shrink-0 text-chart-2" strokeWidth={ICON_STROKE} />
+                  <CheckIcon
+                    className="mt-0.5 size-4 shrink-0 text-chart-2"
+                    strokeWidth={ICON_STROKE}
+                  />
                   {item}
                 </li>
               ))}
@@ -236,7 +244,10 @@ function SubscriptionPage() {
             <ul className="mt-5 space-y-4 text-sm">
               {PREMIUM_FEATURES.map((feature) => (
                 <li key={feature} className="flex gap-3">
-                  <PremiumIcon className="mt-0.5 size-4 shrink-0 text-gold" strokeWidth={ICON_STROKE} />
+                  <PremiumIcon
+                    className="mt-0.5 size-4 shrink-0 text-gold"
+                    strokeWidth={ICON_STROKE}
+                  />
                   <span>
                     <span className="block">{labels.featureLabel(feature)}</span>
                     <span className="block text-muted-foreground">
@@ -260,7 +271,10 @@ function SubscriptionPage() {
               <ul className="mt-5 space-y-3 text-sm text-muted-foreground">
                 {labels.individualHighlights.map((item) => (
                   <li key={item} className="flex gap-3">
-                    <CheckIcon className="mt-0.5 size-4 shrink-0 text-chart-2" strokeWidth={ICON_STROKE} />
+                    <CheckIcon
+                      className="mt-0.5 size-4 shrink-0 text-chart-2"
+                      strokeWidth={ICON_STROKE}
+                    />
                     {item}
                   </li>
                 ))}
@@ -275,7 +289,10 @@ function SubscriptionPage() {
               <ul className="mt-5 space-y-3 text-sm text-muted-foreground">
                 {labels.familyHighlights.map((item) => (
                   <li key={item} className="flex gap-3">
-                    <CheckIcon className="mt-0.5 size-4 shrink-0 text-chart-2" strokeWidth={ICON_STROKE} />
+                    <CheckIcon
+                      className="mt-0.5 size-4 shrink-0 text-chart-2"
+                      strokeWidth={ICON_STROKE}
+                    />
                     {item}
                   </li>
                 ))}

@@ -42,7 +42,10 @@ export function LearnProgressBar({
   return (
     <div
       ref={ref}
-      className={cn("wazen-progress-track h-3 w-full overflow-hidden rounded-full bg-kid-soft/70", className)}
+      className={cn(
+        "wazen-progress-track h-3 w-full overflow-hidden rounded-full bg-kid-soft/70",
+        className,
+      )}
       data-complete={percent >= 100 ? "true" : undefined}
       role="progressbar"
       aria-valuenow={Math.round(percent)}
@@ -85,10 +88,16 @@ export function LearnSection({
         open={defaultOpen}
       >
         <summary className="flex min-w-0 cursor-pointer list-none items-start gap-3 focus-visible:outline-hidden">
-          {icon ? <span className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-xl bg-kid-soft/70 text-kid-deep">{icon}</span> : null}
+          {icon ? (
+            <span className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-xl bg-kid-soft/70 text-kid-deep">
+              {icon}
+            </span>
+          ) : null}
           <span className="min-w-0 flex-1">
             <span className="block text-lg font-semibold sm:text-xl">{title}</span>
-            {caption ? <span className="mt-1 block text-xs text-muted-foreground sm:text-sm">{caption}</span> : null}
+            {caption ? (
+              <span className="mt-1 block text-xs text-muted-foreground sm:text-sm">{caption}</span>
+            ) : null}
           </span>
           <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-kid-soft/70 text-kid-deep transition-transform group-open:rotate-180">
             <ExpandIcon className="size-4" strokeWidth={ICON_STROKE} />
@@ -108,7 +117,9 @@ export function LearnSection({
         ) : null}
         <div className="min-w-0">
           <h2 className="truncate text-lg sm:text-xl">{title}</h2>
-          {caption ? <p className="mt-1 text-xs text-muted-foreground sm:text-sm">{caption}</p> : null}
+          {caption ? (
+            <p className="mt-1 text-xs text-muted-foreground sm:text-sm">{caption}</p>
+          ) : null}
         </div>
       </header>
       {children}
@@ -185,7 +196,13 @@ export function LearnButton({
 }
 
 /** Correct / incorrect feedback line with calm, non-shaming wording. */
-export function Feedback({ state, message }: { state: "correct" | "wrong" | null; message?: string }) {
+export function Feedback({
+  state,
+  message,
+}: {
+  state: "correct" | "wrong" | null;
+  message?: string;
+}) {
   if (!state) return null;
   return (
     <p

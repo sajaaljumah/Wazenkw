@@ -92,7 +92,9 @@ export function QuizDialog({
           <p className="text-4xl tabular-nums">
             {score}/{questions.length}
           </p>
-          <p className="text-sm">{score >= questions.length / 2 ? lc("winBody") : lc("tryAgainBody")}</p>
+          <p className="text-sm">
+            {score >= questions.length / 2 ? lc("winBody") : lc("tryAgainBody")}
+          </p>
           <div className="flex flex-wrap justify-center gap-3">
             <LearnButton onClick={restart}>
               <RetryIcon className="size-4" strokeWidth={ICON_STROKE} />
@@ -106,7 +108,9 @@ export function QuizDialog({
       ) : (
         <div className="space-y-5">
           <div className="space-y-2">
-            <LearnProgressBar percent={((index + (picked === null ? 0 : 1)) / questions.length) * 100} />
+            <LearnProgressBar
+              percent={((index + (picked === null ? 0 : 1)) / questions.length) * 100}
+            />
             <div className="flex items-center justify-between text-xs text-muted-foreground">
               <span>
                 {lc("question")} {index + 1} {lc("stepOf")} {questions.length}

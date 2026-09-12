@@ -17,7 +17,12 @@ import {
   StocksIcon,
   ICON_STROKE,
 } from "@/components/wazen/icons";
-import { DisclosurePanel, EmptyState, Panel, StatCard } from "@/components/wazen/dashboard/primitives";
+import {
+  DisclosurePanel,
+  EmptyState,
+  Panel,
+  StatCard,
+} from "@/components/wazen/dashboard/primitives";
 import { AssetFormDialog } from "@/components/wazen/assets/AssetFormDialog";
 import { useAssetValuations, useAssets, useDeleteAsset } from "@/hooks/use-wazen-assets";
 import { useProfile } from "@/hooks/use-wazen-auth";
@@ -183,7 +188,14 @@ function AssetsPage() {
             <div className="h-52 w-full min-w-0 sm:h-56">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={series} margin={{ top: 8, right: 8, left: 8, bottom: 0 }}>
-                  <XAxis dataKey="label" tickLine={false} axisLine={false} fontSize={10} interval="preserveStartEnd" minTickGap={24} />
+                  <XAxis
+                    dataKey="label"
+                    tickLine={false}
+                    axisLine={false}
+                    fontSize={10}
+                    interval="preserveStartEnd"
+                    minTickGap={24}
+                  />
                   <YAxis hide />
                   <Tooltip
                     formatter={(value) => formatMoney(Number(value), currency)}
@@ -280,15 +292,17 @@ function AssetRow({
 
   return (
     <li className="rounded-2xl border border-border bg-secondary/35 p-5">
-       <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
-         <div className="min-w-0">
-           <p className="break-words text-base">
+      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
+        <div className="min-w-0">
+          <p className="break-words text-base">
             {asset.name}
-            {asset.symbol ? <span className="ms-2 text-xs text-muted-foreground">{asset.symbol}</span> : null}
+            {asset.symbol ? (
+              <span className="ms-2 text-xs text-muted-foreground">{asset.symbol}</span>
+            ) : null}
           </p>
           <p className="mt-1 text-xs text-muted-foreground">
             {unit === "property"
-              ? asset.property_type ?? t("kindRealEstate")
+              ? (asset.property_type ?? t("kindRealEstate"))
               : unit === "grams"
                 ? `${Number(asset.quantity)} g${asset.purity ? ` · ${asset.purity}` : ""}`
                 : `${Number(asset.quantity)} × ${formatMoney(Number(asset.unit_cost), asset.currency)}`}
@@ -296,8 +310,14 @@ function AssetRow({
             {t("purchaseDate")}: {formatDate(asset.purchase_date)}
           </p>
         </div>
-         <div className="flex shrink-0 items-center gap-1">
-          <Button variant="ghost" size="icon" onClick={onEdit} aria-label={t("editAsset")} title={t("editAsset")}>
+        <div className="flex shrink-0 items-center gap-1">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onEdit}
+            aria-label={t("editAsset")}
+            title={t("editAsset")}
+          >
             <EditIcon className="size-4" strokeWidth={ICON_STROKE} />
           </Button>
           <Button
@@ -312,69 +332,79 @@ function AssetRow({
         </div>
       </div>
 
-      <DisclosurePanel title={t("valueHistory")} summary={formatMoney(marketValue(asset), asset.currency)} className="mt-4">
-       <dl className="grid grid-cols-1 gap-3 min-[420px]:grid-cols-2 lg:grid-cols-4">
-        <Cell label={t("investedAmount")} value={formatMoney(costBasis(asset), asset.currency)} />
-        <Cell label={t("totalAssetValue")} value={formatMoney(marketValue(asset), asset.currency)} />
-        <Cell
-          label={t("unrealisedGain")}
-          value={`${formatMoney(gain, asset.currency)} · ${gainPercentOf(asset).toFixed(1)}%`}
-          tone={positive ? "positive" : "negative"}
-          icon={
-            positive ? (
-              <GainIcon className="size-3.5" strokeWidth={ICON_STROKE} />
-            ) : (
-              <LossIcon className="size-3.5" strokeWidth={ICON_STROKE} />
-            )
-          }
-        />
-        {asset.kind === "real_estate" ? (
-          <Cell label={t("annualRentalIncome")} value={formatMoney(annualRentOf(asset), asset.currency)} />
-        ) : (
+      <DisclosurePanel
+        title={t("valueHistory")}
+        summary={formatMoney(marketValue(asset), asset.currency)}
+        className="mt-4"
+      >
+        <dl className="grid grid-cols-1 gap-3 min-[420px]:grid-cols-2 lg:grid-cols-4">
+          <Cell label={t("investedAmount")} value={formatMoney(costBasis(asset), asset.currency)} />
           <Cell
-            label={
-              unit === "grams"
-                ? t("currentValueGram")
-                : unit === "shares"
-                  ? t("currentValueShare")
-                  : t("currentValueProperty")
-            }
-            value={formatMoney(Number(asset.current_unit_value), asset.currency)}
+            label={t("totalAssetValue")}
+            value={formatMoney(marketValue(asset), asset.currency)}
           />
-        )}
-      </dl>
+          <Cell
+            label={t("unrealisedGain")}
+            value={`${formatMoney(gain, asset.currency)} · ${gainPercentOf(asset).toFixed(1)}%`}
+            tone={positive ? "positive" : "negative"}
+            icon={
+              positive ? (
+                <GainIcon className="size-3.5" strokeWidth={ICON_STROKE} />
+              ) : (
+                <LossIcon className="size-3.5" strokeWidth={ICON_STROKE} />
+              )
+            }
+          />
+          {asset.kind === "real_estate" ? (
+            <Cell
+              label={t("annualRentalIncome")}
+              value={formatMoney(annualRentOf(asset), asset.currency)}
+            />
+          ) : (
+            <Cell
+              label={
+                unit === "grams"
+                  ? t("currentValueGram")
+                  : unit === "shares"
+                    ? t("currentValueShare")
+                    : t("currentValueProperty")
+              }
+              value={formatMoney(Number(asset.current_unit_value), asset.currency)}
+            />
+          )}
+        </dl>
 
-      {points.length > 1 ? (
-        <div className="mt-4">
-          <p className="wazen-label">{t("valueHistory")}</p>
-          <div className="mt-2 h-16 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={points} margin={{ top: 4, right: 4, left: 4, bottom: 0 }}>
-                <Tooltip
-                  formatter={(value) => formatMoney(Number(value), asset.currency)}
-                  labelFormatter={(label) => formatDate(String(label))}
-                  contentStyle={{
-                    borderRadius: "0.75rem",
-                    border: "1px solid var(--border)",
-                    background: "var(--card)",
-                    color: "var(--card-foreground)",
-                    fontSize: "0.75rem",
-                  }}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="value"
-                  stroke={positive ? "var(--chart-2)" : "var(--destructive)"}
-                  strokeWidth={2}
-                  dot={false}
-                />
-              </LineChart>
-            </ResponsiveContainer>
+        {points.length > 1 ? (
+          <div className="mt-4">
+            <p className="wazen-label">{t("valueHistory")}</p>
+            <div className="mt-2 h-16 w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={points} margin={{ top: 4, right: 4, left: 4, bottom: 0 }}>
+                  <Tooltip
+                    formatter={(value) => formatMoney(Number(value), asset.currency)}
+                    labelFormatter={(label) => formatDate(String(label))}
+                    contentStyle={{
+                      borderRadius: "0.75rem",
+                      border: "1px solid var(--border)",
+                      background: "var(--card)",
+                      color: "var(--card-foreground)",
+                      fontSize: "0.75rem",
+                    }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="value"
+                    stroke={positive ? "var(--chart-2)" : "var(--destructive)"}
+                    strokeWidth={2}
+                    dot={false}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
           </div>
-        </div>
-      ) : null}
+        ) : null}
 
-       {asset.notes ? <p className="mt-3 text-xs text-muted-foreground">{asset.notes}</p> : null}
+        {asset.notes ? <p className="mt-3 text-xs text-muted-foreground">{asset.notes}</p> : null}
       </DisclosurePanel>
     </li>
   );
@@ -391,11 +421,14 @@ function Cell({
   tone?: "positive" | "negative";
   icon?: React.ReactNode;
 }) {
-  const toneClass = tone === "positive" ? "text-chart-2" : tone === "negative" ? "text-destructive" : "";
+  const toneClass =
+    tone === "positive" ? "text-chart-2" : tone === "negative" ? "text-destructive" : "";
   return (
     <div className="min-w-0">
       <dt className="wazen-label">{label}</dt>
-      <dd className={`wazen-number mt-1 flex min-w-0 items-center gap-1.5 break-words text-sm ${toneClass}`}>
+      <dd
+        className={`wazen-number mt-1 flex min-w-0 items-center gap-1.5 break-words text-sm ${toneClass}`}
+      >
         {icon}
         {value}
       </dd>

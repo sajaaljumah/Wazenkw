@@ -27,10 +27,12 @@ export function WazenLogo({
       role="img"
       aria-label="Wazen"
     >
-      {([
-        [lightLogo.url, "dark:hidden"],
-        [darkLogo.url, "hidden dark:block"],
-      ] as const).map(([url, visibility]) => (
+      {(
+        [
+          [lightLogo.url, "dark:hidden"],
+          [darkLogo.url, "hidden dark:block"],
+        ] as const
+      ).map(([url, visibility]) => (
         <img
           key={url}
           src={url}

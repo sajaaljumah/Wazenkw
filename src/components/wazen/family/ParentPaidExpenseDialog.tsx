@@ -17,8 +17,6 @@ import { useWazenLabels } from "@/lib/i18n-labels";
 
 const inputClass = "wazen-field";
 
-
-
 /** Parents record spending they paid for a linked child or teenager. */
 export function ParentPaidExpenseDialog({
   open,
@@ -98,7 +96,11 @@ export function ParentPaidExpenseDialog({
 
         <div className="space-y-4">
           <Field label={t("forFamilyMember")}>
-            <select className={inputClass} value={childId} onChange={(e) => setChildId(e.target.value)}>
+            <select
+              className={inputClass}
+              value={childId}
+              onChange={(e) => setChildId(e.target.value)}
+            >
               <option value="">{t("selectFamilyMember")}</option>
               {members.map((member) => (
                 <option key={member.profile.id} value={member.profile.id}>
@@ -129,11 +131,19 @@ export function ParentPaidExpenseDialog({
           </Field>
 
           <Field label={t("merchantField")}>
-            <input className={inputClass} value={merchant} onChange={(e) => setMerchant(e.target.value)} />
+            <input
+              className={inputClass}
+              value={merchant}
+              onChange={(e) => setMerchant(e.target.value)}
+            />
           </Field>
 
           <Field label={t("paymentMethod")}>
-            <select className={inputClass} value={method} onChange={(e) => setMethod(e.target.value)}>
+            <select
+              className={inputClass}
+              value={method}
+              onChange={(e) => setMethod(e.target.value)}
+            >
               {paymentMethods.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
@@ -143,7 +153,12 @@ export function ParentPaidExpenseDialog({
           </Field>
 
           <Field label={t("dateField")}>
-            <input className={inputClass} type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+            <input
+              className={inputClass}
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+            />
           </Field>
 
           {canDeduct ? (

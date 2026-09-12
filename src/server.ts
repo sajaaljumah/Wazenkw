@@ -47,6 +47,31 @@ function isH3SwallowedErrorBody(body: string): boolean {
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
+      const url = new URL(request.url);
+      if (url.pathname === "/api/stripe/webhook" || url.pathname === "/api/webhook/stripe") {
+        if (request.method !== "POST") {
+          return new Response("Method Not Allowed", { status: 405 });
+        }
+        try {
+          const sig = request.headers.get("stripe-signature") || "";
+          const rawBody = await request.text();
+          const { constructWebhookEvent, handleStripeWebhook } =
+            await import("./lib/stripe.server");
+          const event = constructWebhookEvent(rawBody, sig);
+          const result = await handleStripeWebhook(event);
+          return new Response(JSON.stringify(result), {
+            status: 200,
+            headers: { "content-type": "application/json" },
+          });
+        } catch (err: unknown) {
+          const message = err instanceof Error ? err.message : "Webhook verification failed";
+          return new Response(JSON.stringify({ error: "Webhook Error", message }), {
+            status: 400,
+            headers: { "content-type": "application/json" },
+          });
+        }
+      }
+
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
       return await normalizeCatastrophicSsrResponse(response);

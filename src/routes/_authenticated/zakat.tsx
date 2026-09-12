@@ -3,7 +3,13 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/wazen/AppShell";
 import { Button } from "@/components/ui/button";
-import { DisclosurePanel, EmptyState, Panel, ProgressBar, StatCard } from "@/components/wazen/dashboard/primitives";
+import {
+  DisclosurePanel,
+  EmptyState,
+  Panel,
+  ProgressBar,
+  StatCard,
+} from "@/components/wazen/dashboard/primitives";
 import { ZakatAlert } from "@/components/wazen/zakat/ZakatAlert";
 import { ZakatPaymentDialog } from "@/components/wazen/zakat/ZakatPaymentDialog";
 import { useWazenLocale } from "@/components/wazen/WazenLocale";
@@ -123,7 +129,11 @@ function ZakatPage() {
             <p className="mt-2 max-w-xl text-sm text-muted-foreground">{t("zakatSubtitle")}</p>
           </div>
           <div className="grid grid-cols-1 gap-3 min-[420px]:grid-cols-2 md:flex">
-            <Button onClick={() => setPaymentOpen(true)} variant="outline" className="w-full md:w-auto">
+            <Button
+              onClick={() => setPaymentOpen(true)}
+              variant="outline"
+              className="w-full md:w-auto"
+            >
               {t("zakatRecordPayment")}
             </Button>
             <Button
@@ -179,7 +189,11 @@ function ZakatPage() {
             amount={result.remaining}
             currency={currency}
             tone={result.remaining > 0 ? "negative" : "positive"}
-            hint={result.dueDate ? `${t("zakatDueDate")}: ${formatDate(result.dueDate)}` : t("zakatNeedsStartDate")}
+            hint={
+              result.dueDate
+                ? `${t("zakatDueDate")}: ${formatDate(result.dueDate)}`
+                : t("zakatNeedsStartDate")
+            }
             icon={<ScheduledIcon className="size-4" strokeWidth={ICON_STROKE} />}
           />
         </div>
@@ -234,8 +248,14 @@ function ZakatPage() {
                       onChange={(e) => setStartDate(e.target.value)}
                     />
                   </label>
-                  <Button onClick={submitStartDate} disabled={saveStartDate.isPending} className="w-full sm:w-auto">
-                    {saveStartDate.isPending ? <SpinnerIcon className="size-4 animate-spin" /> : null}
+                  <Button
+                    onClick={submitStartDate}
+                    disabled={saveStartDate.isPending}
+                    className="w-full sm:w-auto"
+                  >
+                    {saveStartDate.isPending ? (
+                      <SpinnerIcon className="size-4 animate-spin" />
+                    ) : null}
                     {t("zakatSaveStartDate")}
                   </Button>
                 </div>
@@ -278,56 +298,63 @@ function ZakatPage() {
         </Panel>
 
         <DisclosurePanel title={t("zakatHistory")} summary={t("zakatHistorySummary")}>
-        <div className="grid gap-5 lg:grid-cols-2">
-          <Panel title={t("zakatPaymentHistory")}>
-            {payments.length === 0 ? (
-              <p className="text-sm text-muted-foreground">{t("zakatNoPayments")}</p>
-            ) : (
-              <ul className="divide-y divide-border/60 text-sm">
-                {payments.map((payment) => (
-                  <li key={payment.id} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 py-3">
-                    <span>
-                      <span className="block font-semibold">
-                        {formatMoney(Number(payment.amount_kwd), payment.currency)}
+          <div className="grid gap-5 lg:grid-cols-2">
+            <Panel title={t("zakatPaymentHistory")}>
+              {payments.length === 0 ? (
+                <p className="text-sm text-muted-foreground">{t("zakatNoPayments")}</p>
+              ) : (
+                <ul className="divide-y divide-border/60 text-sm">
+                  {payments.map((payment) => (
+                    <li
+                      key={payment.id}
+                      className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 py-3"
+                    >
+                      <span>
+                        <span className="block font-semibold">
+                          {formatMoney(Number(payment.amount_kwd), payment.currency)}
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          {payment.payment_date}
+                          {payment.recipient ? ` · ${payment.recipient}` : ""}
+                        </span>
                       </span>
-                      <span className="text-xs text-muted-foreground">
-                        {payment.payment_date}
-                        {payment.recipient ? ` · ${payment.recipient}` : ""}
-                      </span>
-                    </span>
-                    <span className="wazen-label">{t("zakat")}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </Panel>
+                      <span className="wazen-label">{t("zakat")}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </Panel>
 
-          <Panel title={t("zakatCalculationHistory")}>
-            {(history.data ?? []).length === 0 ? (
-              <p className="text-sm text-muted-foreground">{t("zakatNoCalculations")}</p>
-            ) : (
-              <ul className="divide-y divide-border/60 text-sm">
-                {(history.data ?? []).map((row) => (
-                  <li key={row.id} className="grid grid-cols-1 gap-1 py-3 min-[420px]:grid-cols-[minmax(0,1fr)_auto] min-[420px]:items-center">
-                    <span>
-                      <span className="block font-semibold">
-                        {formatMoney(Number(row.zakat_due_kwd), currency)}
+            <Panel title={t("zakatCalculationHistory")}>
+              {(history.data ?? []).length === 0 ? (
+                <p className="text-sm text-muted-foreground">{t("zakatNoCalculations")}</p>
+              ) : (
+                <ul className="divide-y divide-border/60 text-sm">
+                  {(history.data ?? []).map((row) => (
+                    <li
+                      key={row.id}
+                      className="grid grid-cols-1 gap-1 py-3 min-[420px]:grid-cols-[minmax(0,1fr)_auto] min-[420px]:items-center"
+                    >
+                      <span>
+                        <span className="block font-semibold">
+                          {formatMoney(Number(row.zakat_due_kwd), currency)}
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          {new Intl.DateTimeFormat(locale, { dateStyle: "medium" }).format(
+                            new Date(`${row.calculation_date}T00:00:00`),
+                          )}
+                        </span>
                       </span>
                       <span className="text-xs text-muted-foreground">
-                        {new Intl.DateTimeFormat(locale, { dateStyle: "medium" }).format(
-                          new Date(`${row.calculation_date}T00:00:00`),
-                        )}
+                        {t("zakatableWealth")}:{" "}
+                        {formatMoney(Number(row.zakatable_amount_kwd), currency)}
                       </span>
-                    </span>
-                    <span className="text-xs text-muted-foreground">
-                      {t("zakatableWealth")}: {formatMoney(Number(row.zakatable_amount_kwd), currency)}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </Panel>
-        </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </Panel>
+          </div>
         </DisclosurePanel>
 
         <p className="text-center text-xs text-muted-foreground">
@@ -369,7 +396,10 @@ function LineGroup({
       <p className="wazen-label">{title}</p>
       <ul className="mt-2 divide-y divide-border/60 text-sm">
         {lines.map((line) => (
-          <li key={line.key} className="grid grid-cols-1 gap-2 py-3 min-[420px]:grid-cols-[minmax(0,1fr)_auto] min-[420px]:items-center">
+          <li
+            key={line.key}
+            className="grid grid-cols-1 gap-2 py-3 min-[420px]:grid-cols-[minmax(0,1fr)_auto] min-[420px]:items-center"
+          >
             <span className="min-w-0">
               <span className="block font-semibold">
                 {line.type === "cash" || line.type === "savings"

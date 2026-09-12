@@ -128,15 +128,20 @@ export function useRecordActivity() {
         .eq("activity_key", result.activity_key)
         .maybeSingle();
 
-      const previous = existing as { id: string; best_score: number; attempts: number; status: string } | null;
+      const previous = existing as {
+        id: string;
+        best_score: number;
+        attempts: number;
+        status: string;
+      } | null;
       const row = {
         user_id: userId,
         activity_type: result.activity_type,
         activity_key: result.activity_key,
         topic: result.topic,
-        status: (result.completed || previous?.status === "completed" ? "completed" : "in_progress") as
-          | "completed"
-          | "in_progress",
+        status: (result.completed || previous?.status === "completed"
+          ? "completed"
+          : "in_progress") as "completed" | "in_progress",
         score: result.score,
         best_score: Math.max(result.score, previous?.best_score ?? 0),
         max_score: result.max_score,
@@ -146,7 +151,10 @@ export function useRecordActivity() {
       };
 
       if (previous) {
-        const { error } = await supabase.from("learning_progress").update(row).eq("id", previous.id);
+        const { error } = await supabase
+          .from("learning_progress")
+          .update(row)
+          .eq("id", previous.id);
         if (error) throw error;
       } else {
         const { error } = await supabase.from("learning_progress").insert(row);

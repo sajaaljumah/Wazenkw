@@ -53,7 +53,11 @@ export function useUploadDocument() {
       const path = `${user!.id}/${crypto.randomUUID()}.${extension}`;
       const upload = await supabase.storage
         .from(BUCKET)
-        .upload(path, file, file.type ? { contentType: file.type, upsert: false } : { upsert: false });
+        .upload(
+          path,
+          file,
+          file.type ? { contentType: file.type, upsert: false } : { upsert: false },
+        );
       if (upload.error) throw upload.error;
 
       const { data, error } = await supabase

@@ -1,5 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { AnalyticsIcon, BankIcon, CheckIcon, EmergencyFundIcon, FamilyIcon, ForwardIcon, ICON_STROKE } from "@/components/wazen/icons";
+import {
+  AnalyticsIcon,
+  BankIcon,
+  CheckIcon,
+  EmergencyFundIcon,
+  FamilyIcon,
+  ForwardIcon,
+  ICON_STROKE,
+} from "@/components/wazen/icons";
 import { WazenMark } from "@/components/wazen/AppShell";
 import { WazenLogo } from "@/components/wazen/WazenLogo";
 import { LanguageToggle } from "@/components/wazen/LanguageToggle";
@@ -39,54 +47,55 @@ function Landing() {
   const { t } = useWazenLocale();
   return (
     <div className="min-h-screen overflow-hidden bg-background">
-      <header className="sticky top-0 z-20 border-b border-border/70 bg-card/85 backdrop-blur-xl"><div className="mx-auto flex h-20 max-w-6xl items-center justify-between px-5 sm:px-8">
-        <WazenMark />
-        <div className="flex items-center gap-1">
-          <ThemeToggle />
-          <LanguageToggle />
-          <Button asChild variant="ghost">
-            <Link to="/auth"
-              search={{ mode: "signin" as const }}
-            >{t("signIn")}</Link>
-          </Button>
+      <header className="sticky top-0 z-20 border-b border-border/70 bg-card/85 backdrop-blur-xl">
+        <div className="mx-auto flex h-20 max-w-6xl items-center justify-between px-5 sm:px-8">
+          <WazenMark />
+          <div className="flex items-center gap-1">
+            <ThemeToggle />
+            <LanguageToggle />
+            <Button asChild variant="ghost">
+              <Link to="/auth" search={{ mode: "signin" as const }}>
+                {t("signIn")}
+              </Link>
+            </Button>
+          </div>
         </div>
-      </div></header>
+      </header>
 
       <main className="mx-auto max-w-6xl px-5 pb-20 sm:px-8">
         <section className="relative grid items-center py-14 sm:py-20">
-          <div className="pointer-events-none absolute inset-y-6 end-0 hidden w-2/5 rounded-[2.5rem] bg-accent/60 lg:block" aria-hidden="true">
+          <div
+            className="pointer-events-none absolute inset-y-6 end-0 hidden w-2/5 rounded-[2.5rem] bg-accent/60 lg:block"
+            aria-hidden="true"
+          >
             <span className="absolute bottom-10 end-10 opacity-30">
               <WazenLogo size={110} />
             </span>
           </div>
           <div className="relative max-w-3xl wazen-enter">
-          <p className="wazen-label">{t("landingEyebrow")}</p>
-          <h1 className="mt-5">
-            <WazenLogo size={92} />
-            <span className="sr-only">Wazen</span>
-          </h1>
-          <p className="mt-6 max-w-2xl font-display text-3xl leading-tight sm:text-5xl">{t("landingTagline")}</p>
+            <p className="wazen-label">{t("landingEyebrow")}</p>
+            <h1 className="mt-5">
+              <WazenLogo size={92} />
+              <span className="sr-only">Wazen</span>
+            </h1>
+            <p className="mt-6 max-w-2xl font-display text-3xl leading-tight sm:text-5xl">
+              {t("landingTagline")}
+            </p>
 
-          <p className="mt-6 max-w-xl text-lg text-muted-foreground">{t("landingBody")}</p>
-          <div className="mt-9 flex flex-wrap gap-3">
-            <Button asChild size="lg">
-              <Link
-              to="/auth"
-              search={{ mode: "signup" as const }}
-            >
-              {t("createAccount")}
-              <ForwardIcon className="size-4" strokeWidth={ICON_STROKE} />
-              </Link>
-            </Button>
-            <Button asChild size="lg" variant="outline">
-              <Link
-              to="/auth"
-              search={{ mode: "signin" as const }}
-            >
-              {t("exploreDemo")}
-              </Link>
-            </Button>
-          </div>
+            <p className="mt-6 max-w-xl text-lg text-muted-foreground">{t("landingBody")}</p>
+            <div className="mt-9 flex flex-wrap gap-3">
+              <Button asChild size="lg">
+                <Link to="/auth" search={{ mode: "signup" as const }}>
+                  {t("createAccount")}
+                  <ForwardIcon className="size-4" strokeWidth={ICON_STROKE} />
+                </Link>
+              </Button>
+              <Button asChild size="lg" variant="outline">
+                <Link to="/auth" search={{ mode: "signin" as const }}>
+                  {t("exploreDemo")}
+                </Link>
+              </Button>
+            </div>
           </div>
         </section>
 
@@ -109,20 +118,31 @@ function Landing() {
             </span>
             <div className="min-w-0">
               <p className="wazen-label">{t("futureEyebrow")}</p>
-              <h2 id="future-heading" className="mt-1 text-xl">{t("futureTitle")}</h2>
+              <h2 id="future-heading" className="mt-1 text-xl">
+                {t("futureTitle")}
+              </h2>
             </div>
           </div>
-          <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground">{t("futureBody")}</p>
+          <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+            {t("futureBody")}
+          </p>
           <p className="mt-5 wazen-label">{t("futurePlanned")}</p>
           <ul className="mt-3 grid gap-2.5 sm:grid-cols-2">
-            {[t("futureItem1"), t("futureItem2"), t("futureItem3"), t("futureItem4")].map((item) => (
-              <li key={item} className="flex items-start gap-2.5 text-sm">
-                <CheckIcon className="mt-0.5 size-4 shrink-0 text-primary" strokeWidth={ICON_STROKE} />
-                <span className="text-foreground/90">{item}</span>
-              </li>
-            ))}
+            {[t("futureItem1"), t("futureItem2"), t("futureItem3"), t("futureItem4")].map(
+              (item) => (
+                <li key={item} className="flex items-start gap-2.5 text-sm">
+                  <CheckIcon
+                    className="mt-0.5 size-4 shrink-0 text-primary"
+                    strokeWidth={ICON_STROKE}
+                  />
+                  <span className="text-foreground/90">{item}</span>
+                </li>
+              ),
+            )}
           </ul>
-          <p className="mt-5 border-t border-border/70 pt-4 text-xs text-muted-foreground">{t("futureDisclaimer")}</p>
+          <p className="mt-5 border-t border-border/70 pt-4 text-xs text-muted-foreground">
+            {t("futureDisclaimer")}
+          </p>
         </section>
       </main>
     </div>

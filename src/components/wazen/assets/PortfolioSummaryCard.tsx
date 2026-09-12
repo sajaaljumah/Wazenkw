@@ -15,7 +15,10 @@ import { portfolioTotals } from "@/lib/assets";
 import type { Asset, AssetKind } from "@/lib/assets";
 import { useWazenLocale } from "@/components/wazen/WazenLocale";
 
-const KIND_META: Record<AssetKind, { key: "kindStock" | "kindGold" | "kindSilver" | "kindRealEstate"; icon: typeof StocksIcon }> = {
+const KIND_META: Record<
+  AssetKind,
+  { key: "kindStock" | "kindGold" | "kindSilver" | "kindRealEstate"; icon: typeof StocksIcon }
+> = {
   stock: { key: "kindStock", icon: StocksIcon },
   gold: { key: "kindGold", icon: MetalsIcon },
   silver: { key: "kindSilver", icon: MetalsIcon },
@@ -32,7 +35,10 @@ export function PortfolioSummaryCard({ assets, currency }: { assets: Asset[]; cu
     <Panel
       title={t("portfolioSummary")}
       action={
-        <Link to="/assets" className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary">
+        <Link
+          to="/assets"
+          className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary"
+        >
           {t("viewPortfolio")}
           <ForwardIcon className="size-4" strokeWidth={ICON_STROKE} />
         </Link>
@@ -49,7 +55,9 @@ export function PortfolioSummaryCard({ assets, currency }: { assets: Asset[]; cu
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
               <p className="wazen-label">{t("totalAssetValue")}</p>
-              <p className="wazen-number mt-2 text-2xl sm:text-3xl">{formatMoney(totals.value, currency)}</p>
+              <p className="wazen-number mt-2 text-2xl sm:text-3xl">
+                {formatMoney(totals.value, currency)}
+              </p>
               <p className="mt-2 text-xs text-muted-foreground">{t("notSpendable")}</p>
             </div>
             <p

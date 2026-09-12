@@ -1,7 +1,22 @@
 import { AnalyticsIcon, FamilyIcon, StudentIcon, ICON_STROKE } from "@/components/wazen/icons";
-import { BalanceHero, DisclosurePanel, EmptyState, InsightStrip, JourneySection, Panel, ProgressBar, percentOf } from "./primitives";
+import {
+  BalanceHero,
+  DisclosurePanel,
+  EmptyState,
+  InsightStrip,
+  JourneySection,
+  Panel,
+  ProgressBar,
+  percentOf,
+} from "./primitives";
 
-import { BudgetCard, EmergencyFundCard, GoalsCard, RecentTransactionsCard, UpcomingCashFlowCard } from "./lists";
+import {
+  BudgetCard,
+  EmergencyFundCard,
+  GoalsCard,
+  RecentTransactionsCard,
+  UpcomingCashFlowCard,
+} from "./lists";
 import { IncomeVsExpensesCard, SavingsTrendCard, SpendingByCategoryCard } from "./charts";
 
 import { QuickActions } from "./quick-actions";
@@ -73,8 +88,10 @@ export function AdultDashboard({
         ]}
       />
 
-
-      <InsightStrip icon={<AnalyticsIcon className="size-5" strokeWidth={ICON_STROKE} />} label={t("dashboardInsight")}>
+      <InsightStrip
+        icon={<AnalyticsIcon className="size-5" strokeWidth={ICON_STROKE} />}
+        label={t("dashboardInsight")}
+      >
         {budget && month.expenses > Number(budget.amount) ? (
           <span className="text-destructive font-semibold">{t("overBudget")}</span>
         ) : month.income >= month.expenses ? (
@@ -91,27 +108,46 @@ export function AdultDashboard({
 
       <QuickActions userId={userId} currency={currency} goals={goals} />
 
-      <JourneySection eyebrow={t("moneyStory")} title={t("planAhead")} description={t("planAheadBody")} id="planning">
+      <JourneySection
+        eyebrow={t("moneyStory")}
+        title={t("planAhead")}
+        description={t("planAheadBody")}
+        id="planning"
+      >
         <div className="grid gap-4 lg:grid-cols-3">
-          <BudgetCard budget={budget ? Number(budget.amount) : null} spent={month.expenses} currency={currency} />
+          <BudgetCard
+            budget={budget ? Number(budget.amount) : null}
+            spent={month.expenses}
+            currency={currency}
+          />
           <EmergencyFundCard goals={goals} transactions={transactions} currency={currency} />
           <GoalsCard goals={goals} transactions={transactions} currency={currency} />
         </div>
       </JourneySection>
 
-      <JourneySection eyebrow={t("lookBack")} title={t("activityAndTrends")} description={t("activityAndTrendsBody")}>
+      <JourneySection
+        eyebrow={t("lookBack")}
+        title={t("activityAndTrends")}
+        description={t("activityAndTrendsBody")}
+      >
         <div className="grid gap-4 xl:grid-cols-[minmax(0,1.25fr)_minmax(18rem,0.75fr)]">
           <RecentTransactionsCard transactions={transactions} currency={currency} limit={6} />
           <UpcomingCashFlowCard items={recurring} currency={currency} />
         </div>
       </JourneySection>
 
-      <JourneySection eyebrow={t("lookBack")} title={t("deeperAnalytics")} description={t("deeperAnalyticsSummary")}>
+      <JourneySection
+        eyebrow={t("lookBack")}
+        title={t("deeperAnalytics")}
+        description={t("deeperAnalyticsSummary")}
+      >
         <div className="grid gap-4 lg:grid-cols-2">
           <SpendingByCategoryCard transactions={monthTransactions} currency={currency} />
           <IncomeVsExpensesCard transactions={transactions} currency={currency} />
         </div>
-        <div className="mt-4"><SavingsTrendCard transactions={transactions} currency={currency} /></div>
+        <div className="mt-4">
+          <SavingsTrendCard transactions={transactions} currency={currency} />
+        </div>
       </JourneySection>
 
       <DisclosurePanel title={t("portfolioSummary")} summary={t("notSpendable")}>
@@ -119,7 +155,10 @@ export function AdultDashboard({
       </DisclosurePanel>
 
       {focus === "student" ? (
-        <InsightStrip icon={<StudentIcon className="size-5" strokeWidth={ICON_STROKE} />} label={t("studyTip")}>
+        <InsightStrip
+          icon={<StudentIcon className="size-5" strokeWidth={ICON_STROKE} />}
+          label={t("studyTip")}
+        >
           {t("studyTipBody")}
         </InsightStrip>
       ) : null}
@@ -151,8 +190,10 @@ export function TeenagerDashboard({ data }: { data: DashboardData }) {
         ]}
       />
 
-
-      <InsightStrip icon={<StudentIcon className="size-5" strokeWidth={ICON_STROKE} />} label={t("dashboardInsight")}>
+      <InsightStrip
+        icon={<StudentIcon className="size-5" strokeWidth={ICON_STROKE} />}
+        label={t("dashboardInsight")}
+      >
         {budget && month.expenses > Number(budget.amount) ? (
           <span className="text-destructive font-semibold">{t("overBudget")}</span>
         ) : month.income >= month.expenses ? (
@@ -167,28 +208,69 @@ export function TeenagerDashboard({ data }: { data: DashboardData }) {
         ) : null}
       </InsightStrip>
 
-      <QuickActions userId={userId} currency={currency} goals={goals} actions={["expense", "saving", "give", "income", "goal"]} />
+      <QuickActions
+        userId={userId}
+        currency={currency}
+        goals={goals}
+        actions={["expense", "saving", "give", "income", "goal"]}
+      />
 
-      <JourneySection eyebrow={t("moneyStory")} title={t("planAhead")} description={t("planAheadBody")}>
+      <JourneySection
+        eyebrow={t("moneyStory")}
+        title={t("planAhead")}
+        description={t("planAheadBody")}
+      >
         <div className="grid gap-4 lg:grid-cols-2">
-          <GoalsCard goals={goals} transactions={transactions} currency={currency} title={t("savingFor")} />
-          <BudgetCard budget={budget ? Number(budget.amount) : null} spent={month.expenses} currency={currency} title={t("spendingLimit")} />
+          <GoalsCard
+            goals={goals}
+            transactions={transactions}
+            currency={currency}
+            title={t("savingFor")}
+          />
+          <BudgetCard
+            budget={budget ? Number(budget.amount) : null}
+            spent={month.expenses}
+            currency={currency}
+            title={t("spendingLimit")}
+          />
         </div>
       </JourneySection>
 
-      <JourneySection eyebrow={t("lookBack")} title={t("latestActivity")} description={t("activityAndTrendsBody")}>
+      <JourneySection
+        eyebrow={t("lookBack")}
+        title={t("latestActivity")}
+        description={t("activityAndTrendsBody")}
+      >
         <div className="grid gap-4 xl:grid-cols-[minmax(0,1.2fr)_minmax(18rem,0.8fr)]">
-          <RecentTransactionsCard transactions={transactions} currency={currency} title={t("latestActivity")} />
+          <RecentTransactionsCard
+            transactions={transactions}
+            currency={currency}
+            title={t("latestActivity")}
+          />
           <UpcomingCashFlowCard items={recurring} currency={currency} title={t("comingUp")} />
         </div>
       </JourneySection>
 
-      <JourneySection eyebrow={t("lookBack")} title={t("deeperAnalytics")} description={t("deeperAnalyticsSummary")}>
+      <JourneySection
+        eyebrow={t("lookBack")}
+        title={t("deeperAnalytics")}
+        description={t("deeperAnalyticsSummary")}
+      >
         <div className="grid gap-4 lg:grid-cols-2">
-          <SpendingByCategoryCard transactions={monthTransactions} currency={currency} title={t("whereMoneyWent")} />
+          <SpendingByCategoryCard
+            transactions={monthTransactions}
+            currency={currency}
+            title={t("whereMoneyWent")}
+          />
           <IncomeVsExpensesCard transactions={transactions} currency={currency} months={4} />
         </div>
-        <div className="mt-4"><SavingsTrendCard transactions={transactions} currency={currency} title={t("savedSoFar")} /></div>
+        <div className="mt-4">
+          <SavingsTrendCard
+            transactions={transactions}
+            currency={currency}
+            title={t("savedSoFar")}
+          />
+        </div>
       </JourneySection>
 
       <DisclosurePanel title={t("paidByFamily")} summary={t("paidByFamilyIntro")}>
@@ -218,7 +300,12 @@ export function FamilySummaryCard({
   const labels = useWazenLabels();
   const [dialogOpen, setDialogOpen] = useState(false);
   const parentPaid = transactions
-    .filter((item) => item.paid_by_parent && item.beneficiary_user_id && item.beneficiary_user_id !== item.user_id)
+    .filter(
+      (item) =>
+        item.paid_by_parent &&
+        item.beneficiary_user_id &&
+        item.beneficiary_user_id !== item.user_id,
+    )
     .slice(0, 8);
   const nameOf = (id: string | null | undefined) => {
     const member = members.find((entry) => entry.profile.id === id);
@@ -227,126 +314,143 @@ export function FamilySummaryCard({
 
   return (
     <>
-    <Panel
-      title={t("familySummary")}
-      action={
-        members.length > 0 ? (
-          <Button size="sm" onClick={() => setDialogOpen(true)}>
-            <AddIcon className="size-4" strokeWidth={ICON_STROKE} />
-            {t("addExpenseForChild")}
-          </Button>
-        ) : null
-      }
-    >
-      {isLoading ? (
-
-        <p className="text-sm text-muted-foreground">{t("loadingFamily")}</p>
-      ) : members.length === 0 ? (
-        <EmptyState
-          icon={<FamilyIcon className="size-5" strokeWidth={ICON_STROKE} />}
-          title={t("noFamily")}
-          description={t("noFamilyDescription")}
-        />
-      ) : (
-        <ul className="grid gap-4 sm:grid-cols-2">
-          {members.map(({ profile, canFund, canMonitor, transactions, goals }) => {
-            const totals = totalsFor(transactions);
-            const goal = goals.find((g) => g.kind === "goal");
-            const saved = goal ? savedForGoal(transactions, goal.id) : 0;
-            return (
-              <li
-                key={profile.id}
-                className="wazen-interactive border border-border bg-secondary/35 p-5 hover:bg-secondary/70 hover:wazen-interactive-hover"
-              >
-                <div className="flex items-center justify-between gap-3">
-                  <div className="flex min-w-0 items-center gap-3">
-                    <WazenAvatar
-                      fullName={profile.full_name}
-                      gender={profile.gender}
-                      lifeStage={profile.life_stage}
-                      avatarUrl={profile.avatar_url}
-                      size={44}
+      <Panel
+        title={t("familySummary")}
+        action={
+          members.length > 0 ? (
+            <Button size="sm" onClick={() => setDialogOpen(true)}>
+              <AddIcon className="size-4" strokeWidth={ICON_STROKE} />
+              {t("addExpenseForChild")}
+            </Button>
+          ) : null
+        }
+      >
+        {isLoading ? (
+          <p className="text-sm text-muted-foreground">{t("loadingFamily")}</p>
+        ) : members.length === 0 ? (
+          <EmptyState
+            icon={<FamilyIcon className="size-5" strokeWidth={ICON_STROKE} />}
+            title={t("noFamily")}
+            description={t("noFamilyDescription")}
+          />
+        ) : (
+          <ul className="grid gap-4 sm:grid-cols-2">
+            {members.map(({ profile, canFund, canMonitor, transactions, goals }) => {
+              const totals = totalsFor(transactions);
+              const goal = goals.find((g) => g.kind === "goal");
+              const saved = goal ? savedForGoal(transactions, goal.id) : 0;
+              return (
+                <li
+                  key={profile.id}
+                  className="wazen-interactive border border-border bg-secondary/35 p-5 hover:bg-secondary/70 hover:wazen-interactive-hover"
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex min-w-0 items-center gap-3">
+                      <WazenAvatar
+                        fullName={profile.full_name}
+                        gender={profile.gender}
+                        lifeStage={profile.life_stage}
+                        avatarUrl={profile.avatar_url}
+                        size={44}
+                      />
+                      <div className="min-w-0">
+                        <p className="truncate text-base">{firstNameOf(profile.full_name)}</p>
+                        <p className="mt-0.5 text-xs text-muted-foreground">
+                          {labels.lifeStage(profile.life_stage)} ·{" "}
+                          {calculateAge(profile.date_of_birth)} {t("yearsOld")}
+                        </p>
+                      </div>
+                    </div>
+                    <span className="border border-border bg-background px-2.5 py-1 text-[0.7rem] text-muted-foreground">
+                      {canFund
+                        ? t("allowanceTag")
+                        : canMonitor
+                          ? t("monitoringTag")
+                          : t("linkedTag")}
+                    </span>
+                  </div>
+                  <dl className="mt-4 space-y-1.5 text-sm">
+                    <Row
+                      label={t("available")}
+                      value={formatMoney(totals.net, profile.base_currency)}
                     />
+                    <Row
+                      label={t("saved")}
+                      value={formatMoney(totals.savings, profile.base_currency)}
+                    />
+                    <Row
+                      label={t("spent")}
+                      value={formatMoney(totals.expenses, profile.base_currency)}
+                    />
+                  </dl>
+                  {goal ? (
+                    <>
+                      <ProgressBar
+                        value={saved}
+                        max={Number(goal.target_amount)}
+                        tone="sage"
+                        className="mt-4"
+                      />
+                      <p className="mt-2 text-xs text-muted-foreground">
+                        {goal.name} · {percentOf(saved, Number(goal.target_amount))}%
+                      </p>
+                    </>
+                  ) : null}
+                </li>
+              );
+            })}
+          </ul>
+        )}
+
+        {members.length > 0 ? (
+          <div className="mt-8 border-t border-border/70 pt-6">
+            <h3 className="text-lg">{t("parentPaidTitle")}</h3>
+            <p className="mt-1 text-sm text-muted-foreground">{t("parentPaidIntro")}</p>
+            {parentPaid.length === 0 ? (
+              <div className="mt-4">
+                <EmptyState
+                  icon={<ReceiptIcon className="size-5" strokeWidth={ICON_STROKE} />}
+                  title={t("noParentPaidRecorded")}
+                  description={t("noParentPaidRecordedDescription")}
+                />
+              </div>
+            ) : (
+              <ul className="mt-4 divide-y divide-border/70">
+                {parentPaid.map((item) => (
+                  <li key={item.id} className="flex items-center justify-between gap-4 py-3">
                     <div className="min-w-0">
-                      <p className="truncate text-base">{firstNameOf(profile.full_name)}</p>
+                      <p className="truncate text-sm">
+                        {labels.merchant(item.merchant) || labels.category(item.category)}
+                        <span className="ms-2 text-xs text-muted-foreground">
+                          {`${t("forFamilyMember")} ${nameOf(item.beneficiary_user_id)}`}
+                        </span>
+                      </p>
                       <p className="mt-0.5 text-xs text-muted-foreground">
-                        {labels.lifeStage(profile.life_stage)} · {calculateAge(profile.date_of_birth)} {t("yearsOld")}
+                        {labels.category(item.category)} · {formatDate(item.occurred_on)}
+                        {item.payment_method ? ` · ${item.payment_method}` : ""}
+                        {item.deducted_from_child ? ` · ${t("deductFromChild")}` : ""}
                       </p>
                     </div>
-                  </div>
-                   <span className="border border-border bg-background px-2.5 py-1 text-[0.7rem] text-muted-foreground">
-                    {canFund ? t("allowanceTag") : canMonitor ? t("monitoringTag") : t("linkedTag")}
-                  </span>
-                </div>
-                <dl className="mt-4 space-y-1.5 text-sm">
-                  <Row label={t("available")} value={formatMoney(totals.net, profile.base_currency)} />
-                  <Row label={t("saved")} value={formatMoney(totals.savings, profile.base_currency)} />
-                  <Row label={t("spent")} value={formatMoney(totals.expenses, profile.base_currency)} />
-                </dl>
-                {goal ? (
-                  <>
-                    <ProgressBar value={saved} max={Number(goal.target_amount)} tone="sage" className="mt-4" />
-                    <p className="mt-2 text-xs text-muted-foreground">
-                      {goal.name} · {percentOf(saved, Number(goal.target_amount))}%
+                    <p className="wazen-number shrink-0 text-sm">
+                      {formatMoney(Number(item.amount), item.currency)}
                     </p>
-                  </>
-                ) : null}
-              </li>
-            );
-          })}
-        </ul>
-      )}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        ) : null}
+      </Panel>
 
-      {members.length > 0 ? (
-        <div className="mt-8 border-t border-border/70 pt-6">
-          <h3 className="text-lg">{t("parentPaidTitle")}</h3>
-          <p className="mt-1 text-sm text-muted-foreground">{t("parentPaidIntro")}</p>
-          {parentPaid.length === 0 ? (
-            <div className="mt-4">
-              <EmptyState
-                icon={<ReceiptIcon className="size-5" strokeWidth={ICON_STROKE} />}
-                title={t("noParentPaidRecorded")}
-                description={t("noParentPaidRecordedDescription")}
-              />
-            </div>
-          ) : (
-            <ul className="mt-4 divide-y divide-border/70">
-              {parentPaid.map((item) => (
-                <li key={item.id} className="flex items-center justify-between gap-4 py-3">
-                  <div className="min-w-0">
-                    <p className="truncate text-sm">
-                      {labels.merchant(item.merchant) || labels.category(item.category)}
-                      <span className="ms-2 text-xs text-muted-foreground">
-                        {`${t("forFamilyMember")} ${nameOf(item.beneficiary_user_id)}`}
-                      </span>
-                    </p>
-                    <p className="mt-0.5 text-xs text-muted-foreground">
-                      {labels.category(item.category)} · {formatDate(item.occurred_on)}
-                      {item.payment_method ? ` · ${item.payment_method}` : ""}
-                      {item.deducted_from_child ? ` · ${t("deductFromChild")}` : ""}
-                    </p>
-                  </div>
-                  <p className="wazen-number shrink-0 text-sm">
-                    {formatMoney(Number(item.amount), item.currency)}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      ) : null}
-    </Panel>
-
-    <ParentPaidExpenseDialog
-      open={dialogOpen}
-      onClose={() => setDialogOpen(false)}
-      members={members}
-      currency={currency}
-    />
+      <ParentPaidExpenseDialog
+        open={dialogOpen}
+        onClose={() => setDialogOpen(false)}
+        members={members}
+        currency={currency}
+      />
     </>
   );
 }
-
 
 function Row({ label, value }: { label: string; value: string }) {
   return (

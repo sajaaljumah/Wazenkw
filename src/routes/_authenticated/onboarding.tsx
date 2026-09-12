@@ -34,8 +34,7 @@ export const Route = createFileRoute("/_authenticated/onboarding")({
   component: Onboarding,
 });
 
-const inputClass =
-  "wazen-field";
+const inputClass = "wazen-field";
 
 function Onboarding() {
   const { t } = useWazenLocale();
@@ -171,7 +170,7 @@ function Onboarding() {
               </p>
               <div className="mt-7">
                 {autoStage ? (
-                   <div className="rounded-lg border border-input bg-secondary/60 p-5 text-sm">
+                  <div className="rounded-lg border border-input bg-secondary/60 p-5 text-sm">
                     <strong className="font-normal">{labels.lifeStage(autoStage)}</strong> —{" "}
                     {t("autoStageNote")}
                     <span className="mt-2 block text-xs text-muted-foreground">
@@ -181,15 +180,15 @@ function Onboarding() {
                 ) : (
                   <div className="grid gap-3 sm:grid-cols-2">
                     {ADULT_LIFE_STAGES.map((stage) => (
-                       <Button
+                      <Button
                         key={stage}
                         type="button"
                         onClick={() => setLifeStage(stage)}
-                         variant={lifeStage === stage ? "default" : "outline"}
-                         className="h-auto justify-start p-5 text-start"
+                        variant={lifeStage === stage ? "default" : "outline"}
+                        className="h-auto justify-start p-5 text-start"
                       >
                         {labels.lifeStage(stage)}
-                       </Button>
+                      </Button>
                     ))}
                   </div>
                 )}
@@ -255,10 +254,7 @@ function Onboarding() {
               <p className="mx-auto mt-4 max-w-md text-muted-foreground">
                 {labels.welcomeMessage(effectiveStage)}
               </p>
-              <Button
-                onClick={() => navigate({ to: "/dashboard" })}
-                className="mt-9"
-              >
+              <Button onClick={() => navigate({ to: "/dashboard" })} className="mt-9">
                 {t("goToDashboard")}
                 <ForwardIcon className="size-4" strokeWidth={ICON_STROKE} />
               </Button>
@@ -320,11 +316,7 @@ function NextButton({
 
 function BackButton({ onClick, label }: { onClick: () => void; label: string }) {
   return (
-    <Button
-      type="button"
-      onClick={onClick}
-      variant="outline"
-    >
+    <Button type="button" onClick={onClick} variant="outline">
       {label}
     </Button>
   );

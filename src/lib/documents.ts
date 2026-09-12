@@ -101,12 +101,70 @@ export function mergeExtraction(
 
 /** Which extracted fields each document type asks for, in display order. */
 export const FIELDS_BY_KIND: Record<DocumentKind, (keyof ExtractedFields)[]> = {
-  receipt: ["vendor", "documentDate", "totalAmount", "currency", "category", "taxAmount", "paymentMethod", "reference", "note"],
-  gold_invoice: ["vendor", "documentDate", "metalGrams", "metalPurity", "pricePerGram", "totalAmount", "currency", "reference", "note"],
-  silver_invoice: ["vendor", "documentDate", "metalGrams", "metalPurity", "pricePerGram", "totalAmount", "currency", "reference", "note"],
-  stock_purchase: ["vendor", "documentDate", "symbol", "quantity", "unitPrice", "totalAmount", "currency", "reference", "note"],
-  property_contract: ["propertyAddress", "documentDate", "propertyValue", "currency", "contractStart", "contractEnd", "reference", "note"],
-  rental_contract: ["propertyAddress", "documentDate", "monthlyRent", "currency", "contractStart", "contractEnd", "reference", "note"],
+  receipt: [
+    "vendor",
+    "documentDate",
+    "totalAmount",
+    "currency",
+    "category",
+    "taxAmount",
+    "paymentMethod",
+    "reference",
+    "note",
+  ],
+  gold_invoice: [
+    "vendor",
+    "documentDate",
+    "metalGrams",
+    "metalPurity",
+    "pricePerGram",
+    "totalAmount",
+    "currency",
+    "reference",
+    "note",
+  ],
+  silver_invoice: [
+    "vendor",
+    "documentDate",
+    "metalGrams",
+    "metalPurity",
+    "pricePerGram",
+    "totalAmount",
+    "currency",
+    "reference",
+    "note",
+  ],
+  stock_purchase: [
+    "vendor",
+    "documentDate",
+    "symbol",
+    "quantity",
+    "unitPrice",
+    "totalAmount",
+    "currency",
+    "reference",
+    "note",
+  ],
+  property_contract: [
+    "propertyAddress",
+    "documentDate",
+    "propertyValue",
+    "currency",
+    "contractStart",
+    "contractEnd",
+    "reference",
+    "note",
+  ],
+  rental_contract: [
+    "propertyAddress",
+    "documentDate",
+    "monthlyRent",
+    "currency",
+    "contractStart",
+    "contractEnd",
+    "reference",
+    "note",
+  ],
   other: ["vendor", "documentDate", "totalAmount", "currency", "category", "note"],
 };
 
@@ -158,19 +216,62 @@ export function sampleExtraction(kind: DocumentKind, currency: string): Extracte
   const today = new Date().toISOString().slice(0, 10);
   switch (kind) {
     case "gold_invoice":
-      return { ...base, vendor: "Sample jeweller", documentDate: today, metalGrams: 25, metalPurity: "21K", pricePerGram: 18.5, totalAmount: 462.5 };
+      return {
+        ...base,
+        vendor: "Sample jeweller",
+        documentDate: today,
+        metalGrams: 25,
+        metalPurity: "21K",
+        pricePerGram: 18.5,
+        totalAmount: 462.5,
+      };
     case "silver_invoice":
-      return { ...base, vendor: "Sample jeweller", documentDate: today, metalGrams: 500, metalPurity: "999", pricePerGram: 0.28, totalAmount: 140 };
+      return {
+        ...base,
+        vendor: "Sample jeweller",
+        documentDate: today,
+        metalGrams: 500,
+        metalPurity: "999",
+        pricePerGram: 0.28,
+        totalAmount: 140,
+      };
     case "stock_purchase":
-      return { ...base, vendor: "Sample broker", documentDate: today, symbol: "NBK", quantity: 500, unitPrice: 0.95, totalAmount: 475 };
+      return {
+        ...base,
+        vendor: "Sample broker",
+        documentDate: today,
+        symbol: "NBK",
+        quantity: 500,
+        unitPrice: 0.95,
+        totalAmount: 475,
+      };
     case "property_contract":
-      return { ...base, propertyAddress: "Sample address", documentDate: today, propertyValue: 250000, contractStart: today };
+      return {
+        ...base,
+        propertyAddress: "Sample address",
+        documentDate: today,
+        propertyValue: 250000,
+        contractStart: today,
+      };
     case "rental_contract":
-      return { ...base, propertyAddress: "Sample address", documentDate: today, monthlyRent: 850, contractStart: today };
+      return {
+        ...base,
+        propertyAddress: "Sample address",
+        documentDate: today,
+        monthlyRent: 850,
+        contractStart: today,
+      };
     case "other":
       return { ...base, vendor: "Sample document", documentDate: today, totalAmount: 100 };
     default:
-      return { ...base, vendor: "Sample store", documentDate: today, totalAmount: 32.75, category: "Groceries", paymentMethod: "Card" };
+      return {
+        ...base,
+        vendor: "Sample store",
+        documentDate: today,
+        totalAmount: 32.75,
+        category: "Groceries",
+        paymentMethod: "Card",
+      };
   }
 }
 

@@ -18,7 +18,11 @@ export function PlanBadge({
   const { t } = useWazenLocale();
 
   if (isLoading) {
-    return <span className={cn("inline-block h-6 w-16 animate-pulse rounded-md bg-secondary", className)} />;
+    return (
+      <span
+        className={cn("inline-block h-6 w-16 animate-pulse rounded-md bg-secondary", className)}
+      />
+    );
   }
 
   const Icon = isPremium ? PremiumIcon : FreePlanIcon;

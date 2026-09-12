@@ -45,12 +45,14 @@ export const Route = createFileRoute("/_authenticated/documents")({
       { title: "Financial documents — Wazen" },
       {
         name: "description",
-        content: "Upload invoices, gold and silver purchases, investment confirmations and property contracts, then review and save their details.",
+        content:
+          "Upload invoices, gold and silver purchases, investment confirmations and property contracts, then review and save their details.",
       },
       { property: "og:title", content: "Financial documents — Wazen" },
       {
         property: "og:description",
-        content: "Upload invoices, gold and silver purchases, investment confirmations and property contracts, then review and save their details.",
+        content:
+          "Upload invoices, gold and silver purchases, investment confirmations and property contracts, then review and save their details.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -138,7 +140,11 @@ function DocumentsPage() {
       const outcome = await requestExtraction.mutateAsync(document);
       if (outcome.status === "extracted") {
         setFields(mergeExtraction(emptyExtraction(currency), outcome.fields));
-        await update.mutateAsync({ id: document.id, status: "review", extractionSource: extractionProvider().name });
+        await update.mutateAsync({
+          id: document.id,
+          status: "review",
+          extractionSource: extractionProvider().name,
+        });
         setNotice(null);
       } else {
         setNotice(t("aiNotConnectedBody"));
@@ -330,12 +336,21 @@ function DocumentsPage() {
           ) : (
             <ul className="divide-y divide-border/70">
               {(documents.data ?? []).map((row) => (
-                <li key={row.id} className="flex flex-wrap items-center gap-3 py-4 first:pt-0 last:pb-0">
-                  <DocumentIcon className="size-4 shrink-0 text-muted-foreground" strokeWidth={ICON_STROKE} />
+                <li
+                  key={row.id}
+                  className="flex flex-wrap items-center gap-3 py-4 first:pt-0 last:pb-0"
+                >
+                  <DocumentIcon
+                    className="size-4 shrink-0 text-muted-foreground"
+                    strokeWidth={ICON_STROKE}
+                  />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-semibold">{row.title || row.file_name || t("documentsNav")}</p>
+                    <p className="truncate text-sm font-semibold">
+                      {row.title || row.file_name || t("documentsNav")}
+                    </p>
                     <p className="mt-1 truncate text-xs text-muted-foreground">
-                      {t(KIND_KEY[row.doc_type] as never)} · {t(STATUS_KEY[row.status])} · {formatDate(row.created_at)}
+                      {t(KIND_KEY[row.doc_type] as never)} · {t(STATUS_KEY[row.status])} ·{" "}
+                      {formatDate(row.created_at)}
                     </p>
                   </div>
                   <Button
@@ -373,7 +388,11 @@ function DocumentPreview({
       )}
     >
       {src ? (
-        <img src={src} alt={name ?? ""} className={cn("w-full object-contain", compact ? "max-h-40" : "max-h-72")} />
+        <img
+          src={src}
+          alt={name ?? ""}
+          className={cn("w-full object-contain", compact ? "max-h-40" : "max-h-72")}
+        />
       ) : (
         <p className="px-6 py-10 text-sm text-muted-foreground">{name}</p>
       )}

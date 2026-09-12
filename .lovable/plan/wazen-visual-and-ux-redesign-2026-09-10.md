@@ -1,14 +1,17 @@
 # Wazen visual and UX redesign
 
 ## Direction
+
 Create a warm editorial fintech experience: structured like a refined personal ledger, with purposeful hierarchy, restrained surfaces, precise data presentation, and subtle tactile interaction. Preserve the distinct illustrated child experience while giving teen, university, and adult users progressively more mature visual identities.
 
 ## Scope
+
 - Redesign every existing screen: home, sign-in/sign-up, password recovery, onboarding, dashboard variants, profile, settings, subscription, dialogs, and global error/empty/loading states.
 - Preserve all current routes, live data, authentication, permissions, family relationships, calculations, demo accounts, and subscription rules.
 - Do not create mock versions of Income, Expenses, Analytics, Investments, Zakat, AI, or other modules that do not currently exist.
 
 ## Build approach
+
 1. **Design system**
    - Rework semantic color, typography, spacing, radius, border, elevation, focus, motion, form, button, and status tokens.
    - Use warm ivory, charcoal, sage, olive, taupe, and champagne for adults; define distinct teen and university themes; retain refined pink/blue child palettes.
@@ -44,6 +47,7 @@ Create a warm editorial fintech experience: structured like a refined personal l
    - Run TypeScript checks and the production build, then resolve redesign-related errors only.
 
 ## Technical details
+
 - Continue using TanStack Start, the existing backend client, React Query, Recharts, Lucide, and existing dialogs/toasts.
 - Keep localization frontend-only and driven by the existing profile language field; no database or API changes.
 - Keep styling token-based in `src/styles.css`; no hardcoded component colors or remote CSS imports.

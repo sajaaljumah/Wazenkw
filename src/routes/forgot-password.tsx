@@ -14,7 +14,10 @@ export const Route = createFileRoute("/forgot-password")({
       { title: "Reset your Wazen password" },
       { name: "description", content: "Request a password reset link for your Wazen account." },
       { property: "og:title", content: "Reset your Wazen password" },
-      { property: "og:description", content: "Request a password reset link for your Wazen account." },
+      {
+        property: "og:description",
+        content: "Request a password reset link for your Wazen account.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -72,12 +75,7 @@ function ForgotPassword() {
                   className="wazen-field mt-2"
                 />
               </label>
-              <Button
-                type="submit"
-                disabled={busy}
-                size="lg"
-                className="w-full"
-              >
+              <Button type="submit" disabled={busy} size="lg" className="w-full">
                 {busy ? <SpinnerIcon className="size-4 animate-spin" /> : null}
                 {t("sendResetLink")}
               </Button>

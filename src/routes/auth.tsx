@@ -27,7 +27,8 @@ export const Route = createFileRoute("/auth")({
       { title: "Sign in or join Wazen" },
       {
         name: "description",
-        content: "Sign in to Wazen or create an account to start building healthier financial habits.",
+        content:
+          "Sign in to Wazen or create an account to start building healthier financial habits.",
       },
       { property: "og:title", content: "Sign in or join Wazen" },
       { property: "og:description", content: "Access your Wazen personal finance account." },
@@ -36,7 +37,7 @@ export const Route = createFileRoute("/auth")({
     ],
   }),
   validateSearch: (search: Record<string, unknown>) => ({
-    mode: search['mode'] === "signup" ? ("signup" as const) : ("signin" as const),
+    mode: search["mode"] === "signup" ? ("signup" as const) : ("signin" as const),
   }),
   component: AuthPage,
 });
@@ -63,8 +64,7 @@ function makeSchemas(t: Tr) {
   };
 }
 
-const inputClass =
-  "wazen-field placeholder:text-muted-foreground/70";
+const inputClass = "wazen-field placeholder:text-muted-foreground/70";
 
 function Field({
   label,
@@ -208,14 +208,12 @@ function AuthPage() {
             {mode === "signin" ? t("welcomeBack") : t("createWazenAccount")}
           </h1>
           <p className="mt-3 text-sm text-muted-foreground">
-            {mode === "signin"
-              ? t("signinSub")
-              : t("signupSub")}
+            {mode === "signin" ? t("signinSub") : t("signupSub")}
           </p>
 
           {mode === "signin" ? (
             <form onSubmit={handleSignIn} className="mt-8 space-y-5">
-              <Field label={t("email")} error={errors['email']}>
+              <Field label={t("email")} error={errors["email"]}>
                 <input
                   type="email"
                   autoComplete="email"
@@ -225,7 +223,7 @@ function AuthPage() {
                   placeholder="you@example.com"
                 />
               </Field>
-              <Field label={t("password")} error={errors['password']}>
+              <Field label={t("password")} error={errors["password"]}>
                 <input
                   type="password"
                   autoComplete="current-password"
@@ -247,7 +245,7 @@ function AuthPage() {
             </form>
           ) : (
             <form onSubmit={handleSignUp} className="mt-8 space-y-5">
-              <Field label={t("firstName")} error={errors['full_name']}>
+              <Field label={t("firstName")} error={errors["full_name"]}>
                 <input
                   className={inputClass}
                   value={form.full_name}
@@ -256,7 +254,7 @@ function AuthPage() {
                 />
               </Field>
               <div className="grid gap-5 sm:grid-cols-2">
-                <Field label={t("email")} error={errors['email']}>
+                <Field label={t("email")} error={errors["email"]}>
                   <input
                     type="email"
                     autoComplete="email"
@@ -266,7 +264,7 @@ function AuthPage() {
                     placeholder="you@example.com"
                   />
                 </Field>
-                <Field label={t("password")} error={errors['password']}>
+                <Field label={t("password")} error={errors["password"]}>
                   <input
                     type="password"
                     autoComplete="new-password"
@@ -278,7 +276,7 @@ function AuthPage() {
                 </Field>
               </div>
               <div className="grid gap-5 sm:grid-cols-2">
-                <Field label={t("dateOfBirth")} error={errors['date_of_birth']}>
+                <Field label={t("dateOfBirth")} error={errors["date_of_birth"]}>
                   <input
                     type="date"
                     max={new Date().toISOString().slice(0, 10)}
@@ -292,29 +290,24 @@ function AuthPage() {
                     </span>
                   ) : null}
                 </Field>
-                <Field label={t("genderField")} error={errors['gender']}>
+                <Field label={t("genderField")} error={errors["gender"]}>
                   <div className="flex gap-2">
                     {(["female", "male"] as const).map((value) => (
-                        <Button
+                      <Button
                         key={value}
                         type="button"
                         onClick={() => set("gender", value)}
-                          variant={form.gender === value ? "default" : "outline"}
-                          className={cn(
-                            "flex-1",
-                          form.gender === value
-                              ? ""
-                              : "",
-                        )}
+                        variant={form.gender === value ? "default" : "outline"}
+                        className={cn("flex-1", form.gender === value ? "" : "")}
                       >
                         {t(value)}
-                        </Button>
+                      </Button>
                     ))}
                   </div>
                 </Field>
               </div>
 
-              <Field label={t("lifeStageField")} error={errors['life_stage']}>
+              <Field label={t("lifeStageField")} error={errors["life_stage"]}>
                 {autoStage ? (
                   <div className="rounded-lg border border-input bg-secondary/60 px-4 py-3 text-sm">
                     {labels.lifeStage(autoStage)} — {t("setFromAge")}
@@ -416,12 +409,7 @@ function AuthPage() {
 
 function SubmitButton({ busy, children }: { busy: boolean; children: React.ReactNode }) {
   return (
-    <Button
-      type="submit"
-      disabled={busy}
-      size="lg"
-      className="w-full"
-    >
+    <Button type="submit" disabled={busy} size="lg" className="w-full">
       {busy ? <SpinnerIcon className="size-4 animate-spin" /> : null}
       {children}
     </Button>

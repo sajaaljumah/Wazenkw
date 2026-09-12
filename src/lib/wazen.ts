@@ -1,11 +1,6 @@
 export type Gender = "female" | "male";
 export type LifeStage =
-  | "child"
-  | "teenager"
-  | "university_student"
-  | "employee"
-  | "self_employed"
-  | "parent";
+  "child" | "teenager" | "university_student" | "employee" | "self_employed" | "parent";
 export type AccountType = "independent" | "dependent" | "parent";
 
 export type Profile = {

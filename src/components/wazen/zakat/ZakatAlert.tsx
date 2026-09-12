@@ -31,11 +31,7 @@ export function ZakatAlert({
   const due = result.status === "due";
   const recorded = result.status === "recorded";
 
-  const title = due
-    ? t("zakatDueTitle")
-    : recorded
-      ? t("zakatRecorded")
-      : t("zakatNotDueTitle");
+  const title = due ? t("zakatDueTitle") : recorded ? t("zakatRecorded") : t("zakatNotDueTitle");
 
   const body = due
     ? t("zakatDueBody")

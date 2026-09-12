@@ -45,9 +45,7 @@ export function ThemeToggle({ className }: { className?: string }) {
       ) : (
         <Moon className="size-4" strokeWidth={ICON_STROKE} />
       )}
-      <span className="hidden sm:inline">
-        {theme === "dark" ? t("lightMode") : t("darkMode")}
-      </span>
+      <span className="hidden sm:inline">{theme === "dark" ? t("lightMode") : t("darkMode")}</span>
     </Button>
   );
 }
