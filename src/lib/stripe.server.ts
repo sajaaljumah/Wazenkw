@@ -371,16 +371,19 @@ export async function syncSubscriptionState(params: {
   const start = params.periodStart || now;
   const end = params.periodEnd || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
 
-  // 1. Update MongoDB subscriptions collection
+  // 1. Update MongoDB subscriptions collection (PRIMARY source of truth)
   try {
     const subCol = await getCollection("subscriptions");
     await subCol.updateOne(
-      { user_id: params.userId },
+      { $or: [{ user_id: params.userId }, { _id: params.userId }] },
       {
         $set: {
           plan_id: params.plan,
+          plan: isPremium ? "premium" : "free",
           status: params.status,
+          subscription_type: params.plan === "family" ? "family" : "individual",
           billing_cycle: "monthly",
+          billing_period: "monthly",
           current_period_start: start,
           current_period_end: end,
           cancel_at_period_end: params.cancelAtPeriodEnd ?? false,
@@ -390,6 +393,7 @@ export async function syncSubscriptionState(params: {
           stripe_price_id: params.stripePriceId || null,
           family_id: params.familyId || null,
           additional_child_count: params.additionalChildCount ?? 0,
+          cancelled_at: params.status === "canceled" ? now : null,
           updated_at: now,
         },
         $setOnInsert: {
@@ -409,44 +413,46 @@ export async function syncSubscriptionState(params: {
     );
   }
 
-  // 2. Update Supabase subscriptions table
-  try {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    await supabaseAdmin.from("subscriptions").upsert(
-      {
-        user_id: params.userId,
-        plan: isPremium ? "premium" : "free",
-        status: params.status === "canceled" ? "cancelled" : params.status,
-        subscription_type: params.plan === "family" ? "family" : "individual",
-        family_id: params.familyId || null,
-        billing_period: "monthly",
-        stripe_customer_id: params.stripeCustomerId || null,
-        stripe_subscription_id: params.stripeSubscriptionId || null,
-        stripe_price_id: params.stripePriceId || null,
-        included_parent_count: params.plan === "family" ? 2 : 1,
-        included_child_count: params.plan === "family" ? 4 : 0,
-        additional_child_count: params.additionalChildCount ?? 0,
-        started_at: start,
-        current_period_start: start,
-        current_period_end: end,
-        cancel_at_period_end: params.cancelAtPeriodEnd ?? false,
-        cancelled_at: params.status === "canceled" ? now : null,
-      },
-      { onConflict: "user_id" },
-    );
+  // 2. Best-effort Supabase sync when SUPABASE_SERVICE_ROLE_KEY is present
+  if (process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    try {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      await supabaseAdmin.from("subscriptions").upsert(
+        {
+          user_id: params.userId,
+          plan: isPremium ? "premium" : "free",
+          status: params.status === "canceled" ? "cancelled" : params.status,
+          subscription_type: params.plan === "family" ? "family" : "individual",
+          family_id: params.familyId || null,
+          billing_period: "monthly",
+          stripe_customer_id: params.stripeCustomerId || null,
+          stripe_subscription_id: params.stripeSubscriptionId || null,
+          stripe_price_id: params.stripePriceId || null,
+          included_parent_count: params.plan === "family" ? 2 : 1,
+          included_child_count: params.plan === "family" ? 4 : 0,
+          additional_child_count: params.additionalChildCount ?? 0,
+          started_at: start,
+          current_period_start: start,
+          current_period_end: end,
+          cancel_at_period_end: params.cancelAtPeriodEnd ?? false,
+          cancelled_at: params.status === "canceled" ? now : null,
+        },
+        { onConflict: "user_id" },
+      );
 
-    // If Family Plan, enable all family seats by clearing suspension
-    if (params.plan === "family" && params.familyId) {
-      await supabaseAdmin
-        .from("family_members")
-        .update({ seat_suspended: false })
-        .eq("family_id", params.familyId);
+      // If Family Plan, enable all family seats by clearing suspension
+      if (params.plan === "family" && params.familyId) {
+        await supabaseAdmin
+          .from("family_members")
+          .update({ seat_suspended: false })
+          .eq("family_id", params.familyId);
+      }
+    } catch (err) {
+      console.error(
+        "Supabase subscription sync error:",
+        err instanceof Error ? err.message : String(err),
+      );
     }
-  } catch (err) {
-    console.error(
-      "Supabase subscription sync error:",
-      err instanceof Error ? err.message : String(err),
-    );
   }
 }
 

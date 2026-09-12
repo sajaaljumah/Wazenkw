@@ -257,6 +257,23 @@ export type WazenCollections = {
 
 export type CollectionName = keyof WazenCollections;
 
+export const COLLECTIONS = {
+  profiles: "profiles",
+  transactions: "transactions",
+  recurring_items: "recurring_items",
+  budgets: "budgets",
+  savings_goals: "savings_goals",
+  emergency_funds: "emergency_funds",
+  family_relationships: "family_relationships",
+  learning_progress: "learning_progress",
+  quizzes: "quizzes",
+  challenges: "challenges",
+  badges: "badges",
+  assets: "assets",
+  subscriptions: "subscriptions",
+  stripe_events: "stripe_events",
+} as const;
+
 /* ------------------------------------------------------------------ Connection Pooling */
 
 let cachedClient: MongoClient | null = null;
@@ -330,6 +347,8 @@ export async function getMongoDb(dbName: string = "Wazen"): Promise<Db> {
   cachedDb = client.db(dbName);
   return cachedDb;
 }
+
+export const getDatabase = getMongoDb;
 
 /**
  * Returns a typed MongoDB collection.
