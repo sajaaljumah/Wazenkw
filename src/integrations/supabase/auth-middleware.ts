@@ -67,10 +67,6 @@ export const requireSupabaseAuth = createMiddleware({ type: "function" }).server
       throw new Error("Unauthorized: No token provided");
     }
 
-    if (token.split(".").length !== 3) {
-      throw new Error("Unauthorized: Invalid token");
-    }
-
     const supabase = createClient<Database>(SUPABASE_URL!, SUPABASE_PUBLISHABLE_KEY!, {
       global: {
         fetch: createSupabaseFetch(SUPABASE_PUBLISHABLE_KEY!),
@@ -85,20 +81,29 @@ export const requireSupabaseAuth = createMiddleware({ type: "function" }).server
       },
     });
 
-    const { data, error } = await supabase.auth.getClaims(token);
-    if (error || !data?.claims) {
-      throw new Error("Unauthorized: Invalid token");
+    // Try getClaims first (available in newer Supabase), fall back to getUser
+    let userId: string | undefined;
+    try {
+      const { data, error } = await supabase.auth.getClaims(token);
+      if (!error && data?.claims?.sub) {
+        userId = data.claims.sub;
+      }
+    } catch {
+      // getClaims may not be available, fall back to getUser
     }
 
-    if (!data.claims.sub) {
-      throw new Error("Unauthorized: No user ID found in token");
+    if (!userId) {
+      const { data, error } = await supabase.auth.getUser(token);
+      if (error || !data?.user?.id) {
+        throw new Error("Unauthorized: Invalid token");
+      }
+      userId = data.user.id;
     }
 
     return next({
       context: {
         supabase,
-        userId: data.claims.sub,
-        claims: data.claims,
+        userId,
       },
     });
   },

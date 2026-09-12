@@ -57,7 +57,7 @@ export default {
           const rawBody = await request.text();
           const { constructWebhookEvent, handleStripeWebhook } =
             await import("./lib/stripe.server");
-          const event = constructWebhookEvent(rawBody, sig);
+          const event = await constructWebhookEvent(rawBody, sig);
           const result = await handleStripeWebhook(event);
           return new Response(JSON.stringify(result), {
             status: 200,

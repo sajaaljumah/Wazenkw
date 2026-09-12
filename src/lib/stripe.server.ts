@@ -329,11 +329,12 @@ export async function cancelSubscription(
 
 /**
  * Verifies and constructs a Stripe Webhook Event from raw payload and signature.
+ * Uses constructEventAsync for compatibility with Web Crypto / Cloudflare Workers / modern edge runtimes.
  */
-export function constructWebhookEvent(
+export async function constructWebhookEvent(
   rawPayload: string | Buffer,
   signature: string,
-): Stripe.Event {
+): Promise<Stripe.Event> {
   const stripe = getStripeClient();
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
@@ -341,7 +342,7 @@ export function constructWebhookEvent(
     throw new Error("STRIPE_WEBHOOK_SECRET is not configured in the server environment.");
   }
 
-  return stripe.webhooks.constructEvent(rawPayload, signature, webhookSecret.trim());
+  return stripe.webhooks.constructEventAsync(rawPayload, signature, webhookSecret.trim());
 }
 
 /**
@@ -514,7 +515,7 @@ export async function handleStripeWebhook(event: Stripe.Event): Promise<{
           if (sub.current_period_end) {
             periodEnd = new Date(sub.current_period_end * 1000).toISOString();
           }
-          priceId = sub.items.data[0]?.price.id || null;
+          priceId = sub.items?.data?.[0]?.price?.id || null;
         } catch {
           // Fallback to defaults
         }
@@ -562,7 +563,7 @@ export async function handleStripeWebhook(event: Stripe.Event): Promise<{
       const kind = sub.metadata?.kind === "family" ? "family" : "individual";
       const familyId = sub.metadata?.familyId || null;
       const additionalChildren = parseInt(sub.metadata?.additionalChildren || "0", 10) || 0;
-      const priceId = sub.items.data[0]?.price.id || null;
+      const priceId = sub.items?.data?.[0]?.price?.id || null;
 
       const isActive = sub.status === "active" || sub.status === "trialing";
       const isPastDue = sub.status === "past_due";

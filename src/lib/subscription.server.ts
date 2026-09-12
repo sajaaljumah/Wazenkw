@@ -90,9 +90,19 @@ export function mapMongoSubDocToSubscription(doc: Record<string, unknown>): Subs
  * SUPABASE_SERVICE_ROLE_KEY for normal entitlement checks.
  */
 export async function loadEntitlements(
-  supabase: SupabaseClient,
-  userId: string,
+  supabaseOrUserId: SupabaseClient | string | null | undefined,
+  maybeUserId?: string,
 ): Promise<Entitlements> {
+  let supabase: SupabaseClient | null = null;
+  let userId: string;
+
+  if (typeof supabaseOrUserId === "string") {
+    userId = supabaseOrUserId;
+    supabase = null;
+  } else {
+    supabase = supabaseOrUserId ?? null;
+    userId = maybeUserId || "";
+  }
   let ownSubscription: Subscription | null = null;
   let familySubscription: Subscription | null = null;
   let membership: FamilyMemberRow | null = null;
