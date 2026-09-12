@@ -6,6 +6,7 @@
  * spendable cash. Every number here is derived from stored rows — quantities,
  * purchase prices and recorded valuations — never from static placeholders.
  */
+import type { AssetLiveValuation } from "@/lib/market-data.functions";
 
 export type AssetKind = "stock" | "gold" | "silver" | "real_estate";
 
@@ -89,17 +90,36 @@ export type PortfolioTotals = {
   gainPercent: number;
   annualRentalIncome: number;
   byKind: PortfolioKindTotals[];
+  hasLiveValuation?: boolean;
 };
 
-export function portfolioTotals(assets: Asset[]): PortfolioTotals {
+export function portfolioTotals(
+  assets: Asset[],
+  liveValuations?: AssetLiveValuation[],
+): PortfolioTotals {
   let cost = 0;
   let value = 0;
   let annualRentalIncome = 0;
+  let hasLiveValuation = false;
   const kinds = new Map<AssetKind, PortfolioKindTotals>();
+  const liveMap = new Map<string, AssetLiveValuation>();
+
+  if (liveValuations && liveValuations.length > 0) {
+    for (const item of liveValuations) {
+      liveMap.set(item.id, item);
+    }
+  }
 
   for (const asset of assets) {
+    const live = liveMap.get(asset.id);
     const assetCost = costBasis(asset);
-    const assetValue = marketValue(asset);
+    const isLive = Boolean(live && live.priceAvailable && live.liveMarketValue !== null);
+    if (isLive) {
+      hasLiveValuation = true;
+    }
+    const assetValue =
+      isLive && live?.liveMarketValue !== null ? live.liveMarketValue : marketValue(asset);
+
     cost += assetCost;
     value += assetValue;
     annualRentalIncome += annualRentOf(asset);
@@ -127,6 +147,7 @@ export function portfolioTotals(assets: Asset[]): PortfolioTotals {
     byKind: ASSET_KINDS.map((kind) => kinds.get(kind)).filter(
       (entry): entry is PortfolioKindTotals => !!entry,
     ),
+    hasLiveValuation,
   };
 }
 

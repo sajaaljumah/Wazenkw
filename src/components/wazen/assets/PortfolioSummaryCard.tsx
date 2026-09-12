@@ -13,6 +13,7 @@ import {
 import { formatMoney } from "@/lib/finance";
 import { portfolioTotals } from "@/lib/assets";
 import type { Asset, AssetKind } from "@/lib/assets";
+import type { AssetLiveValuation } from "@/lib/market-data.functions";
 import { useWazenLocale } from "@/components/wazen/WazenLocale";
 
 const KIND_META: Record<
@@ -26,9 +27,17 @@ const KIND_META: Record<
 };
 
 /** Dashboard summary of owned assets — always kept apart from available money. */
-export function PortfolioSummaryCard({ assets, currency }: { assets: Asset[]; currency: string }) {
+export function PortfolioSummaryCard({
+  assets,
+  currency,
+  liveValuations,
+}: {
+  assets: Asset[];
+  currency: string;
+  liveValuations?: AssetLiveValuation[];
+}) {
   const { t } = useWazenLocale();
-  const totals = portfolioTotals(assets);
+  const totals = portfolioTotals(assets, liveValuations);
   const positive = totals.gain >= 0;
 
   return (
@@ -54,7 +63,15 @@ export function PortfolioSummaryCard({ assets, currency }: { assets: Asset[]; cu
         <div className="space-y-5">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
-              <p className="wazen-label">{t("totalAssetValue")}</p>
+              <div className="flex items-center gap-2">
+                <p className="wazen-label">{t("totalAssetValue")}</p>
+                {totals.hasLiveValuation ? (
+                  <span className="inline-flex items-center gap-1 rounded-full border border-chart-2/30 bg-chart-2/10 px-1.5 py-0.2 text-[10px] font-medium text-chart-2">
+                    <span className="size-1 rounded-full bg-chart-2 animate-pulse" />
+                    {t("liveRates")}
+                  </span>
+                ) : null}
+              </div>
               <p className="wazen-number mt-2 text-2xl sm:text-3xl">
                 {formatMoney(totals.value, currency)}
               </p>

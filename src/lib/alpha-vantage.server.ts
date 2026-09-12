@@ -194,11 +194,15 @@ async function fetchAlphaVantage(
       };
     }
 
-    // Handle rate-limit notes
+    // Handle rate-limit notes and throttling messages
     if (
       json["Note"] ||
       (typeof json["Information"] === "string" &&
-        (json["Information"] as string).toLowerCase().includes("call frequency"))
+        ((json["Information"] as string).toLowerCase().includes("call frequency") ||
+          (json["Information"] as string).toLowerCase().includes("rate limit") ||
+          (json["Information"] as string).toLowerCase().includes("requests per day") ||
+          (json["Information"] as string).toLowerCase().includes("sparingly") ||
+          (json["Information"] as string).toLowerCase().includes("premium")))
     ) {
       return {
         success: false,
@@ -445,48 +449,62 @@ export async function getGoldSpot(
     return { success: true, data: cached.data };
   }
 
-  // 1. Try CURRENCY_EXCHANGE_RATE for XAU
-  const res = await fetchAlphaVantage({
-    function: "CURRENCY_EXCHANGE_RATE",
-    from_currency: "XAU",
-    to_currency: curr,
-  });
-
   let pricePerOunce = 0;
   let asOf = new Date().toISOString();
 
-  if ("success" in res && !res.success) {
-    // If rate limited or error, try commodities GOLD fallback
+  // 1. Try dedicated GOLD_SILVER_SPOT endpoint
+  const spotRes = await fetchAlphaVantage({
+    function: "GOLD_SILVER_SPOT",
+    symbol: "GOLD",
+  });
+
+  if (!("success" in spotRes && !spotRes.success)) {
+    if (typeof spotRes["price"] === "string" || typeof spotRes["price"] === "number") {
+      pricePerOunce = parseFloat(String(spotRes["price"]));
+      if (typeof spotRes["timestamp"] === "string") asOf = String(spotRes["timestamp"]);
+    }
+  }
+
+  // 2. Fallback: try CURRENCY_EXCHANGE_RATE for XAU
+  if (pricePerOunce <= 0) {
+    const res = await fetchAlphaVantage({
+      function: "CURRENCY_EXCHANGE_RATE",
+      from_currency: "XAU",
+      to_currency: curr,
+    });
+
+    if (!("success" in res && !res.success)) {
+      const rateData = res["Realtime Currency Exchange Rate"] as Record<string, string> | undefined;
+      if (rateData && rateData["5. Exchange Rate"]) {
+        pricePerOunce = parseFloat(rateData["5. Exchange Rate"]);
+        asOf = rateData["6. Last Refreshed"] || asOf;
+      }
+    }
+  }
+
+  // 3. Fallback: try commodities GOLD daily
+  if (pricePerOunce <= 0) {
     const goldFallback = await fetchAlphaVantage({
       function: "GOLD",
       interval: "daily",
     });
 
-    if ("success" in goldFallback && !goldFallback.success) {
-      if (cached) return { success: true, data: { ...cached.data, cached: true } };
-      return res;
+    if (!("success" in goldFallback && !goldFallback.success)) {
+      const goldData = goldFallback["data"] as Array<{ date: string; value: string }> | undefined;
+      if (goldData && goldData.length > 0 && goldData[0].value !== ".") {
+        pricePerOunce = parseFloat(goldData[0].value);
+        asOf = goldData[0].date;
+      }
     }
+  }
 
-    const goldData = goldFallback["data"] as Array<{ date: string; value: string }> | undefined;
-    if (!goldData || goldData.length === 0 || goldData[0].value === ".") {
-      if (cached) return { success: true, data: { ...cached.data, cached: true } };
-      return res;
-    }
-
-    pricePerOunce = parseFloat(goldData[0].value);
-    asOf = goldData[0].date;
-  } else {
-    const rateData = res["Realtime Currency Exchange Rate"] as Record<string, string> | undefined;
-    if (!rateData || !rateData["5. Exchange Rate"]) {
-      if (cached) return { success: true, data: { ...cached.data, cached: true } };
-      return {
-        success: false,
-        error: "API_ERROR",
-        message: "Real-time Gold (XAU) exchange rate unavailable",
-      };
-    }
-    pricePerOunce = parseFloat(rateData["5. Exchange Rate"]);
-    asOf = rateData["6. Last Refreshed"] || asOf;
+  if (pricePerOunce <= 0) {
+    if (cached) return { success: true, data: { ...cached.data, cached: true } };
+    return {
+      success: false,
+      error: "API_ERROR",
+      message: "Gold (XAU) spot price currently unavailable from Alpha Vantage",
+    };
   }
 
   const pricePerGram24K = Number((pricePerOunce / TROY_OUNCE_TO_GRAMS).toFixed(4));
@@ -521,48 +539,46 @@ export async function getSilverSpot(
     return { success: true, data: cached.data };
   }
 
-  // 1. Try CURRENCY_EXCHANGE_RATE for XAG
-  const res = await fetchAlphaVantage({
-    function: "CURRENCY_EXCHANGE_RATE",
-    from_currency: "XAG",
-    to_currency: curr,
-  });
-
   let pricePerOunce = 0;
   let asOf = new Date().toISOString();
 
-  if ("success" in res && !res.success) {
-    // If rate limited or error, try commodities SILVER fallback
-    const silverFallback = await fetchAlphaVantage({
-      function: "SILVER",
-      interval: "daily",
+  // 1. Try dedicated GOLD_SILVER_SPOT endpoint
+  const spotRes = await fetchAlphaVantage({
+    function: "GOLD_SILVER_SPOT",
+    symbol: "SILVER",
+  });
+
+  if (!("success" in spotRes && !spotRes.success)) {
+    if (typeof spotRes["price"] === "string" || typeof spotRes["price"] === "number") {
+      pricePerOunce = parseFloat(String(spotRes["price"]));
+      if (typeof spotRes["timestamp"] === "string") asOf = String(spotRes["timestamp"]);
+    }
+  }
+
+  // 2. Fallback: try CURRENCY_EXCHANGE_RATE for XAG
+  if (pricePerOunce <= 0) {
+    const res = await fetchAlphaVantage({
+      function: "CURRENCY_EXCHANGE_RATE",
+      from_currency: "XAG",
+      to_currency: curr,
     });
 
-    if ("success" in silverFallback && !silverFallback.success) {
-      if (cached) return { success: true, data: { ...cached.data, cached: true } };
-      return res;
+    if (!("success" in res && !res.success)) {
+      const rateData = res["Realtime Currency Exchange Rate"] as Record<string, string> | undefined;
+      if (rateData && rateData["5. Exchange Rate"]) {
+        pricePerOunce = parseFloat(rateData["5. Exchange Rate"]);
+        asOf = rateData["6. Last Refreshed"] || asOf;
+      }
     }
+  }
 
-    const silverData = silverFallback["data"] as Array<{ date: string; value: string }> | undefined;
-    if (!silverData || silverData.length === 0 || silverData[0].value === ".") {
-      if (cached) return { success: true, data: { ...cached.data, cached: true } };
-      return res;
-    }
-
-    pricePerOunce = parseFloat(silverData[0].value);
-    asOf = silverData[0].date;
-  } else {
-    const rateData = res["Realtime Currency Exchange Rate"] as Record<string, string> | undefined;
-    if (!rateData || !rateData["5. Exchange Rate"]) {
-      if (cached) return { success: true, data: { ...cached.data, cached: true } };
-      return {
-        success: false,
-        error: "API_ERROR",
-        message: "Real-time Silver (XAG) exchange rate unavailable",
-      };
-    }
-    pricePerOunce = parseFloat(rateData["5. Exchange Rate"]);
-    asOf = rateData["6. Last Refreshed"] || asOf;
+  if (pricePerOunce <= 0) {
+    if (cached) return { success: true, data: { ...cached.data, cached: true } };
+    return {
+      success: false,
+      error: "API_ERROR",
+      message: "Silver (XAG) spot price currently unavailable from Alpha Vantage",
+    };
   }
 
   const pricePerGram24K = Number((pricePerOunce / TROY_OUNCE_TO_GRAMS).toFixed(4));
@@ -685,6 +701,7 @@ export async function calculateLivePortfolioValuation(
           gain: Number(gain.toFixed(3)),
           gainPercent: Number(gainPercent.toFixed(2)),
           priceAvailable: true,
+          notes: `${asset.symbol} quote @ $${livePrice}`,
         });
         continue;
       }

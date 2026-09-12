@@ -118,7 +118,9 @@ export function useLivePortfolioValuation(assets: Asset[]) {
   return useQuery({
     queryKey: [
       "live-portfolio-valuation",
-      activeAssets.map((a) => `${a.id}:${a.quantity}:${a.unit_cost}`).join(","),
+      activeAssets
+        .map((a) => `${a.id}:${a.symbol}:${a.quantity}:${a.unit_cost}:${a.purity}`)
+        .join(","),
     ],
     enabled: activeAssets.length > 0,
     staleTime: 5 * 60 * 1000,

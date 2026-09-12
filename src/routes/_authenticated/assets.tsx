@@ -26,6 +26,8 @@ import {
 import { AssetFormDialog } from "@/components/wazen/assets/AssetFormDialog";
 import { useAssetValuations, useAssets, useDeleteAsset } from "@/hooks/use-wazen-assets";
 import { useProfile } from "@/hooks/use-wazen-auth";
+import { useLivePortfolioValuation } from "@/hooks/use-wazen-market-data";
+import type { AssetLiveValuation } from "@/lib/market-data.functions";
 import {
   annualRentOf,
   canOwnAssets,
@@ -87,6 +89,14 @@ function AssetsPage() {
 
   const currency = profile?.base_currency ?? "KWD";
   const allowed = canOwnAssets(profile?.life_stage);
+  const rows = assets.data ?? [];
+  const history = valuations.data ?? [];
+  const liveValuation = useLivePortfolioValuation(rows);
+  const liveMap = new Map<string, AssetLiveValuation>();
+  for (const item of liveValuation.data ?? []) {
+    liveMap.set(item.id, item);
+  }
+  const totals = portfolioTotals(rows, liveValuation.data);
 
   if (profileLoading || assets.isLoading || valuations.isLoading) {
     return (
@@ -112,9 +122,6 @@ function AssetsPage() {
     );
   }
 
-  const rows = assets.data ?? [];
-  const history = valuations.data ?? [];
-  const totals = portfolioTotals(rows);
   const series = portfolioSeries(rows, history).map((point) => ({
     label: new Intl.DateTimeFormat(locale, { month: "short", year: "2-digit" }).format(
       new Date(`${point.date}T00:00:00`),
@@ -139,6 +146,26 @@ function AssetsPage() {
           <p className="wazen-label">{t("portfolio")}</p>
           <h1 className="mt-3 text-3xl sm:text-4xl">{t("assets")}</h1>
           <p className="mt-3 max-w-2xl text-muted-foreground">{t("assetsSubtitle")}</p>
+          {rows.some((a) => a.kind === "stock" || a.kind === "gold" || a.kind === "silver") ? (
+            <div className="mt-4 flex flex-wrap items-center gap-2">
+              {liveValuation.isLoading ? (
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-secondary/50 px-2.5 py-1 text-xs text-muted-foreground">
+                  <SpinnerIcon className="size-3 animate-spin text-muted-foreground" />
+                  {t("updatingMarketRates")}
+                </span>
+              ) : liveValuation.isError ? (
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-secondary/50 px-2.5 py-1 text-xs text-muted-foreground">
+                  <span className="size-1.5 rounded-full bg-muted-foreground/60" />
+                  {t("liveRatesUnavailable")}
+                </span>
+              ) : totals.hasLiveValuation ? (
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-chart-2/30 bg-chart-2/10 px-2.5 py-1 text-xs font-medium text-chart-2">
+                  <span className="size-1.5 rounded-full bg-chart-2 animate-pulse" />
+                  {t("liveValuationActive")}
+                </span>
+              ) : null}
+            </div>
+          ) : null}
           <div className="mt-6">
             <Button
               onClick={() => {
@@ -157,7 +184,7 @@ function AssetsPage() {
             label={t("totalAssetValue")}
             amount={totals.value}
             currency={currency}
-            hint={t("notSpendable")}
+            hint={totals.hasLiveValuation ? t("liveMarketValue") : t("notSpendable")}
             className="min-[420px]:col-span-2 lg:col-span-1"
             icon={<PortfolioIcon className="size-4" strokeWidth={ICON_STROKE} />}
           />
@@ -246,6 +273,8 @@ function AssetsPage() {
                         key={asset.id}
                         asset={asset}
                         history={valuationsFor(history, asset.id)}
+                        live={liveMap.get(asset.id)}
+                        isLiveLoading={liveValuation.isLoading}
                         onEdit={() => {
                           setEditing(asset);
                           setDialogOpen(true);
@@ -276,28 +305,55 @@ function AssetsPage() {
 function AssetRow({
   asset,
   history,
+  live,
+  isLiveLoading,
   onEdit,
   onRemove,
 }: {
   asset: Asset;
   history: { valued_on: string; unit_value: number }[];
+  live?: AssetLiveValuation;
+  isLiveLoading?: boolean;
   onEdit: () => void;
   onRemove: () => void;
 }) {
   const { t } = useWazenLocale();
   const unit = unitOf(asset.kind);
-  const gain = gainOf(asset);
-  const positive = gain >= 0;
+  const isMarketKind = asset.kind === "stock" || asset.kind === "gold" || asset.kind === "silver";
+  const isLive = Boolean(live?.priceAvailable && live.liveMarketValue !== null);
+  const effectiveMarketValue =
+    isLive && live?.liveMarketValue !== null ? live.liveMarketValue : marketValue(asset);
+  const effectiveCostBasis = costBasis(asset);
+  const effectiveGain = isLive && live?.gain !== null ? live.gain : gainOf(asset);
+  const effectiveGainPercent =
+    isLive && live?.gainPercent !== null ? live.gainPercent : gainPercentOf(asset);
+  const effectiveUnitPrice =
+    isLive && live?.liveUnitPrice !== null ? live.liveUnitPrice : Number(asset.current_unit_value);
+  const positive = effectiveGain >= 0;
   const points = history.map((row) => ({ label: row.valued_on, value: Number(row.unit_value) }));
 
   return (
     <li className="rounded-2xl border border-border bg-secondary/35 p-5">
       <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
         <div className="min-w-0">
-          <p className="break-words text-base">
-            {asset.name}
+          <p className="break-words text-base flex flex-wrap items-center gap-1.5">
+            <span>{asset.name}</span>
             {asset.symbol ? (
-              <span className="ms-2 text-xs text-muted-foreground">{asset.symbol}</span>
+              <span className="text-xs text-muted-foreground">{asset.symbol}</span>
+            ) : null}
+            {isLive ? (
+              <span className="inline-flex items-center gap-1 rounded-full border border-chart-2/30 bg-chart-2/10 px-2 py-0.5 text-[10px] font-medium text-chart-2">
+                <span className="size-1.5 rounded-full bg-chart-2 animate-pulse" />
+                {t("liveRates")}
+              </span>
+            ) : isLiveLoading && isMarketKind ? (
+              <span className="inline-flex items-center gap-1 text-[10px] text-muted-foreground">
+                <SpinnerIcon className="size-3 animate-spin text-muted-foreground" />
+              </span>
+            ) : isMarketKind ? (
+              <span className="inline-flex items-center gap-1 rounded-full border border-border bg-secondary/60 px-2 py-0.5 text-[10px] text-muted-foreground">
+                {t("recordedRate")}
+              </span>
             ) : null}
           </p>
           <p className="mt-1 text-xs text-muted-foreground">
@@ -334,18 +390,21 @@ function AssetRow({
 
       <DisclosurePanel
         title={t("valueHistory")}
-        summary={formatMoney(marketValue(asset), asset.currency)}
+        summary={formatMoney(effectiveMarketValue, asset.currency)}
         className="mt-4"
       >
         <dl className="grid grid-cols-1 gap-3 min-[420px]:grid-cols-2 lg:grid-cols-4">
-          <Cell label={t("investedAmount")} value={formatMoney(costBasis(asset), asset.currency)} />
+          <Cell
+            label={t("investedAmount")}
+            value={formatMoney(effectiveCostBasis, asset.currency)}
+          />
           <Cell
             label={t("totalAssetValue")}
-            value={formatMoney(marketValue(asset), asset.currency)}
+            value={formatMoney(effectiveMarketValue, asset.currency)}
           />
           <Cell
             label={t("unrealisedGain")}
-            value={`${formatMoney(gain, asset.currency)} · ${gainPercentOf(asset).toFixed(1)}%`}
+            value={`${formatMoney(effectiveGain, asset.currency)} · ${effectiveGainPercent.toFixed(1)}%`}
             tone={positive ? "positive" : "negative"}
             icon={
               positive ? (
@@ -369,7 +428,7 @@ function AssetRow({
                     ? t("currentValueShare")
                     : t("currentValueProperty")
               }
-              value={formatMoney(Number(asset.current_unit_value), asset.currency)}
+              value={formatMoney(effectiveUnitPrice, asset.currency)}
             />
           )}
         </dl>
@@ -402,6 +461,12 @@ function AssetRow({
               </ResponsiveContainer>
             </div>
           </div>
+        ) : null}
+
+        {live?.notes ? (
+          <p className="mt-3 text-xs text-muted-foreground font-mono bg-secondary/50 rounded-lg px-3 py-1.5 inline-block">
+            {live.notes}
+          </p>
         ) : null}
 
         {asset.notes ? <p className="mt-3 text-xs text-muted-foreground">{asset.notes}</p> : null}
