@@ -19,7 +19,7 @@ export type SyncResult = {
 /**
  * Idempotently syncs Wazen application tables into MongoDB.
  */
-export async function syncSupabaseToMongo(dbName: string = "wazen"): Promise<SyncResult> {
+export async function syncSupabaseToMongo(dbName: string = "Wazen"): Promise<SyncResult> {
   const db = await getMongoDb(dbName);
   const imported: Record<string, number> = {};
   const errors: string[] = [];

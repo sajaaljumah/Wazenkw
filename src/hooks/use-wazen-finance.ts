@@ -1,81 +1,88 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@/hooks/use-wazen-auth";
 import { firstOfMonth } from "@/lib/finance";
 import type { Budget, Goal, RecurringItem, Transaction } from "@/lib/finance";
 import type { Profile } from "@/lib/wazen";
 import { enrichTransactionWithFx, attachFxSnapshot } from "@/lib/currency";
 import { convertCurrencyFn } from "@/lib/currency.functions";
+import {
+  listTransactionsFn,
+  createTransactionFn,
+  updateTransactionFn,
+  deleteTransactionFn,
+  refundTransactionFn,
+  listGoalsFn,
+  createGoalFn,
+  updateGoalFn,
+  deleteGoalFn,
+  getMonthlyBudgetFn,
+  upsertMonthlyBudgetFn,
+  listRecurringItemsFn,
+  listParentPaidForMeFn,
+  addParentPaidExpenseFn,
+  getFamilySummaryFn,
+} from "@/lib/crud.functions";
 
-/** All queries are scoped to the signed-in user; RLS enforces this server-side too. */
+/** All queries are scoped to the signed-in user and served from MongoDB Atlas. */
 export function useTransactions() {
-  const { user, loading } = useSession();
+  const { session, user, loading } = useSession();
   return useQuery({
     queryKey: ["transactions", user?.id],
     enabled: !loading && !!user,
     queryFn: async (): Promise<Transaction[]> => {
-      const { data, error } = await supabase
-        .from("transactions")
-        .select("*")
-        .eq("user_id", user!.id)
-        .order("occurred_on", { ascending: false })
-        .order("created_at", { ascending: false });
-      if (error) throw error;
-      return (data ?? []).map((row) => enrichTransactionWithFx(row as unknown as Transaction));
+      const res = await listTransactionsFn({
+        data: { authToken: session?.access_token, userId: user?.id },
+      });
+      if (!res.success) throw new Error("Failed to load transactions from MongoDB.");
+      return (res.data ?? []).map((row) => enrichTransactionWithFx(row as unknown as Transaction));
     },
   });
 }
 
 export function useGoals() {
-  const { user, loading } = useSession();
+  const { session, user, loading } = useSession();
   return useQuery({
     queryKey: ["goals", user?.id],
     enabled: !loading && !!user,
     queryFn: async (): Promise<Goal[]> => {
-      const { data, error } = await supabase
-        .from("goals")
-        .select("*")
-        .eq("user_id", user!.id)
-        .order("created_at", { ascending: true });
-      if (error) throw error;
-      return (data ?? []) as unknown as Goal[];
+      const res = await listGoalsFn({
+        data: { authToken: session?.access_token, userId: user?.id },
+      });
+      if (!res.success) throw new Error("Failed to load goals from MongoDB.");
+      return (res.data ?? []) as unknown as Goal[];
     },
   });
 }
 
 export function useMonthlyBudget() {
-  const { user, loading } = useSession();
+  const { session, user, loading } = useSession();
   const period = firstOfMonth();
   return useQuery({
     queryKey: ["budget", user?.id, period],
     enabled: !loading && !!user,
     queryFn: async (): Promise<Budget | null> => {
-      const { data, error } = await supabase
-        .from("budgets")
-        .select("*")
-        .eq("user_id", user!.id)
-        .eq("period_month", period)
-        .maybeSingle();
-      if (error) throw error;
-      return (data ?? null) as unknown as Budget | null;
+      const res = await getMonthlyBudgetFn({
+        data: { periodMonth: period, authToken: session?.access_token, userId: user?.id },
+      });
+      if (!res.success) throw new Error("Failed to load monthly budget from MongoDB.");
+      return (res.data ?? null) as unknown as Budget | null;
     },
   });
 }
 
 export function useRecurringItems() {
-  const { user, loading } = useSession();
+  const { session, user, loading } = useSession();
   return useQuery({
     queryKey: ["recurring", user?.id],
     enabled: !loading && !!user,
     queryFn: async (): Promise<RecurringItem[]> => {
-      const { data, error } = await supabase
-        .from("recurring_items")
-        .select("*")
-        .eq("user_id", user!.id)
-        .eq("active", true)
-        .order("day_of_month", { ascending: true });
-      if (error) throw error;
-      return (data ?? []).map((row) => enrichTransactionWithFx(row as unknown as RecurringItem));
+      const res = await listRecurringItemsFn({
+        data: { activeOnly: true, authToken: session?.access_token, userId: user?.id },
+      });
+      if (!res.success) throw new Error("Failed to load recurring items from MongoDB.");
+      return (res.data ?? []).map((row) =>
+        enrichTransactionWithFx(row as unknown as RecurringItem),
+      );
     },
   });
 }
@@ -90,81 +97,45 @@ export type FamilyMemberSummary = {
 
 /**
  * Parents only: linked children/teenagers they are permitted to see.
- * Reads rely entirely on the family permissions stored in the database.
+ * Reads rely entirely on the family permissions stored in MongoDB.
  */
 export function useFamilySummary(enabled: boolean) {
-  const { user, loading } = useSession();
+  const { session, user, loading } = useSession();
   return useQuery({
     queryKey: ["family-summary", user?.id],
     enabled: enabled && !loading && !!user,
     queryFn: async (): Promise<FamilyMemberSummary[]> => {
-      const { data: links, error: linkError } = await supabase
-        .from("family_relationships")
-        .select("child_user_id, permissions, status")
-        .eq("parent_user_id", user!.id)
-        .eq("status", "active");
-      if (linkError) throw linkError;
-
-      const rows = links ?? [];
-      const allowed = rows.filter((row) => {
-        const permissions = (row.permissions ?? {}) as Record<string, unknown>;
-        return permissions["can_monitor"] === true || permissions["can_fund"] === true;
+      const res = await getFamilySummaryFn({
+        data: { authToken: session?.access_token, userId: user?.id },
       });
-      if (allowed.length === 0) return [];
-
-      const ids = allowed.map((row) => row.child_user_id);
-      const [profilesRes, txRes, goalsRes] = await Promise.all([
-        supabase.from("profiles").select("*").in("id", ids),
-        supabase.from("transactions").select("*").in("user_id", ids),
-        supabase.from("goals").select("*").in("user_id", ids),
-      ]);
-      if (profilesRes.error) throw profilesRes.error;
-      if (txRes.error) throw txRes.error;
-      if (goalsRes.error) throw goalsRes.error;
-
-      const transactions = (txRes.data ?? []) as unknown as Transaction[];
-      const goals = (goalsRes.data ?? []) as unknown as Goal[];
-
-      return ((profilesRes.data ?? []) as unknown as Profile[])
-        .map((profile) => {
-          const link = allowed.find((row) => row.child_user_id === profile.id);
-          const permissions = (link?.permissions ?? {}) as Record<string, unknown>;
-          return {
-            profile,
-            canFund: permissions["can_fund"] === true,
-            canMonitor: permissions["can_monitor"] === true,
-            transactions: transactions
-              .filter((t) => t.user_id === profile.id)
-              .map((t) => enrichTransactionWithFx(t)),
-            goals: goals.filter((g) => g.user_id === profile.id),
-          };
-        })
-        .sort((a, b) => a.profile.full_name.localeCompare(b.profile.full_name));
+      if (!res.success) throw new Error("Failed to load family summary from MongoDB.");
+      return (res.data ?? []).map((member) => ({
+        profile: member.profile as unknown as Profile,
+        canFund: member.canFund,
+        canMonitor: member.canMonitor,
+        transactions: (member.transactions ?? []).map((t) =>
+          enrichTransactionWithFx(t as unknown as Transaction),
+        ),
+        goals: (member.goals ?? []) as unknown as Goal[],
+      }));
     },
   });
 }
 
 /**
- * Spending a parent recorded for the signed-in child/teenager. These rows live
- * in the parent's own records, so they never reduce the child's available money
- * unless the parent explicitly deducted them from the child's funds — in which
- * case a matching entry also exists in the child's own transactions.
+ * Spending a parent recorded for the signed-in child/teenager.
  */
 export function useParentPaidForMe() {
-  const { user, loading } = useSession();
+  const { session, user, loading } = useSession();
   return useQuery({
     queryKey: ["parent-paid", user?.id],
     enabled: !loading && !!user,
     queryFn: async (): Promise<Transaction[]> => {
-      const { data, error } = await supabase
-        .from("transactions")
-        .select("*")
-        .eq("beneficiary_user_id", user!.id)
-        .eq("paid_by_parent", true)
-        .neq("user_id", user!.id)
-        .order("occurred_on", { ascending: false });
-      if (error) throw error;
-      return (data ?? []).map((row) => enrichTransactionWithFx(row as unknown as Transaction));
+      const res = await listParentPaidForMeFn({
+        data: { authToken: session?.access_token, userId: user?.id },
+      });
+      if (!res.success) throw new Error("Failed to load parent paid records from MongoDB.");
+      return (res.data ?? []).map((row) => enrichTransactionWithFx(row as unknown as Transaction));
     },
   });
 }
@@ -177,24 +148,20 @@ export type ParentPaidExpenseInput = {
   occurredOn: string;
   paymentMethod: string | null;
   currency: string;
-  /** Only allowed for guardians with funding permission. */
   deductFromChild: boolean;
 };
 
 /**
- * Records an expense a parent paid for a linked child or teenager. The expense
- * always lands in the parent's records because the parent actually paid it. When
- * the parent chooses to deduct it, a linked entry is also written to the child's
- * records so the child's own available money reflects it.
+ * Records an expense a parent paid for a linked child or teenager into MongoDB.
  */
 export function useAddParentPaidExpense() {
-  const { user } = useSession();
+  const { session, user } = useSession();
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (input: ParentPaidExpenseInput) => {
       let finalAmount = input.amount;
       let parentNote: string | null = null;
-      let childNote = "Paid by parent from your own money";
+      let snapshotData: Record<string, unknown> = {};
 
       if (input.currency !== "KWD") {
         const fxRes = await convertCurrencyFn({
@@ -215,40 +182,30 @@ export function useAddParentPaidExpense() {
             rate_date: fxRes.rate_date,
           };
           parentNote = attachFxSnapshot(parentNote, snapshot);
-          childNote = attachFxSnapshot(childNote, snapshot);
+          snapshotData = snapshot;
         }
       }
 
-      const shared = {
-        kind: "expense" as const,
-        category: input.category,
-        merchant: input.merchant,
-        amount: finalAmount,
-        currency: input.currency,
-        occurred_on: input.occurredOn,
-        payment_method: input.paymentMethod,
-        beneficiary_user_id: input.childUserId,
-        paid_by_parent: true,
-        note: parentNote,
-      };
-
-      const { data, error } = await supabase
-        .from("transactions")
-        .insert({ ...shared, user_id: user!.id, deducted_from_child: input.deductFromChild })
-        .select("id")
-        .single();
-      if (error) throw error;
-
-      if (input.deductFromChild) {
-        const { error: childError } = await supabase.from("transactions").insert({
-          ...shared,
-          user_id: input.childUserId,
-          deducted_from_child: true,
-          linked_transaction_id: (data as { id: string }).id,
-          note: childNote,
-        });
-        if (childError) throw childError;
-      }
+      await addParentPaidExpenseFn({
+        data: {
+          childUserId: input.childUserId,
+          amount: finalAmount,
+          category: input.category,
+          merchant: input.merchant,
+          occurredOn: input.occurredOn,
+          paymentMethod: input.paymentMethod,
+          currency: input.currency,
+          deductFromChild: input.deductFromChild,
+          note: parentNote,
+          originalAmount: (snapshotData["original_amount"] as number) ?? null,
+          originalCurrency: (snapshotData["original_currency"] as string) ?? null,
+          convertedAmount: (snapshotData["converted_amount"] as number) ?? null,
+          exchangeRate: (snapshotData["exchange_rate"] as number) ?? null,
+          rateDate: (snapshotData["rate_date"] as string) ?? null,
+          authToken: session?.access_token,
+          userId: user?.id,
+        },
+      });
     },
     onSuccess: async () => {
       await Promise.all([
@@ -256,6 +213,215 @@ export function useAddParentPaidExpense() {
         queryClient.invalidateQueries({ queryKey: ["family-summary"] }),
         queryClient.invalidateQueries({ queryKey: ["parent-paid"] }),
       ]);
+    },
+  });
+}
+
+/**
+ * Mutation hooks for standard Transaction CRUD in MongoDB.
+ */
+export function useCreateTransaction() {
+  const { session, user } = useSession();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: Parameters<typeof createTransactionFn>[0]["data"]) => {
+      const res = await createTransactionFn({
+        data: {
+          ...input,
+          authToken: session?.access_token,
+          userId: user?.id,
+        },
+      });
+      if (!res.success) throw new Error("Failed to create transaction in MongoDB.");
+      return res.data;
+    },
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["transactions"] }),
+        queryClient.invalidateQueries({ queryKey: ["family-summary"] }),
+        queryClient.invalidateQueries({ queryKey: ["budget"] }),
+      ]);
+    },
+  });
+}
+
+export function useUpdateTransaction() {
+  const { session, user } = useSession();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, updates }: { id: string; updates: Record<string, unknown> }) => {
+      const res = await updateTransactionFn({
+        data: {
+          id,
+          updates,
+          authToken: session?.access_token,
+          userId: user?.id,
+        },
+      });
+      if (!res.success) throw new Error("Failed to update transaction in MongoDB.");
+      return res.data;
+    },
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["transactions"] }),
+        queryClient.invalidateQueries({ queryKey: ["family-summary"] }),
+      ]);
+    },
+  });
+}
+
+export function useDeleteTransaction() {
+  const { session, user } = useSession();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const res = await deleteTransactionFn({
+        data: {
+          id,
+          authToken: session?.access_token,
+          userId: user?.id,
+        },
+      });
+      if (!res.success) throw new Error("Failed to delete transaction from MongoDB.");
+      return res.success;
+    },
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["transactions"] }),
+        queryClient.invalidateQueries({ queryKey: ["family-summary"] }),
+      ]);
+    },
+  });
+}
+
+export function useRefundTransaction() {
+  const { session, user } = useSession();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, reason }: { id: string; reason?: string }) => {
+      const res = await refundTransactionFn({
+        data: {
+          id,
+          reason,
+          authToken: session?.access_token,
+          userId: user?.id,
+        },
+      });
+      if (!res.success) throw new Error("Failed to refund transaction in MongoDB.");
+      return res.data;
+    },
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["transactions"] }),
+        queryClient.invalidateQueries({ queryKey: ["family-summary"] }),
+      ]);
+    },
+  });
+}
+
+/**
+ * Mutation hooks for Goals & Budgets in MongoDB.
+ */
+export function useCreateGoal() {
+  const { session, user } = useSession();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: Parameters<typeof createGoalFn>[0]["data"]) => {
+      const res = await createGoalFn({
+        data: {
+          ...input,
+          authToken: session?.access_token,
+          userId: user?.id,
+        },
+      });
+      if (!res.success) throw new Error("Failed to create goal in MongoDB.");
+      return res.data;
+    },
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["goals"] }),
+        queryClient.invalidateQueries({ queryKey: ["family-summary"] }),
+      ]);
+    },
+  });
+}
+
+export function useUpdateGoal() {
+  const { session, user } = useSession();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, updates }: { id: string; updates: Record<string, unknown> }) => {
+      const res = await updateGoalFn({
+        data: {
+          id,
+          updates,
+          authToken: session?.access_token,
+          userId: user?.id,
+        },
+      });
+      if (!res.success) throw new Error("Failed to update goal in MongoDB.");
+      return res.data;
+    },
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["goals"] }),
+        queryClient.invalidateQueries({ queryKey: ["family-summary"] }),
+      ]);
+    },
+  });
+}
+
+export function useDeleteGoal() {
+  const { session, user } = useSession();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const res = await deleteGoalFn({
+        data: {
+          id,
+          authToken: session?.access_token,
+          userId: user?.id,
+        },
+      });
+      if (!res.success) throw new Error("Failed to delete goal from MongoDB.");
+      return res.success;
+    },
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["goals"] }),
+        queryClient.invalidateQueries({ queryKey: ["family-summary"] }),
+      ]);
+    },
+  });
+}
+
+export function useUpsertMonthlyBudget() {
+  const { session, user } = useSession();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({
+      periodMonth,
+      amount,
+      currency,
+    }: {
+      periodMonth: string;
+      amount: number;
+      currency?: string;
+    }) => {
+      const res = await upsertMonthlyBudgetFn({
+        data: {
+          periodMonth,
+          amount,
+          currency: currency || "KWD",
+          authToken: session?.access_token,
+          userId: user?.id,
+        },
+      });
+      if (!res.success) throw new Error("Failed to update monthly budget in MongoDB.");
+      return res.data;
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["budget"] });
     },
   });
 }

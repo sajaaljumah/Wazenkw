@@ -8,6 +8,7 @@ import type {
   FinancialDocument,
 } from "@/lib/documents";
 import { extractionProvider, savesAsTransaction } from "@/lib/documents";
+import { createTransactionFn } from "@/lib/crud.functions";
 
 const BUCKET = "financial-documents";
 
@@ -156,7 +157,7 @@ export function useRequestExtraction() {
  * spending record so the money flows through the existing calculations.
  */
 export function useSaveDocumentRecord() {
-  const { user } = useSession();
+  const { session } = useSession();
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({
@@ -168,23 +169,22 @@ export function useSaveDocumentRecord() {
     }) => {
       let transactionId: string | null = null;
       if (savesAsTransaction(document.doc_type) && fields.totalAmount && fields.totalAmount > 0) {
-        const { data, error } = await supabase
-          .from("transactions")
-          .insert({
-            user_id: user!.id,
-            kind: "expense",
-            category: fields.category || "Other",
-            merchant: fields.vendor,
-            amount: fields.totalAmount,
-            currency: fields.currency,
-            occurred_on: fields.documentDate ?? new Date().toISOString().slice(0, 10),
-            payment_method: fields.paymentMethod,
-            note: fields.note,
-          })
-          .select("id")
-          .single();
-        if (error) throw error;
-        transactionId = (data as { id: string }).id;
+        const res = await createTransactionFn({
+          data: {
+            authToken: session?.access_token,
+            transaction: {
+              kind: "expense",
+              category: fields.category || "Other",
+              merchant: fields.vendor ?? null,
+              amount: fields.totalAmount,
+              currency: fields.currency ?? "KWD",
+              occurred_on: fields.documentDate ?? new Date().toISOString().slice(0, 10),
+              payment_method: fields.paymentMethod ?? null,
+              note: fields.note ?? null,
+            },
+          },
+        });
+        transactionId = res.id;
       }
 
       const { error } = await supabase

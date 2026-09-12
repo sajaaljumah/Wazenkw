@@ -22,6 +22,11 @@ import {
 } from "@/components/ui/dialog";
 import type { Goal } from "@/lib/finance";
 import { firstOfMonth } from "@/lib/finance";
+import {
+  useCreateTransaction,
+  useCreateGoal,
+  useUpsertMonthlyBudget,
+} from "@/hooks/use-wazen-finance";
 import { Button } from "@/components/ui/button";
 import { useWazenLocale } from "@/components/wazen/WazenLocale";
 import { useReveal } from "@/hooks/use-reveal";
@@ -218,6 +223,9 @@ export function ActionDialog({
   const { t } = useWazenLocale();
   const tr = t as unknown as (key: string) => string;
   const queryClient = useQueryClient();
+  const createTx = useCreateTransaction();
+  const createGoal = useCreateGoal();
+  const upsertBudget = useUpsertMonthlyBudget();
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState("");
   const [merchant, setMerchant] = useState("");
@@ -262,30 +270,21 @@ export function ActionDialog({
         const target = Number(goalTarget);
         if (goalName.trim().length < 2) throw new Error(tr("enterGoalName"));
         if (!Number.isFinite(target) || target <= 0) throw new Error(tr("enterAmount"));
-        const { error } = await supabase.from("goals").insert({
-          user_id: userId,
+        await createGoal.mutateAsync({
           name: goalName.trim(),
           kind: "goal",
           target_amount: target,
           target_date: goalDate || null,
           currency,
         });
-        if (error) throw error;
-        await queryClient.invalidateQueries({ queryKey: ["goals"] });
       } else if (kind === "budget") {
         const value = Number(amount);
         if (!Number.isFinite(value) || value <= 0) throw new Error(tr("enterAmount"));
-        const { error } = await supabase.from("budgets").upsert(
-          {
-            user_id: userId,
-            period_month: `${budgetMonth}-01`,
-            amount: value,
-            currency,
-          },
-          { onConflict: "user_id,period_month" },
-        );
-        if (error) throw error;
-        await queryClient.invalidateQueries({ queryKey: ["budget"] });
+        await upsertBudget.mutateAsync({
+          periodMonth: `${budgetMonth}-01`,
+          amount: value,
+          currency,
+        });
       } else {
         const value = Number(amount);
         if (!Number.isFinite(value) || value <= 0) throw new Error(tr("enterAmount"));
@@ -301,6 +300,13 @@ export function ActionDialog({
 
         let finalAmount = value;
         let finalNote = note.trim() || null;
+        let fxSnapshotData: {
+          original_amount?: number;
+          original_currency?: string;
+          converted_amount?: number;
+          exchange_rate?: number;
+          rate_date?: string;
+        } | null = null;
 
         if (selectedCurrency !== "KWD") {
           const fxRes = await convertCurrencyFn({
@@ -313,6 +319,13 @@ export function ActionDialog({
           });
           if (fxRes.success) {
             finalAmount = fxRes.converted_amount;
+            fxSnapshotData = {
+              original_amount: fxRes.original_amount,
+              original_currency: fxRes.original_currency,
+              converted_amount: fxRes.converted_amount,
+              exchange_rate: fxRes.exchange_rate,
+              rate_date: fxRes.rate_date,
+            };
             finalNote = attachFxSnapshot(finalNote, {
               original_amount: fxRes.original_amount,
               original_currency: fxRes.original_currency,
@@ -323,9 +336,7 @@ export function ActionDialog({
           }
         }
 
-        const { error } = await supabase.from("transactions").insert({
-          user_id: userId,
-          // Giving is real spending, so it flows through expense analytics.
+        await createTx.mutateAsync({
           kind: kind === "give" ? "expense" : kind,
           category: resolvedCategory,
           merchant: merchant.trim() || null,
@@ -335,9 +346,12 @@ export function ActionDialog({
           occurred_on: date,
           payment_method: kind === "saving" ? null : tr(paymentMethod),
           goal_id: kind === "saving" && goalId ? goalId : null,
+          original_amount: fxSnapshotData?.original_amount ?? null,
+          original_currency: fxSnapshotData?.original_currency ?? null,
+          converted_amount: fxSnapshotData?.converted_amount ?? null,
+          exchange_rate: fxSnapshotData?.exchange_rate ?? null,
+          rate_date: fxSnapshotData?.rate_date ?? null,
         });
-        if (error) throw error;
-        await queryClient.invalidateQueries({ queryKey: ["transactions"] });
       }
       toast.success(tr("savedToast"));
       close();

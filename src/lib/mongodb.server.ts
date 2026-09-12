@@ -23,6 +23,11 @@ export type UserProfileDoc = {
   email?: string | null | undefined;
   full_name?: string | null | undefined;
   role?: string | null | undefined;
+  life_stage?: string | null | undefined;
+  date_of_birth?: string | null | undefined;
+  gender?: string | null | undefined;
+  theme?: string | null | undefined;
+  avatar_url?: string | null | undefined;
   currency: string;
   created_at: string;
   updated_at: string;

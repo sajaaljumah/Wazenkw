@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@/hooks/use-wazen-auth";
 import { useAssets } from "@/hooks/use-wazen-assets";
 import { useTransactions } from "@/hooks/use-wazen-finance";
+import { createTransactionFn } from "@/lib/crud.functions";
 import {
   addHijriYear,
   calculateZakat,
@@ -240,28 +241,27 @@ export type ZakatPaymentInput = {
  * (giving) is never treated as zakat, and zakat is never treated as sadaqah.
  */
 export function useRecordZakatPayment() {
-  const { user } = useSession();
+  const { session, user } = useSession();
   const invalidate = useInvalidateZakat();
   return useMutation({
     mutationFn: async (input: ZakatPaymentInput) => {
       let transactionId: string | null = null;
       if (input.status === "paid") {
-        const { data, error } = await supabase
-          .from("transactions")
-          .insert({
-            user_id: user!.id,
-            kind: "expense",
-            category: "Zakat",
-            merchant: input.recipient,
-            amount: input.amount,
-            currency: input.currency,
-            occurred_on: input.paymentDate,
-            note: input.notes,
-          })
-          .select("id")
-          .single();
-        if (error) throw error;
-        transactionId = (data as { id: string }).id;
+        const res = await createTransactionFn({
+          data: {
+            authToken: session?.access_token,
+            transaction: {
+              kind: "expense",
+              category: "Zakat",
+              merchant: input.recipient || null,
+              amount: input.amount,
+              currency: input.currency || "KWD",
+              occurred_on: input.paymentDate,
+              note: input.notes || null,
+            },
+          },
+        });
+        transactionId = res.id;
       }
 
       const { error: paymentError } = await supabase.from("zakat_payments").insert({
