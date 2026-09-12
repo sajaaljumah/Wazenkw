@@ -1,0 +1,727 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Wazen design system — Premium Modern Banking.
+ * Ivory/white surfaces, charcoal ink, neutral greys and a single confident
+ * red accent for actions, active states and key financial highlights.
+ */
+
+@theme inline {
+  --font-display: "Sora", "Noto Kufi Arabic", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Manrope", "Noto Sans Arabic", ui-sans-serif, system-ui, sans-serif;
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 2px);
+  --radius-2xl: calc(var(--radius) + 6px);
+  --radius-3xl: calc(var(--radius) + 10px);
+  --radius-4xl: calc(var(--radius) + 14px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-ring-offset-background: var(--background);
+  --color-gold: var(--gold);
+  --color-sand: var(--sand);
+  /* Shared child palette — one visual experience for every child. */
+  --color-kid-tint: var(--kid-tint);
+  --color-kid-soft: var(--kid-soft);
+  --color-kid-mid: var(--kid-mid);
+  --color-kid-deep: var(--kid-deep);
+  --color-kid-ivory: var(--kid-ivory);
+  --color-kid-champagne: var(--kid-champagne);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sage: var(--sage);
+  --color-olive: var(--olive);
+  --color-taupe: var(--taupe);
+  --color-paper: var(--paper);
+  --color-ink-soft: var(--ink-soft);
+  --color-positive: var(--positive);
+  --shadow-soft: 0 1px 2px oklch(0.22 0.01 20 / 4%), 0 10px 30px oklch(0.22 0.01 20 / 6%);
+  --shadow-lifted: 0 2px 6px oklch(0.22 0.01 20 / 5%), 0 22px 54px oklch(0.22 0.01 20 / 10%);
+}
+
+:root {
+  --radius: 1rem;
+  --background: #f4f5f7;
+  --foreground: oklch(0.245 0.008 25);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.245 0.008 25);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.245 0.008 25);
+  --primary: oklch(0.505 0.196 26);
+  --primary-foreground: oklch(0.99 0.003 60);
+  --secondary: oklch(0.958 0.004 60);
+  --secondary-foreground: oklch(0.32 0.009 25);
+  --muted: oklch(0.958 0.004 60);
+  --muted-foreground: oklch(0.53 0.008 30);
+  --accent: oklch(0.955 0.022 25);
+  --accent-foreground: oklch(0.45 0.17 26);
+  --destructive: oklch(0.53 0.19 26);
+  --destructive-foreground: oklch(0.99 0.003 60);
+  --border: oklch(0.912 0.004 60);
+  --input: oklch(0.888 0.005 60);
+  --ring: oklch(0.505 0.196 26);
+  --gold: oklch(0.505 0.196 26);
+  --sand: oklch(0.962 0.006 60);
+  --sage: oklch(0.55 0.075 165);
+  --olive: oklch(0.52 0.05 150);
+  --taupe: oklch(0.6 0.01 40);
+  --paper: oklch(1 0 0);
+  --ink-soft: oklch(0.4 0.009 28);
+  --positive: oklch(0.53 0.1 162);
+  --chart-1: oklch(0.505 0.196 26);
+  --chart-2: oklch(0.53 0.1 162);
+  --chart-3: oklch(0.45 0.05 250);
+  --chart-4: oklch(0.62 0.12 45);
+  --chart-5: oklch(0.42 0.02 30);
+  --sidebar: oklch(1 0 0);
+  --sidebar-foreground: oklch(0.245 0.008 25);
+  --sidebar-primary: oklch(0.505 0.196 26);
+  --sidebar-primary-foreground: oklch(0.99 0.003 60);
+  --sidebar-accent: oklch(0.955 0.022 25);
+  --sidebar-accent-foreground: oklch(0.45 0.17 26);
+  --sidebar-border: oklch(0.918 0.004 60);
+  --sidebar-ring: oklch(0.505 0.196 26);
+  --avatar-child-plate: oklch(0.89 0.026 82);
+  --avatar-child-field: oklch(0.98 0.006 85);
+  --avatar-child-accent: oklch(0.42 0.025 55);
+  --avatar-teen-plate: oklch(0.82 0.025 24);
+  --avatar-teen-field: oklch(0.965 0.007 35);
+  --avatar-teen-accent: oklch(0.43 0.14 24);
+  --avatar-student-plate: oklch(0.79 0.035 165);
+  --avatar-student-field: oklch(0.96 0.008 160);
+  --avatar-student-accent: oklch(0.37 0.05 165);
+  --avatar-adult-plate: oklch(0.7 0.018 55);
+  --avatar-adult-field: oklch(0.95 0.007 65);
+  --avatar-adult-accent: oklch(0.28 0.012 30);
+  --logo-plate: transparent;
+  --chart-fade: oklch(1 0 0);
+  /* Child experience — "Playful Luxury": soft pastel surfaces, champagne accents. */
+  --kid-ivory: oklch(0.992 0.002 85);
+  --kid-tint: oklch(0.965 0.006 85);
+  --kid-soft: oklch(0.925 0.018 82);
+  --kid-mid: oklch(0.78 0.045 78);
+  --kid-deep: oklch(0.32 0.012 30);
+  --kid-champagne: oklch(0.72 0.075 78);
+}
+
+.dark {
+  --background: oklch(0.19 0.006 25);
+  --foreground: oklch(0.965 0.003 60);
+  --card: oklch(0.235 0.007 25);
+  --card-foreground: oklch(0.965 0.003 60);
+  --popover: oklch(0.235 0.007 25);
+  --popover-foreground: oklch(0.965 0.003 60);
+  --primary: oklch(0.62 0.185 26);
+  --primary-foreground: oklch(0.985 0.003 60);
+  --secondary: oklch(0.278 0.007 25);
+  --secondary-foreground: oklch(0.965 0.003 60);
+  --muted: oklch(0.278 0.007 25);
+  --muted-foreground: oklch(0.74 0.006 40);
+  --accent: oklch(0.32 0.045 25);
+  --accent-foreground: oklch(0.94 0.02 25);
+  --destructive: oklch(0.63 0.18 26);
+  --destructive-foreground: oklch(0.985 0.003 60);
+  --border: oklch(1 0 0 / 11%);
+  --input: oklch(1 0 0 / 16%);
+  --ring: oklch(0.62 0.185 26);
+  --gold: oklch(0.66 0.175 26);
+  --sand: oklch(0.278 0.007 25);
+  --sage: oklch(0.7 0.08 165);
+  --olive: oklch(0.68 0.06 150);
+  --taupe: oklch(0.72 0.01 40);
+  --paper: oklch(0.245 0.007 25);
+  --ink-soft: oklch(0.8 0.005 40);
+  --positive: oklch(0.72 0.1 162);
+  --chart-1: oklch(0.66 0.175 26);
+  --chart-2: oklch(0.72 0.1 162);
+  --chart-3: oklch(0.68 0.06 250);
+  --chart-4: oklch(0.74 0.11 45);
+  --chart-5: oklch(0.8 0.01 30);
+  --sidebar: oklch(0.235 0.007 25);
+  --sidebar-foreground: oklch(0.965 0.003 60);
+  --sidebar-primary: oklch(0.62 0.185 26);
+  --sidebar-primary-foreground: oklch(0.985 0.003 60);
+  --sidebar-accent: oklch(0.32 0.045 25);
+  --sidebar-accent-foreground: oklch(0.94 0.02 25);
+  --sidebar-border: oklch(1 0 0 / 11%);
+  --sidebar-ring: oklch(0.62 0.185 26);
+  /* Child surfaces on a dark foundation: deep charcoal, champagne accents. */
+  --kid-ivory: oklch(0.262 0.008 70);
+  --kid-tint: oklch(0.232 0.007 70);
+  --kid-soft: oklch(0.355 0.015 78);
+  --kid-mid: oklch(0.6 0.045 78);
+  --kid-deep: oklch(0.9 0.012 80);
+  --kid-champagne: oklch(0.78 0.085 80);
+  /* Logo plate keeps the printed lockup readable on dark surfaces. */
+  --logo-plate: oklch(0.97 0.004 80);
+  --chart-fade: oklch(0.72 0.01 60);
+}
+
+.stage-teen {
+  --accent: oklch(0.955 0.024 12);
+  --gold: oklch(0.53 0.19 18);
+  --sage: oklch(0.55 0.07 300);
+  --chart-1: oklch(0.53 0.19 18);
+  --chart-2: oklch(0.5 0.07 285);
+  --chart-3: oklch(0.62 0.11 45);
+}
+
+.stage-university {
+  --accent: oklch(0.955 0.02 30);
+  --gold: oklch(0.5 0.17 30);
+  --sage: oklch(0.52 0.08 168);
+  --chart-1: oklch(0.5 0.17 30);
+  --chart-2: oklch(0.52 0.08 168);
+  --chart-3: oklch(0.5 0.05 250);
+}
+
+/* Life-stage personalities keep their hue on a dark foundation. */
+.dark .stage-teen {
+  --accent: oklch(0.33 0.05 12);
+  --gold: oklch(0.68 0.17 18);
+  --sage: oklch(0.7 0.08 300);
+  --chart-1: oklch(0.68 0.17 18);
+  --chart-2: oklch(0.68 0.08 285);
+  --chart-3: oklch(0.75 0.11 45);
+}
+
+.dark .stage-university {
+  --accent: oklch(0.33 0.045 30);
+  --gold: oklch(0.66 0.16 30);
+  --sage: oklch(0.7 0.08 168);
+  --chart-1: oklch(0.66 0.16 30);
+  --chart-2: oklch(0.7 0.08 168);
+  --chart-3: oklch(0.68 0.06 250);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: 0;
+    line-height: 1.15;
+  }
+
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  :focus-visible {
+    outline: 2px solid color-mix(in oklab, var(--color-ring) 70%, transparent);
+    outline-offset: 3px;
+  }
+
+  html[dir="rtl"] body {
+    font-family: "Noto Sans Arabic", var(--font-sans);
+  }
+
+  html[dir="rtl"] h1,
+  html[dir="rtl"] h2,
+  html[dir="rtl"] h3 {
+    font-family: "Noto Kufi Arabic", var(--font-sans);
+  }
+}
+
+@utility wazen-panel {
+  background-color: var(--color-card);
+  border: 1px solid color-mix(in oklab, var(--color-border) 70%, transparent);
+  border-radius: calc(var(--radius) + 6px);
+  box-shadow: var(--shadow-soft);
+}
+
+/* A single page-level dusty-red wash. It belongs to the canvas rather than
+   any header or card, so every authenticated screen blends into it naturally. */
+@utility wazen-app-canvas {
+  background-color: var(--color-background);
+  background-image: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--color-primary) 10%, var(--color-background)) 0,
+    color-mix(in oklab, var(--color-primary) 5%, var(--color-background)) 10rem,
+    var(--color-background) 27rem
+  );
+  background-repeat: no-repeat;
+  background-size: 100% 27rem;
+}
+
+@utility wazen-card {
+  background-color: var(--color-card);
+  border: 1px solid color-mix(in oklab, var(--color-border) 70%, transparent);
+  border-radius: calc(var(--radius) + 6px);
+  box-shadow: var(--shadow-soft);
+  padding: 1.25rem;
+  transition:
+    box-shadow 220ms ease,
+    transform 220ms ease,
+    border-color 220ms ease;
+  @media (min-width: 640px) {
+    padding: 1.5rem;
+  }
+}
+
+@utility wazen-masthead {
+  border-bottom: 1px solid var(--color-border);
+  padding: 0.5rem 0 1.5rem;
+}
+
+@utility wazen-journey {
+  min-width: 0;
+  border-top: 1px solid var(--color-border);
+  padding-top: 1.5rem;
+}
+
+@utility wazen-journey-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  &::before {
+    content: "";
+    width: 1.5rem;
+    height: 2px;
+    border-radius: 999px;
+    background: var(--color-primary);
+  }
+}
+
+@utility wazen-insight {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.875rem;
+  border-inline-start: 3px solid var(--color-primary);
+  background: color-mix(in oklab, var(--color-accent) 52%, transparent);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.125rem;
+}
+
+@utility wazen-disclosure {
+  min-width: 0;
+  border-top: 1px solid var(--color-border);
+  padding: 1.125rem 0;
+  transition: border-color 180ms ease, background-color 180ms ease;
+  &[open] {
+    border-color: color-mix(in oklab, var(--color-primary) 35%, var(--color-border));
+  }
+  & > summary:hover .wazen-disclosure-control {
+    transform: translateY(-1px);
+  }
+  &[open] > div:last-child {
+    animation: wazen-disclosure-open 220ms ease-out both;
+  }
+}
+
+@keyframes wazen-disclosure-open {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@utility wazen-action-dock {
+  border-block: 1px solid var(--color-border);
+  padding-block: 1rem;
+  background: linear-gradient(90deg, color-mix(in oklab, var(--color-accent) 30%, transparent), transparent 45%);
+}
+
+html[dir="rtl"] .wazen-action-dock {
+  background: linear-gradient(-90deg, color-mix(in oklab, var(--color-accent) 30%, transparent), transparent 45%);
+}
+
+@utility wazen-progress-fill {
+  position: relative;
+  box-shadow: 0 0 0 transparent;
+}
+
+@utility wazen-progress-track {
+  background-image: linear-gradient(
+    90deg,
+    transparent 24.5%,
+    color-mix(in oklab, var(--color-border) 72%, transparent) 25%,
+    transparent 25.5%,
+    transparent 49.5%,
+    color-mix(in oklab, var(--color-border) 72%, transparent) 50%,
+    transparent 50.5%,
+    transparent 74.5%,
+    color-mix(in oklab, var(--color-border) 72%, transparent) 75%,
+    transparent 75.5%
+  );
+}
+
+@utility wazen-chart-row {
+  transition: background-color 180ms ease, transform 180ms ease;
+  &:hover,
+  &:focus-visible,
+  &[data-active="true"] {
+    background-color: color-mix(in oklab, var(--color-accent) 48%, transparent);
+  }
+  &:hover .wazen-chart-bar,
+  &:focus-visible .wazen-chart-bar,
+  &[data-active="true"] .wazen-chart-bar {
+    filter: saturate(1.12) brightness(1.03);
+  }
+  &[data-active="true"] {
+    box-shadow: inset 3px 0 0 var(--color-primary);
+  }
+}
+
+html[dir="rtl"] .wazen-chart-row[data-active="true"] {
+  box-shadow: inset -3px 0 0 var(--color-primary);
+}
+
+[data-complete="true"] .wazen-progress-fill {
+  box-shadow: 0 0 12px color-mix(in oklab, var(--color-positive) 45%, transparent);
+}
+
+@utility wazen-interactive {
+  cursor: pointer;
+  transition:
+    box-shadow 200ms ease,
+    transform 200ms ease,
+    background-color 200ms ease;
+}
+
+@utility wazen-interactive-hover {
+  box-shadow: var(--shadow-lifted);
+  transform: translateY(-1px);
+}
+
+@utility wazen-label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-muted-foreground);
+}
+
+@utility wazen-page-title {
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1.05;
+}
+
+@utility wazen-section {
+  border-top: 1px solid var(--color-border);
+  padding-top: 1.5rem;
+}
+
+@utility wazen-field {
+  width: 100%;
+  min-height: 2.875rem;
+  border: 1px solid var(--color-input);
+  border-radius: var(--radius-md);
+  background: var(--color-paper);
+  padding: 0.7rem 0.875rem;
+  font-size: 0.875rem;
+  transition: border-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+  &:focus {
+    border-color: var(--color-ring);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-ring) 16%, transparent);
+    outline: none;
+  }
+}
+
+@utility wazen-rule-list {
+  & > * + * {
+    border-top: 1px solid var(--color-border);
+  }
+}
+
+@utility wazen-number {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+  letter-spacing: 0;
+}
+
+@keyframes wazen-enter {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@utility wazen-enter {
+  animation: wazen-enter 420ms ease-out both;
+}
+
+/* Scroll reveal: direction-agnostic (translateY only), so RTL and LTR match. */
+@utility wazen-reveal {
+  opacity: 0;
+  transform: translate3d(0, 28px, 0);
+  transition:
+    opacity 640ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 640ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+  &[data-revealed="true"] {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+    will-change: auto;
+  }
+}
+
+/* A restrained cascade for repeated content inside a section. */
+.wazen-reveal[data-revealed="true"] > :where(ul, ol, div) > :where(.wazen-card, .wazen-stat, li):nth-child(2) {
+  transition-delay: 70ms;
+}
+
+.wazen-reveal[data-revealed="true"] > :where(ul, ol, div) > :where(.wazen-card, .wazen-stat, li):nth-child(3) {
+  transition-delay: 140ms;
+}
+
+.wazen-reveal[data-revealed="true"] > :where(ul, ol, div) > :where(.wazen-card, .wazen-stat, li):nth-child(n + 4) {
+  transition-delay: 210ms;
+}
+
+/* Soft editorial wash used behind greeting/hero content. */
+@utility wazen-hero-wash {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 140% at 100% 0%, color-mix(in oklab, var(--color-primary) 9%, transparent), transparent 62%),
+    linear-gradient(180deg, color-mix(in oklab, var(--color-secondary) 70%, transparent), transparent 55%);
+}
+
+/* Primary balance statement — the one dark, dominant surface per screen. */
+@utility wazen-balance {
+  position: relative;
+  overflow: hidden;
+  border-radius: calc(var(--radius) + 10px);
+  padding: 1.5rem;
+  color: var(--color-primary-foreground);
+  background:
+    radial-gradient(120% 160% at 92% 4%, color-mix(in oklab, var(--color-primary) 62%, transparent), transparent 60%),
+    linear-gradient(155deg, oklch(0.3 0.014 30), oklch(0.2 0.01 28));
+  box-shadow: var(--shadow-lifted);
+  @media (min-width: 640px) {
+    padding: 2rem;
+  }
+}
+
+/* Legible accent tones on the dark balance surface. */
+@utility wazen-balance-pos {
+  color: oklch(0.84 0.11 165);
+}
+
+@utility wazen-balance-neg {
+  color: oklch(0.78 0.13 25);
+}
+
+@utility wazen-balance-gold {
+  color: oklch(0.87 0.08 85);
+}
+
+@utility wazen-balance-grid {
+
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.14;
+  background-image:
+    linear-gradient(to right, color-mix(in oklab, white 40%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in oklab, white 40%, transparent) 1px, transparent 1px);
+  background-size: 3.5rem 3.5rem;
+  mask-image: radial-gradient(120% 120% at 0% 0%, black, transparent 70%);
+}
+
+/* Statement-style figure cell: flat surface, thin tone rule, no card noise. */
+@utility wazen-stat {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--color-card);
+  border: 1px solid color-mix(in oklab, var(--color-border) 70%, transparent);
+  border-radius: calc(var(--radius) + 2px);
+  padding: 1rem 1.125rem;
+  transition: box-shadow 220ms ease, border-color 220ms ease;
+  &::before {
+    content: "";
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block: 0.85rem;
+    width: 2px;
+    border-radius: 2px;
+  }
+  &:hover {
+    box-shadow: var(--shadow-soft);
+    border-color: color-mix(in oklab, var(--color-border) 100%, transparent);
+  }
+}
+
+
+/* ---------------------------------------------------------------
+   Child experience — "Playful Luxury"
+   Soft pastel surfaces, champagne accents, gentle motion.
+   --------------------------------------------------------------- */
+/* Light child palette lives in :root above; dark values live in .dark. */
+
+
+@utility kid-panel {
+  background-color: var(--kid-ivory);
+  color: var(--foreground);
+  border: 1px solid var(--kid-soft);
+  border-radius: calc(var(--radius) + 6px);
+  box-shadow: 0 2px 4px oklch(0.3 0.02 70 / 4%), 0 18px 40px oklch(0.3 0.02 70 / 7%);
+}
+
+@utility kid-money-tile {
+  transition: transform 220ms ease, border-color 220ms ease, box-shadow 220ms ease;
+  &:hover {
+    transform: translateY(-2px);
+    border-color: var(--kid-mid);
+  }
+}
+
+@utility kid-press {
+  cursor: pointer;
+  transition:
+    box-shadow 220ms ease,
+    transform 220ms ease,
+    background-color 220ms ease;
+  &:hover {
+    box-shadow: 0 4px 8px oklch(0.3 0.02 70 / 5%), 0 22px 48px oklch(0.3 0.02 70 / 11%);
+    transform: translateY(-3px);
+  }
+  &:active {
+    transform: translateY(0) scale(0.985);
+  }
+}
+
+@keyframes kid-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes kid-twinkle {
+  0%, 100% { opacity: 0.35; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.08); }
+}
+
+@keyframes kid-pop {
+  0% { transform: scale(0.6); opacity: 0; }
+  60% { transform: scale(1.08); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes kid-confetti {
+  0% { transform: translateY(-10%) rotate(0deg); opacity: 0; }
+  15% { opacity: 1; }
+  100% { transform: translateY(320%) rotate(320deg); opacity: 0; }
+}
+
+@utility kid-float {
+  animation: kid-float 5s ease-in-out infinite;
+}
+
+@utility kid-twinkle {
+  animation: kid-twinkle 3.2s ease-in-out infinite;
+}
+
+@utility kid-pop {
+  animation: kid-pop 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@utility kid-earned {
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--kid-champagne) 45%, transparent), var(--shadow-soft);
+  &:hover,
+  &:focus-within {
+    transform: translateY(-2px);
+    border-color: var(--kid-mid);
+  }
+}
+
+@utility kid-confetti-piece {
+  animation: kid-confetti 1.8s ease-in forwards;
+}
+
+/* Brand gloss: the same dimensional red finish as the Wazen mark, used on
+   primary actions and brand surfaces so the UI reads as one family. */
+@utility gloss-red {
+  position: relative;
+  overflow: hidden;
+  background-image: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--color-primary) 82%, white) 0%,
+    var(--color-primary) 46%,
+    color-mix(in oklab, var(--color-primary) 84%, black) 100%
+  );
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, white 42%, transparent),
+    inset 0 -1px 0 color-mix(in oklab, black 18%, transparent),
+    0 6px 16px -8px color-mix(in oklab, var(--color-primary) 60%, transparent);
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0 0 55% 0;
+    background: linear-gradient(
+      180deg,
+      color-mix(in oklab, white 30%, transparent) 0%,
+      transparent 100%
+    );
+    pointer-events: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+  .wazen-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .wazen-enter,
+  .wazen-disclosure[open] > div:last-child,
+  .kid-float,
+  .kid-twinkle,
+  .kid-pop,
+  .kid-confetti-piece {
+    animation: none !important;
+  }
+}
