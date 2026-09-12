@@ -15,6 +15,7 @@ import { ASSET_KINDS, unitOf } from "@/lib/assets";
 import { GOLD_PURITIES, HOLDING_PURPOSES } from "@/lib/zakat";
 import type { Asset, AssetKind } from "@/lib/assets";
 import { useWazenLocale } from "@/components/wazen/WazenLocale";
+import { getStockQuoteFn, getGoldPriceFn, getSilverPriceFn } from "@/lib/market-data.functions";
 
 const inputClass = "wazen-field";
 
@@ -72,6 +73,70 @@ export function AssetFormDialog({
   const unit = unitOf(kind);
   const isProperty = unit === "property";
   const isMetal = unit === "grams";
+
+  const [fetchingPrice, setFetchingPrice] = useState(false);
+
+  async function fetchLiveMarketPrice() {
+    if (kind === "stock") {
+      if (!symbol.trim()) {
+        toast.error("Please enter a stock symbol first (e.g. AAPL, IBM)");
+        return;
+      }
+      setFetchingPrice(true);
+      try {
+        const res = await getStockQuoteFn({ data: { symbol: symbol.trim() } });
+        if (!res.success) {
+          toast.error(res.message);
+        } else {
+          setCurrentValue(String(res.data.price));
+          if (!name.trim()) setName(res.data.symbol);
+          toast.success(
+            `${res.data.symbol}: $${res.data.price} (${res.data.changePercentFormatted})`,
+          );
+        }
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : "Failed to fetch stock quote");
+      } finally {
+        setFetchingPrice(false);
+      }
+    } else if (kind === "gold") {
+      setFetchingPrice(true);
+      try {
+        const res = await getGoldPriceFn({ data: { currency: "USD" } });
+        if (!res.success) {
+          toast.error(res.message);
+        } else {
+          let gramPrice = res.data.pricePerGram24K;
+          if (purity === "21K" && res.data.pricePerGram21K) gramPrice = res.data.pricePerGram21K;
+          else if (purity === "18K" && res.data.pricePerGram18K)
+            gramPrice = res.data.pricePerGram18K;
+          else if (purity === "22K") gramPrice = Number((gramPrice * (22 / 24)).toFixed(4));
+          setCurrentValue(String(gramPrice));
+          toast.success(`Gold ${purity || "24K"}: $${gramPrice}/g`);
+        }
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : "Failed to fetch gold price");
+      } finally {
+        setFetchingPrice(false);
+      }
+    } else if (kind === "silver") {
+      setFetchingPrice(true);
+      try {
+        const res = await getSilverPriceFn({ data: { currency: "USD" } });
+        if (!res.success) {
+          toast.error(res.message);
+        } else {
+          const gramPrice = res.data.pricePerGram24K;
+          setCurrentValue(String(gramPrice));
+          toast.success(`Silver: $${gramPrice}/g`);
+        }
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : "Failed to fetch silver price");
+      } finally {
+        setFetchingPrice(false);
+      }
+    }
+  }
 
   async function submit() {
     const qty = isProperty ? 1 : Number(quantity);
@@ -144,7 +209,11 @@ export function AssetFormDialog({
 
           {kind === "stock" ? (
             <Field label={t("assetSymbol")}>
-              <input className={inputClass} value={symbol} onChange={(e) => setSymbol(e.target.value)} />
+              <input
+                className={inputClass}
+                value={symbol}
+                onChange={(e) => setSymbol(e.target.value)}
+              />
             </Field>
           ) : null}
 
@@ -172,7 +241,11 @@ export function AssetFormDialog({
           {isMetal ? (
             <Field label={t("purity")}>
               {kind === "gold" ? (
-                <select className={inputClass} value={purity || "24K"} onChange={(e) => setPurity(e.target.value)}>
+                <select
+                  className={inputClass}
+                  value={purity || "24K"}
+                  onChange={(e) => setPurity(e.target.value)}
+                >
                   {GOLD_PURITIES.map((option) => (
                     <option key={option} value={option}>
                       {option}
@@ -180,7 +253,12 @@ export function AssetFormDialog({
                   ))}
                 </select>
               ) : (
-                <input className={inputClass} value={purity} onChange={(e) => setPurity(e.target.value)} placeholder="999" />
+                <input
+                  className={inputClass}
+                  value={purity}
+                  onChange={(e) => setPurity(e.target.value)}
+                  placeholder="999"
+                />
               )}
             </Field>
           ) : null}
@@ -232,6 +310,19 @@ export function AssetFormDialog({
                   ? t("currentValueGram")
                   : t("currentValueShare")
             } (${currency})`}
+            action={
+              kind === "stock" || kind === "gold" || kind === "silver" ? (
+                <button
+                  type="button"
+                  onClick={fetchLiveMarketPrice}
+                  disabled={fetchingPrice}
+                  className="text-xs text-primary hover:underline inline-flex items-center gap-1 font-medium cursor-pointer"
+                >
+                  {fetchingPrice ? <SpinnerIcon className="size-3 animate-spin" /> : null}
+                  {kind === "stock" ? "Fetch live quote" : "Fetch spot price"}
+                </button>
+              ) : null
+            }
           >
             <input
               className={inputClass}
@@ -257,7 +348,11 @@ export function AssetFormDialog({
           ) : null}
 
           <Field label={t("notesField")}>
-            <input className={inputClass} value={notes} onChange={(e) => setNotes(e.target.value)} />
+            <input
+              className={inputClass}
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+            />
           </Field>
         </div>
 
@@ -275,10 +370,21 @@ export function AssetFormDialog({
   );
 }
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function Field({
+  label,
+  action,
+  children,
+}: {
+  label: string;
+  action?: React.ReactNode;
+  children: React.ReactNode;
+}) {
   return (
     <label className="block">
-      <span className="wazen-label">{label}</span>
+      <div className="flex items-center justify-between">
+        <span className="wazen-label">{label}</span>
+        {action}
+      </div>
       <div className="mt-2">{children}</div>
     </label>
   );
