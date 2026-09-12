@@ -43,6 +43,7 @@ import { AddIcon, ReceiptIcon } from "@/components/wazen/icons";
 import { Button } from "@/components/ui/button";
 import { formatDate } from "@/lib/finance";
 import { useState } from "react";
+import { AiFinancialAdvisor } from "@/components/wazen/ai/AiFinancialAdvisor";
 
 export type DashboardData = {
   userId: string;
@@ -105,6 +106,14 @@ export function AdultDashboard({
           </div>
         ) : null}
       </InsightStrip>
+
+      <AiFinancialAdvisor
+        currency={currency}
+        transactions={transactions}
+        goals={goals}
+        budget={budget}
+        lifeStage={focus === "student" ? "university_student" : "employee"}
+      />
 
       <QuickActions userId={userId} currency={currency} goals={goals} />
 
@@ -207,6 +216,14 @@ export function TeenagerDashboard({ data }: { data: DashboardData }) {
           </div>
         ) : null}
       </InsightStrip>
+
+      <AiFinancialAdvisor
+        currency={currency}
+        transactions={transactions}
+        goals={goals}
+        budget={budget}
+        lifeStage="teenager"
+      />
 
       <QuickActions
         userId={userId}

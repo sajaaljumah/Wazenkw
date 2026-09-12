@@ -1,18 +1,21 @@
-import { useMemo, useState } from "react";
-import { CheckIcon, ICON_STROKE, RetryIcon } from "@/components/wazen/icons";
+import { useEffect, useMemo, useState } from "react";
+import { AiIcon, CheckIcon, ICON_STROKE, RetryIcon, SpinnerIcon } from "@/components/wazen/icons";
 import { Feedback, LearnButton, LearnDialog, LearnProgressBar, useLearnCopy } from "./primitives";
 import { useRecordActivity } from "@/hooks/use-wazen-learning";
+import { useGenerateQuiz } from "@/hooks/use-wazen-ai";
+import { useWazenLocale } from "@/components/wazen/WazenLocale";
 import {
   DIFFICULTY_LABEL,
   buildQuiz,
   nextQuizDifficulty,
   weakTopics,
   type LearningProgress,
+  type QuizQuestion,
 } from "@/lib/learning";
 
 /**
- * Personalised quiz: difficulty follows previous results and questions lean on
- * the topics the child scored lowest in, so two quizzes never look identical.
+ * Personalised quiz: powered by OpenRouter AI when available, targeting the
+ * topics the child scored lowest in, with seamless fallback to static question bank.
  */
 export function QuizDialog({
   open,
@@ -26,18 +29,69 @@ export function QuizDialog({
   age: number | null;
 }) {
   const { lc, s } = useLearnCopy();
+  const { isArabic } = useWazenLocale();
+  const isAr = isArabic;
   const record = useRecordActivity();
+  const aiQuizMutation = useGenerateQuiz();
+
   const difficulty = useMemo(() => nextQuizDifficulty(progress), [progress]);
-  const questions = useMemo(
+  const staticQuestions = useMemo(
     () => buildQuiz({ difficulty, weak: weakTopics(progress), age }),
     [difficulty, progress, age],
   );
 
+  const [aiQuestions, setAiQuestions] = useState<QuizQuestion[] | null>(null);
   const [index, setIndex] = useState(0);
   const [picked, setPicked] = useState<number | null>(null);
   const [score, setScore] = useState(0);
   const [finished, setFinished] = useState(false);
 
+  // Trigger AI quiz generation on open for child/teen
+  useEffect(() => {
+    if (!open) {
+      setAiQuestions(null);
+      setIndex(0);
+      setPicked(null);
+      setScore(0);
+      setFinished(false);
+      return;
+    }
+
+    const topic = weakTopics(progress)[0] ?? "saving";
+    const lifeStage = age && age >= 13 ? "teenager" : "child";
+
+    aiQuizMutation.mutate(
+      {
+        topic,
+        lifeStage,
+        language: isAr ? "ar" : "en",
+        questionCount: 3,
+      },
+      {
+        onSuccess: (res) => {
+          if (res?.questions && res.questions.length > 0) {
+            const mapped: QuizQuestion[] = res.questions.map((q, qIndex) => ({
+              id: `ai-${qIndex}`,
+              topic: (res.topic || topic) as QuizQuestion["topic"],
+              difficulty,
+              prompt: { ar: q.question, en: q.question },
+              options: q.options.map((opt) => ({ ar: opt, en: opt })),
+              answer: q.answerIndex,
+              explanation: { ar: q.explanation, en: q.explanation },
+            }));
+            setAiQuestions(mapped);
+          }
+        },
+        onError: () => {
+          // Automatic safe fallback to static question bank
+          setAiQuestions(null);
+        },
+      },
+    );
+  }, [open]);
+
+  const questions = aiQuestions && aiQuestions.length > 0 ? aiQuestions : staticQuestions;
+  const isAiQuiz = Boolean(aiQuestions && aiQuestions.length > 0);
   const question = questions[index];
 
   const answer = (option: number) => {
@@ -55,7 +109,7 @@ export function QuizDialog({
     setFinished(true);
     record.mutate({
       activity_type: "quiz",
-      activity_key: `quiz-${difficulty}`,
+      activity_key: isAiQuiz ? `ai-quiz-${difficulty}` : `quiz-${difficulty}`,
       topic: question?.topic ?? "saving",
       score,
       max_score: questions.length,
@@ -84,9 +138,18 @@ export function QuizDialog({
       open={open}
       onClose={close}
       title={lc("quiz")}
-      description={`${lc("quizIntro")} · ${lc("difficulty")}: ${s(DIFFICULTY_LABEL[difficulty])}`}
+      description={`${lc("quizIntro")} · ${lc("difficulty")}: ${s(DIFFICULTY_LABEL[difficulty])}${isAiQuiz ? " · ✨ الذكاء الاصطناعي" : ""}`}
     >
-      {finished || !question ? (
+      {aiQuizMutation.isPending && !aiQuestions ? (
+        <div className="flex flex-col items-center justify-center space-y-3 py-10 text-center">
+          <SpinnerIcon className="size-6 animate-spin text-gold" />
+          <p className="text-sm text-muted-foreground">
+            {isAr
+              ? "وازِن يجهز اختباراً مخصصاً لك بالذكاء الاصطناعي..."
+              : "Wazen AI is crafting your personalized quiz..."}
+          </p>
+        </div>
+      ) : finished || !question ? (
         <div className="space-y-5 text-center">
           <p className="text-sm text-muted-foreground">{lc("yourResult")}</p>
           <p className="text-4xl tabular-nums">

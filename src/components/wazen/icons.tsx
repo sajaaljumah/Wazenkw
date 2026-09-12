@@ -124,6 +124,7 @@ export const LearnIcon = BookOpen;
 export const GameIcon = Gamepad2;
 export const QuizIcon = ListChecks;
 export const RecommendIcon = Sparkles;
+export const AiIcon = Sparkles;
 export const StreakIcon = Flame;
 export const RewardsIcon = Award;
 export const PremiumIcon = BadgeCheck;
